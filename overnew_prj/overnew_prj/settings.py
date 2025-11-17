@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "overnew",
     "users",
+    "account",
+    "discussion",
+    "recommend",
+    "feed",
+    "archive",
 ]
 
 MIDDLEWARE = [

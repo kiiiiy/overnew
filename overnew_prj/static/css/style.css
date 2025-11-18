@@ -1812,7 +1812,7 @@ body.splash-body {
     
     /* (NEW) 스플래시 배경 이미지 */
     /*  */
-    background-image: url('splash-bg.png'); 
+    background-image: url('/overnew_prj/static/image/splash-bg.png'); 
     background-size: cover;
     background-position: center center;
     

@@ -21,7 +21,6 @@ function formatTimeAgo(timestamp) {
         const days = Math.floor(diffSeconds / DAY);
         return `${days}일 전`;
     } else {
-        // 한 달 이상 지난 경우 날짜 형식으로 표시 (예: 25/11/09)
         const year = String(past.getFullYear()).slice(-2);
         const month = String(past.getMonth() + 1).padStart(2, '0');
         const day = String(past.getDate()).padStart(2, '0');
@@ -39,24 +38,17 @@ function initializeNotifications() {
         const notifTime = item.dataset.time; 
         const timestampElement = item.querySelector('.notif-timestamp');
         
-        // 🚨 시간 계산 및 업데이트
         if (notifTime && timestampElement) {
             timestampElement.textContent = formatTimeAgo(notifTime);
         }
 
-        // 1. 초기 상태 적용: 저장된 상태가 'true'이면 'read' 클래스를 추가
         if (notifId && readStates[notifId]) {
             item.classList.add('read');
         }
 
-        // 2. 클릭 이벤트 리스너 추가 (읽음 표시)
         item.addEventListener('click', () => {
             if (!notifId) return;
-
-            // 'read' 클래스 추가 (배경색 변경)
             item.classList.add('read'); 
-
-            // 상태를 localStorage에 저장
             readStates[notifId] = true;
             localStorage.setItem('read_notifications', JSON.stringify(readStates));
         });
@@ -74,10 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // 1. localStorage에서 저장된 정보 불러오기
-    const userInfo = JSON.parse(localStorage.getItem('user-info'));
+    // --------------------------------------------------
+    // [수정!] 1. 'user-info' 대신 'current-session' (로그인 상태)을 불러옵니다.
+    // --------------------------------------------------
+    const userInfo = JSON.parse(localStorage.getItem('current-session'));
 
-    // 2. (방어 코드) 만약 저장된 정보가 없으면 (로그인 안 한 상태)
+    // 2. (방어 코드) 'current-session'이 없으면 쫓아냅니다.
     if (!userInfo || !userInfo.nickname) {
         alert('로그인이 필요한 페이지입니다.');
         window.location.href = 'login.html'; 
@@ -86,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. (핵심) '나소공' 닉네임 채우기
     document.querySelectorAll('.username').forEach(element => {
-        // 닉네임이 있는 곳에 사용자 닉네임을 채워줍니다.
+        // 'current-session'에 저장된 닉네임으로 채웁니다.
         element.textContent = userInfo.nickname; 
     });
     

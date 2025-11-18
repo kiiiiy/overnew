@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('user-password');
 
     // 2. 아이콘에 'click' 이벤트 리스너를 추가합니다.
-    // (null 체크 추가: 요소를 찾지 못해도 에러가 나지 않도록)
     if (togglePassword && passwordInput) {
         togglePassword.addEventListener('click', () => {
             // 3. 현재 입력창의 type을 확인합니다.
@@ -35,15 +34,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 2-2. localStorage에서 회원가입 정보 불러오기
+            // 2-2. [데이터베이스] localStorage에서 회원가입 정보 불러오기
             const savedInfo = JSON.parse(localStorage.getItem('user-info'));
 
             // 2-3. (핵심!) ID와 비밀번호 일치 여부 확인
             if (savedInfo && savedInfo.userId === id && savedInfo.password === password) {
                 
+                // --------------------------------------------------
+                // [수정!] (로그인 성공) 'current-session' (로그인 상태)을 생성합니다.
+                // --------------------------------------------------
+                const sessionData = {
+                    nickname: savedInfo.nickname,
+                    userId: savedInfo.userId,
+                    name: savedInfo.name,
+                    age: savedInfo.age,
+                    gender: savedInfo.gender,
+                    stance: savedInfo.stance,
+                    topics: savedInfo.topics,
+                    media: savedInfo.media
+                    // (중요) 비밀번호는 세션에 저장하지 않습니다.
+                };
+                localStorage.setItem('current-session', JSON.stringify(sessionData));
+
+
                 // 2-4. (로그인 성공) 'feed.html'로 페이지 이동
                 alert(`'${savedInfo.nickname}'님, 환영합니다!`); 
-                window.location.href = 'feed.html';
+                window.location.href = '/overnew_prj/feed/templates/feed/feeds.html';
 
             } else {
                 // 2-5. (로그인 실패)

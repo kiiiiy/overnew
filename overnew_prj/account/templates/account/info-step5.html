@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 기입 5 - OVERNEW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+
+    <script src="/overnew_prj/static/js/account.js" defer></script>
+</head>
+<body id="page-info-step5">
+
+    <main class="container">
+
+        <h1 class="logo">OVERNEW</h1>
+
+        <div class="progress-bar">
+            <div class="progress-value" style="width: 95%;"></div>
+        </div>
+
+        <h3 class="subtitle" style="margin-top: 50px; margin-bottom: 40px;">
+            사용하실 닉네임과<br>계정 정보를 입력해 주세요.
+        </h3>
+
+        <form class="info-form">
+
+            <div class="form-group">
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" placeholder="Value">
+            </div>
+
+            <div class="form-group">
+                <label for="user-id">ID</label>
+                <input type="text" id="user-id" placeholder="Value">
+            </div>
+
+            <div class="form-group">
+                <label for="user-password">Password</label>
+                <input type="password" id="user-password" placeholder="Value">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Value">
+            </div>
+
+        </form>
+
+    </main>
+
+    <button type="button" class="next-button" id="next-btn-step5">NEXT</button>
+
+    </body>
+</html>

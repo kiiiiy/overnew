@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>피드 - OVERNEW</title>
+    <link rel="stylesheet" href="../../../static/css/style.css">
+</head>
+
+<body class="with-fixed-nav">
+    <header class="main-header">
+        <button type="button" class="icon-btn menu-btn" id="settings-menu-btn"><span>☰</span></button>
+        <h1 class="logo header-logo">OVERNEW</h1>
+        <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+    </header>
+
+    <main class="container">
+
+        <div class="view-toggle" style="margin-bottom: 20px;">
+            <input type="radio" id="view-hot" name="view-type" value="hot" checked>
+            <label for="view-hot">HOT</label>
+            
+            <input type="radio" id="view-following" name="view-type" value="following">
+            <label for="view-following">FOLLOWING</label>
+        </div>
+        
+        <div class="keyword-list" id="keyword-list-container">
+            <span class="keyword-tag active" data-topic="politics">정치</span>
+            <span class="keyword-tag" data-topic="economy">경제</span>
+            <span class="keyword-tag" data-topic="society">사회</span>
+            <span class="keyword-tag" data-topic="culture">생활/문화</span>
+            <span class="keyword-tag" data-topic="it">IT/과학</span>
+            <span class="keyword-tag" data-topic="world">세계</span>
+            <span class="keyword-tag" data-topic="enter">연예</span>
+            <span class="keyword-tag" data-topic="sport">스포츠</span>
+        </div>
+
+        <div class="article-list" id="feed-hot"></div>
+        <div class="article-list" id="feed-following" style="display: none;"></div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="feed.html" class="nav-item active"> 
+            <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
+            <span class="nav-label">피드</span>
+        </a>
+        
+        <a href="archive.html" class="nav-item">
+            <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
+            <span class="nav-label">아카이브</span>
+        </a>
+
+        <a href="main.html" class="nav-item">
+            <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
+            <span class="nav-label">추천</span>
+        </a>
+
+        <a href="community.html" class="nav-item">
+            <div class="nav-icon-wrapper"><span class="nav-icon">⚙️</span></div>
+            <span class="nav-label">커뮤니티</span>
+        </a>
+    </nav>
+
+    <script src="../../../static/js/feed.js"></script>
+</body>
+</html>

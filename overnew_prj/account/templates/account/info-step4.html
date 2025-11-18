@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 기입 4 - OVERNEW</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+
+    <script src="/overnew_prj/static/js/info-step4.js" defer></script>
+</head>
+<body>
+
+    <main class="container">
+
+        <h1 class="logo">OVERNEW</h1>
+
+        <div class="progress-bar">
+            <div class="progress-value" style="width: 80%;"></div>
+        </div>
+
+        <h2 class="title" id="user-greeting">...님</h2>
+        <h3 class="subtitle">뉴스를 주로 접하는 언론사를<br>모두 체크해주세요.</h3>
+
+        <form class="info-form">
+
+            <div class="form-group">
+                <h4 class="section-title">종합</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-kh" name="media" value="kh">
+                    <label for="media-kh">경향신문</label>
+                    
+                    <input type="checkbox" id="media-km" name="media" value="km">
+                    <label for="media-km">국민일보</label>
+                    
+                    <input type="checkbox" id="media-donga" name="media" value="donga">
+                    <label for="media-donga">동아일보</label>
+                    
+                    <input type="checkbox" id="media-munhwa" name="media" value="munhwa">
+                    <label for="media-munhwa">문화일보</label>
+                    
+                    <input type="checkbox" id="media-seoul" name="media" value="seoul">
+                    <label for="media-seoul">서울신문</label>
+                    
+                    <input type="checkbox" id="media-segye" name="media" value="segye">
+                    <label for="media-segye">세계일보</label>
+                    
+                    <input type="checkbox" id="media-chosun" name="media" value="chosun">
+                    <label for="media-chosun">조선일보</label>
+                    
+                    <input type="checkbox" id="media-joongang" name="media" value="joongang">
+                    <label for="media-joongang">중앙일보</label>
+                    
+                    <input type="checkbox" id="media-hani" name="media" value="hani">
+                    <label for="media-hani">한겨레</label>
+                    
+                    <input type="checkbox" id="media-hankook" name="media" value="hankook">
+                    <label for="media-hankook">한국일보</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">방송/통신</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-news1" name="media" value="news1">
+                    <label for="media-news1">뉴스1</label>
+
+                    <input type="checkbox" id="media-newsis" name="media" value="newsis">
+                    <label for="media-newsis">뉴시스</label>
+
+                    <input type="checkbox" id="media-yonhap" name="media" value="yonhap">
+                    <label for="media-yonhap">연합뉴스</label>
+
+                    <input type="checkbox" id="media-yonhaptv" name="media" value="yonhaptv">
+                    <label for="media-yonhaptv">연합뉴스TV</label>
+
+                    <input type="checkbox" id="media-channela" name="media" value="channela">
+                    <label for="media-channela">채널A</label>
+
+                    <input type="checkbox" id="media-hankyung" name="media" value="hankyung">
+                    <label for="media-hankyung">한국경제TV</label>
+
+                    <input type="checkbox" id="media-jtbc" name="media" value="jtbc">
+                    <label for="media-jtbc">JTBC</label>
+
+                    <input type="checkbox" id="media-kbs" name="media" value="kbs">
+                    <label for="media-kbs">KBS</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">경제</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-maeil" name="media" value="maeil">
+                    <label for="media-maeil">매일경제</label>
+                    <input type="checkbox" id="media-money" name="media" value="money">
+                    <label for="media-money">머니투데이</label>
+                    <input type="checkbox" id="media-bizwatch" name="media" value="bizwatch">
+                    <label for="media-bizwatch">비즈워치</label>
+                    <input type="checkbox" id="media-seouleco" name="media" value="seouleco">
+                    <label for="media-seouleco">서울경제</label>
+                    <input type="checkbox" id="media-asiae" name="media" value="asiae">
+                    <label for="media-asiae">아시아경제</label>
+                    <input type="checkbox" id="media-edaily" name="media" value="edaily">
+                    <label for="media-edaily">이데일리</label>
+                    <input type="checkbox" id="media-fnnews" name="media" value="fnnews">
+                    <label for="media-fnnews">파이낸셜뉴스</label>
+                    <input type="checkbox" id="media-hankyung" name="media" value="hankyung">
+                    <label for="media-hankyung">한국경제</label>
+                    <input type="checkbox" id="media-herald" name="media" value="herald">
+                    <label for="media-herald">헤럴드경제</label>
+                    <input type="checkbox" id="media-jose" name="media" value="jose">
+                    <label for="media-jose">조세일보</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">인터넷</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-nocut" name="media" value="nocut">
+                    <label for="media-nocut">노컷뉴스</label>
+                    <input type="checkbox" id="media-fact" name="media" value="fact">
+                    <label for="media-fact">더팩트</label>
+                    <input type="checkbox" id="media-dailyan" name="media" value="dailyan">
+                    <label for="media-dailyan">데일리안</label>
+                    <input type="checkbox" id="media-moneys" name="media" value="moneys">
+                    <label for="media-moneys">머니S</label>
+                    <input type="checkbox" id="media-today" name="media" value="today">
+                    <label for="media-today">미디어오늘</label>
+                    <input type="checkbox" id="media-inews24" name="media" value="inews24">
+                    <label for="media-inews24">아이뉴스24</label>
+                    <input type="checkbox" id="media-ohmynews" name="media" value="ohmynews">
+                    <label for="media-ohmynews">오마이뉴스</label>
+                    <input type="checkbox" id="media-pressian" name="media" value="pressian">
+                    <label for="media-pressian">프레시안</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <h4 class="section-title">IT/과학</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-ddaily" name="media" value="ddaily">
+                    <label for="media-ddaily">디지털데일리</label>
+                    <input type="checkbox" id="media-dt" name="media" value="dt">
+                    <label for="media-dt">디지털타임스</label>
+                    <input type="checkbox" id="media-bloter" name="media" value="bloter">
+                    <label for="media-bloter">블로터</label>
+                    <input type="checkbox" id="media-etnews" name="media" value="etnews">
+                    <label for="media-etnews">전자신문</label>
+                    <input type="checkbox" id="media-zdnet" name="media" value="zdnet">
+                    <label for="media-zdnet">지디넷코리아</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">매거진</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-scoop" name="media" value="scoop">
+                    <label for="media-scoop">더스쿠프</label>
+                    <input type="checkbox" id="media-lady" name="media" value="lady">
+                    <label for="media-lady">레이디경향</label>
+                    <input type="checkbox" id="media-mkecono" name="media" value="mkecono">
+                    <label for="media-mkecono">매경이코노미</label>
+                    <input type="checkbox" id="media-sisain" name="media" value="sisain">
+                    <label for="media-sisain">시사IN</label>
+                    <input type="checkbox" id="media-sisaj" name="media" value="sisaj">
+                    <label for="media-sisaj">시사저널</label>
+                    <input type="checkbox" id="media-shindonga" name="media" value="shindonga">
+                    <label for="media-shindonga">신동아</label>
+                    <input type="checkbox" id="media-monthlysan" name="media" value="monthlysan">
+                    <label for="media-monthlysan">월간 산</label>
+                    <input type="checkbox" id="media-economist" name="media" value="economist">
+                    <label for="media-economist">이코노미스트</label>
+                    <input type="checkbox" id="media-weeklykh" name="media" value="weeklykh">
+                    <label for="media-weeklykh">주간경향</label>
+                    <input type="checkbox" id="media-weeklydonga" name="media" value="weeklydonga">
+                    <label for="media-weeklydonga">주간동아</label>
+                    <input type="checkbox" id="media-weeklychosun" name="media" value="weeklychosun">
+                    <label for="media-weeklychosun">주간조선</label>
+                    <input type="checkbox" id="media-sunday" name="media" value="sunday">
+                    <label for="media-sunday">중앙SUNDAY</label>
+                    <input type="checkbox" id="media-hani21" name="media" value="hani21">
+                    <label for="media-hani21">한겨레21</label>
+                    <input type="checkbox" id="media-hankyungbiz" name="media" value="hankyungbiz">
+                    <label for="media-hankyungbiz">한경비즈니스</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <h4 class="section-title">전문지</h4>
+                
+                <div class="media-toggle">
+                        <input type="checkbox" id="media-report" name="media" value="report">
+                            <label for="media-report">기자협회보</label>
+                            <input type="checkbox" id="media-nongmin" name="media" value="nongmin">
+                            <label for="media-nongmin">농민신문</label>
+                            <input type="checkbox" id="media-newstapa" name="media" value="newstapa">
+                            <label for="media-newstapa">뉴스타파</label>
+                            <input type="checkbox" id="media-dongascience" name="media" value="dongascience">
+                            <label for="media-dongascience">동아사이언스</label>
+                            <input type="checkbox" id="media-women" name="media" value="women">
+                            <label for="media-women">여성신문</label>
+                            <input type="checkbox" id="media-ilda" name="media" value="ilda">
+                            <label for="media-ilda">일다</label>
+                            <input type="checkbox" id="media-koreajoongang" name="media" value="koreajoongang">
+                            <label for="media-koreajoongang">코리아중앙데일리</label>
+                            <input type="checkbox" id="media-koreaherald" name="media" value="koreaherald">
+                            <label for="media-koreaherald">코리아헤럴드</label>
+                            <input type="checkbox" id="media-komedi" name="media" value="komedi">
+                            <label for="media-komedi">코메디닷컴</label>
+                            <input type="checkbox" id="media-healthchosun" name="media" value="healthchosun">
+                            <label for="media-healthchosun">헬스조선</label>
+                    </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">지역</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-gangwon" name="media" value="gangwon">
+                    <label for="media-gangwon">강원도민일보</label>
+                    <input type="checkbox" id="media-gangwonilbo" name="media" value="gangwonilbo">
+                    <label for="media-gangwonilbo">강원일보</label>
+                    <input type="checkbox" id="media-kyeonggi" name="media" value="kyeonggi">
+                    <label for="media-kyeonggi">경기일보</label>
+                    <input type="checkbox" id="media-kookje" name="media" value="kookje">
+                    <label for="media-kookje">국제신문</label>
+                    <input type="checkbox" id="media-dgmbc" name="media" value="dgmbc">
+                    <label for="media-dgmbc">대구MBC</label>
+                    <input type="checkbox" id="media-daejeon" name="media" value="daejeon">
+                    <label for="media-daejeon">대전일보</label>
+                    <input type="checkbox" id="media-maeilshin" name="media" value="maeilshin">
+                    <label for="media-maeilshin">매일신문</label>
+                    <input type="checkbox" id="media-busan" name="media" value="busan">
+                    <label for="media-busan">부산일보</label>
+                    <input type="checkbox" id="media-jeonjumbc" name="media" value="jeonjumbc">
+                    <label for="media-jeonjumbc">전주MBC</label>
+                    <input type="checkbox" id="media-cjb" name="media" value="cjb">
+                    <label for="media-cjb">CJB청주방송</label>
+                    <input type="checkbox" id="media-jibs" name="media" value="jibs">
+                    <label for="media-jibs">JIBS</label>
+                    <input type="checkbox" id="media-kbc" name="media" value="kbc">
+                    <label for="media-kbc">kbc광주방송</label>
+                    </div>
+            </div>
+
+            <div class="form-group">
+                <h4 class="section-title">포토</h4>
+                
+                <div class="media-toggle">
+                    <input type="checkbox" id="media-xinhua" name="media" value="xinhua">
+                    <label for="media-xinhua">신화사 연합뉴스</label>
+                    <input type="checkbox" id="media-ap" name="media" value="ap">
+                    <label for="media-ap">AP연합뉴스</label>
+                    <input type="checkbox" id="media-epa" name="media" value="epa">
+                    <label for="media-epa">EPA연합뉴스</label>
+                    </div>
+            </div>
+
+        </form>
+
+    </main>
+
+    <button type="button" class="next-button" id="next-btn-step4">NEXT</button>
+
+    </body>
+</html>

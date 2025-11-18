@@ -25,11 +25,16 @@
         <button type="button" class="topic-grid-button" data-topic="culture">생활/문화</button>
         <button type="button" class="topic-grid-button" data-topic="it">IT/과학</button>
         <button type="button" class="topic-grid-button" data-topic="world">세계</button>
-        <button type="button" class="topic-grid-button" data-topic="entertainment">연예</button>
-        <button type="button" class="topic-grid-button" data-topic="sports">스포츠</button>
+        <button type="button" class="topic-grid-button" data-topic="enter">연예</button>
+        <button type="button" class="topic-grid-button" data-topic="sport">스포츠</button>
     </div>
     
     <form class="info-form" style="margin-top: 30px;">
+        
+        <div class="form-group"> 
+            <input type="text" id="article-source" placeholder="언론사를 입력해주세요">
+            <button type="button" class="clear-btn" id="clear-source-btn">×</button>
+        </div>
         <div class="form-group input-with-clear">
             <input type="url" id="article-link" placeholder="기사 링크를 입력해주세요">
             <button type="button" class="clear-btn" id="clear-link-btn">×</button>
@@ -49,7 +54,6 @@
     <a href="community.html" class="nav-item"> ... </a>
 </nav>
 
-<!-- JS 파일 불러오기 -->
 <script src="../../../static/js/archive.js"></script>
 </body>
 </html>

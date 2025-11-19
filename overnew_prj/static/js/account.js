@@ -344,3 +344,69 @@ document.addEventListener('DOMContentLoaded', () => {
         initSignupCompletePage();
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 🚨 기존의 모든 이벤트 리스너 코드 (로그아웃, 뒤로가기 등)는 여기에 포함되어 있다고 가정합니다.
+
+    // 1. 사용자 정보를 불러와 화면에 표시하는 함수
+    function displayUserInfo() {
+        // 로컬 스토리지에서 최신 정보 로드
+        const userInfo = JSON.parse(localStorage.getItem('user-info') || 'null');
+        
+        // 설정 페이지 HTML 요소 ID (settings-logged-in.html에 있어야 함)
+        const nicknameEl = document.getElementById('user-nickname');
+        const tagsEl = document.getElementById('user-tags');
+        
+        if (userInfo) {
+            // A. 닉네임 업데이트
+            if (nicknameEl) {
+                // 저장된 닉네임이 있으면 표시, 없으면 기본값 표시
+                nicknameEl.textContent = userInfo.nickname || 'OVERNEW 사용자';
+            }
+            
+            // B. 관심 분야 태그 업데이트
+            if (tagsEl && userInfo.topics && Array.isArray(userInfo.topics)) {
+                // ['정치', '경제'] -> '#정치 #경제' 문자열로 변환하여 표시
+                tagsEl.textContent = userInfo.topics.map(t => `#${t}`).join(' ');
+            } else if (tagsEl) {
+                tagsEl.textContent = '관심 분야 미설정';
+            }
+        }
+        
+        // 🚨 (옵션) 로그인 정보가 없을 경우 처리 (이 페이지는 로그인 상태여야 함)
+        if (!userInfo) {
+             // 닉네임 영역 등에 "로그인 필요" 등의 메시지를 표시하거나
+             // window.location.href = 'login.html'; 로 리다이렉션할 수 있습니다.
+        }
+    }
+    
+    // 2. 페이지 로드 시 정보 표시 함수를 실행
+    // settings-logged-in.html이 로드될 때마다 이 함수가 실행되어 최신 정보를 표시합니다.
+    displayUserInfo();
+
+    // ----------------------------------------------------
+    // 3. 로그아웃 버튼 이벤트 리스너 (기존 코드)
+    // ----------------------------------------------------
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            localStorage.removeItem('user-info');
+            alert('로그아웃되었습니다.');
+            // 🚨 경로 수정: settings-logged-out.html로 이동
+            window.location.href = 'settings-logged-out.html'; 
+        });
+    }
+    
+    // ----------------------------------------------------
+    // 4. 프로필 수정 버튼 이벤트 리스너 (settings -> profile-edit으로 이동)
+    // ----------------------------------------------------
+    const profileEditBtn = document.getElementById('profile-edit-btn');
+    if (profileEditBtn) {
+        profileEditBtn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            // 🚨 경로 수정: profile-edit.html로 이동
+            window.location.href = 'profile-edit.html'; 
+        });
+    }
+});

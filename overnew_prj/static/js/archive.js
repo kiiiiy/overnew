@@ -3,11 +3,18 @@ const dummyScrapData = {
     scrap: {
         politics: [{ category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'jung-chung-rae.jpg' }],
         economy: [{ category: '경제', source: 'SBS', title: 'APEC 효과?...', views: '32.6k', time: '4 hours ago', image: 'apec-market.jpg' }],
-        society: [], it: [], culture: [], world: [], enter: [], sport: []
+        society: [], 
+        it: [], 
+        culture: [{ category: '생활/문화', source: '문화일보', title: '생활 문화 뉴스입니다.', views: '1.2k', time: '1일 전', image: 'image-placeholder.jpg' }], // ⭐ 임시 데이터 추가
+        world: [{ category: '세계', source: 'CNN', title: '해외 주요 소식입니다.', views: '5.5k', time: '5시간 전', image: 'image-placeholder.jpg' }],     // ⭐ 임시 데이터 추가
+        enter: [], sport: []
     },
     bookmark: {
         politics: [{ category: '정치', source: '뉴스웍스', title: "북마크한 정치 기사입니다.", views: '31.9k', time: '5 hours ago', image: 'lg-cns-award.jpg' }],
-        economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: []
+        economy: [], society: [], it: [], 
+        culture: [], // ⭐ 임시 데이터 필요 시 추가
+        world: [],   // ⭐ 임시 데이터 필요 시 추가
+        enter: [], sport: []
     }
 };
 
@@ -27,7 +34,7 @@ function createArticleCardHTML(cardData) {
     const topicDisplayMap = {
         'IT/과학': 'IT/과학', '경제': '경제', '사회': '사회', '정치': '정치', '연예': '연예', '스포츠': '스포츠', '생활/문화': '생활/문화', '세계': '세계',
         'Politics': '정치', 'Economy': '경제', 'Society': '사회', 'Culture': '생활/문화', 'It': 'IT/과학', 'World': '세계', 
-        'Entertainment': '연예', 'Sports': '스포츠' 
+        'Enter': '연예', 'Sport': '스포츠' 
     };
     
     // CSS 클래스 매핑 (저장된 대문자 시작 카테고리와 더미 데이터의 한글 카테고리 모두 처리)

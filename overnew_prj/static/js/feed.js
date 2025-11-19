@@ -26,42 +26,48 @@
     // 카드 생성
     // ====================
     function createHotCardHTML(cardData) {
-        return `
+    // 이미지 경로를 다른 PNG 파일과 동일하게 설정합니다.
+    const viewIconPath = '../../../static/image/view.png'; 
+    
+    return `
+        <a class="article-card">
+            <div class="card-text">
+                <span class="card-category">${cardData.category}</span>
+                <span class="card-source">${cardData.source}</span>
+                <h3 class="card-title">${cardData.title}</h3>
+                <div class="card-stats">
+                    <span><img src="${viewIconPath}" alt="조회수" class="stat-icon"> ${cardData.views}</span> <span>${cardData.time}</span>
+                </div>
+            </div>
+            <img src="${cardData.image}" class="card-thumbnail">
+        </a>
+    `;
+}
+
+    function createFollowingCardHTML(cardData) {
+    // 이미지 경로를 다른 PNG 파일과 동일하게 설정합니다.
+    const viewIconPath = '../../../static/image/view.png'; 
+
+    return `
+        <div class="following-card-group">
+            <div class="follower-header">
+                <img src="https://via.placeholder.com/20" class="card-avatar-small">
+                <strong>${cardData.followerName}</strong>님이 열람한 기사
+            </div>
             <a class="article-card">
                 <div class="card-text">
                     <span class="card-category">${cardData.category}</span>
-                    <span class="card-source">${cardData.source}</span>
+                    <span class="card-source">${cardData.articleSource}</span>
                     <h3 class="card-title">${cardData.title}</h3>
                     <div class="card-stats">
-                        <span>👁️ ${cardData.views}</span> <span>${cardData.time}</span>
+                        <span><img src="${viewIconPath}" alt="조회수" class="stat-icon"> ${cardData.views}</span> <span>${cardData.time}</span>
                     </div>
                 </div>
                 <img src="${cardData.image}" class="card-thumbnail">
             </a>
-        `;
-    }
-
-    function createFollowingCardHTML(cardData) {
-        return `
-            <div class="following-card-group">
-                <div class="follower-header">
-                    <img src="https://via.placeholder.com/20" class="card-avatar-small">
-                    <strong>${cardData.followerName}</strong>님이 열람한 기사
-                </div>
-                <a class="article-card">
-                    <div class="card-text">
-                        <span class="card-category">${cardData.category}</span>
-                        <span class="card-source">${cardData.articleSource}</span>
-                        <h3 class="card-title">${cardData.title}</h3>
-                        <div class="card-stats">
-                            <span>👁️ ${cardData.views}</span> <span>${cardData.time}</span>
-                        </div>
-                    </div>
-                    <img src="${cardData.image}" class="card-thumbnail">
-                </a>
-            </div>
-        `;
-    }
+        </div>
+    `;
+}
 
     // ====================
     // 피드 렌더링

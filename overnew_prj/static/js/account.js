@@ -51,7 +51,7 @@ function initSplashPage() {
     // 🚨 [수정된 로직] 2초 후에 'feed' 페이지로 이동
     setTimeout(() => {
         // 절대 경로로 수정 (로그인 페이지의 경로를 기준으로 추정)
-        window.location.href = '/overnew_prj/feed/templates/feed/feeds.html';
+        window.location.href = '/overnew_prj/feed/templates/feed/feed.html';
     }, 2000); 
 }
 
@@ -169,7 +169,7 @@ function initInfoStep5Page() {
 // [Signup Complete] signup-complete.html
 function initSignupCompletePage() {
     setTimeout(() => {
-        window.location.href = 'main.html'; 
+        window.location.href = '/overnew_prj/feed/templates/feed/feed.html'; 
     }, 3000); 
 }
 

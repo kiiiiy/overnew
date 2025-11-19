@@ -139,10 +139,16 @@
         // 버튼 예시
         const isLoggedIn = true;
         document.getElementById('settings-menu-btn').addEventListener('click', () => {
-            if (isLoggedIn) alert('설정 페이지 이동');
-            else alert('로그인 필요');
-        });
+        if (isLoggedIn) {
+            // 로그인 상태: 로그인된 설정 페이지로 이동
+            window.location.href = accountPath + 'settings-logged-in.html';
+        } else {
+            // 비로그인 상태: 로그아웃된 설정 페이지로 이동
+            window.location.href = accountPath + 'settings-logged-out.html';
+        }
+    });
         document.getElementById('notifications-btn').addEventListener('click', () => {
-            alert('알람 페이지 이동');
-        });
+        // 알림 페이지로 이동
+        window.location.href = accountPath + 'notifications.html';
+    });
     });

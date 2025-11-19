@@ -10,15 +10,25 @@
 <body class="with-fixed-nav">
 
 <header class="main-header">
-    <a href="settings-logged-in.html" class="icon-btn menu-btn"><span>☰</span></a>
+    <a href="../../../account/templates/account/settings-logged-in.html" class="icon-btn menu-btn">
+        <img src="../../../static/image/hamburger.png" alt="메뉴" class="header-icon">
+    </a>
     <h1 class="logo header-logo">OVERNEW</h1>
-    <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+    <a href="../../../account/templates/account/notifications.html" class="icon-btn bell-btn">
+        <img src="../../../static/image/bell.png" alt="알림" class="header-icon">
+    </a>
 </header>
 
 <aside class="floating-action-bar">
-    <button type="button" class="action-btn" id="like-btn"><span>👍</span></button>
-    <button type="button" class="action-btn" id="discuss-btn"><span>💬</span></button>
-    <button type="button" class="action-btn" id="bookmark-btn"><span>🔖</span></button>
+    <button type="button" class="action-btn" id="like-btn">
+        <img src="../../../static/image/like.png" alt="좋아요" class="action-icon">
+    </button>
+    <button type="button" class="action-btn" id="discuss-btn">
+        <img src="../../../static/image/comment_icon.png" alt="댓글 달기" class="action-icon">
+    </button>
+    <button type="button" class="action-btn" id="bookmark-btn">
+        <img src="../../../static/image/bookmark-white.png" alt="북마크" class="action-icon">
+    </button>
 </aside>
 
 <main class="container article-container">

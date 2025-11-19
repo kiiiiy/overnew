@@ -2148,3 +2148,10 @@ h1.splash-logo {
     text-align: center;
     /* 또는 display: flex; justify-content: center; */
 }
+
+/* 내부 아이콘 이미지 크기 설정 */
+.action-btn .action-icon {
+    width: 24px;       /* 버튼 크기(50px)보다 작게 설정 (예: 24px) */
+    height: 24px;      /* 가로와 동일한 크기로 설정 */
+    object-fit: contain; /* 이미지가 찌그러지지 않도록 비율 유지 */
+}

@@ -41,7 +41,7 @@ function createArticleCardHTML(cardData) {
     const topicClassMap = { 
         'IT/과학': 'topic-it', '경제': 'topic-economy', '사회': 'topic-society', '정치': 'topic-politics', '연예': 'topic-enter', '스포츠': 'topic-sport', '생활/문화': 'topic-culture', '세계': 'topic-world', 
         'Politics': 'topic-politics', 'Economy': 'topic-economy', 'Society': 'topic-society', 'Culture': 'topic-culture', 'It': 'topic-it', 'World': 'topic-world', 
-        'Entertainment': 'topic-enter', 'Sports': 'topic-sport' 
+        'Enter': 'topic-enter', 'Sport': 'topic-sport' 
     };
 
     const categoryText = topicDisplayMap[cardData.category] || cardData.category;

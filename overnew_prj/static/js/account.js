@@ -204,7 +204,7 @@ function initLoginPage() {
                 delete sessionData.password; 
                 localStorage.setItem('current-session', JSON.stringify(sessionData));
                 alert(`'${savedInfo.nickname}'님, 환영합니다!`); 
-                window.location.href = '/overnew_prj/feed/templates/feed/feeds.html';
+                window.location.href = '../../../feed/templates/feed/feed.html';
             } else {
                 alert('ID 또는 비밀번호가 일치하지 않습니다.');
             }
@@ -241,7 +241,9 @@ function initSettingsLoggedInPage() {
     if (backButton) {
         backButton.addEventListener('click', (e) => {
             e.preventDefault(); 
-            window.history.back(); 
+            const feedUrl = '../../../feed/templates/feed/feed.html';
+            
+            window.location.href = feedUrl;
         });
     }
 
@@ -389,12 +391,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
-        logoutButton.addEventListener('click', function(e) {
+        logoutButton.addEventListener('click', (e) => {
             e.preventDefault(); 
-            localStorage.removeItem('user-info');
-            alert('로그아웃되었습니다.');
-            // 🚨 경로 수정: settings-logged-out.html로 이동
-            window.location.href = 'settings-logged-out.html'; 
+            if (confirm('정말 로그아웃 하시겠습니까?')) {
+                // 🚨 수정: 등록 정보(user-info)는 보존하고 세션만 삭제합니다.
+                localStorage.removeItem('current-session');
+                alert('로그아웃되었습니다.');
+                // 🚨 수정: settings-logged-out.html로 이동합니다. (login.html은 settings-logged-out에서 다시 연결될 수 있음)
+                window.location.href = 'settings-logged-out.html'; 
+            }
         });
     }
     

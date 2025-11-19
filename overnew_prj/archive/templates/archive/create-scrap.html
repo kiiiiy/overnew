@@ -8,14 +8,20 @@
 </head>
 <body class="with-fixed-nav"> 
 <header class="main-header">
-    <button type="button" class="icon-btn menu-btn"><span>☰</span></button>
+    <!-- 뒤로가기 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
+
     <h1 class="logo header-logo">OVERNEW</h1>
-    <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+
+    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+    <div style="width:40px;"></div>
 </header>
 
 <main class="container">
     <h3 class="subtitle" style="margin-top: 20px; font-size: 20px;">
-        스크랩하는 기사의 분야 및<br>해당 기사의 링크를 작성해주세요.
+        스크랩하는 기사의 분야와 언론사 및<br>해당 기사의 링크를 작성해주세요.
     </h3>
 
     <div class="topic-grid">
@@ -30,7 +36,6 @@
     </div>
     
     <form class="info-form" style="margin-top: 30px;">
-        
         <div class="form-group"> 
             <input type="text" id="article-source" placeholder="언론사를 입력해주세요">
             <button type="button" class="clear-btn" id="clear-source-btn">×</button>
@@ -44,16 +49,4 @@
 
 <button type="button" class="next-button" id="submit-scrap-btn">기사 스크랩하기</button>
 
-<nav class="bottom-nav">
-    <a href="feed.html" class="nav-item"> ... </a>
-    <a href="archive.html" class="nav-item active">
-        <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
-        <span class="nav-label">아카이브</span>
-    </a>
-    <a href="main.html" class="nav-item"> ... </a>
-    <a href="community.html" class="nav-item"> ... </a>
-</nav>
-
 <script src="../../../static/js/archive.js"></script>
-</body>
-</html>

@@ -281,6 +281,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // 초기 렌더
         renderFeed();
     }
+    // 기사 스크랩 페이지용 뒤로가기
+const backButton = document.getElementById('back-button');
+if (backButton) {
+    backButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.history.back();
+    });
+}
+
 });
 
 

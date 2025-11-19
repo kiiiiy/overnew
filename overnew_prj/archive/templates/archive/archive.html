@@ -8,17 +8,19 @@
 </head>
 <body class="with-fixed-nav"> 
 <header class="main-header">
-    <a href="#" id="settings-menu-link" class="icon-btn menu-btn"><span>☰</span></a>
-    
+    <!-- 햄버거 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="settings-menu-btn"><span>☰</span></button>
+
     <h1 class="logo header-logo">OVERNEW</h1>
-    
-    <a href="../../../account/templates/account/notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+
+    <!-- 알람 버튼 -->
+    <button type="button" class="icon-btn bell-btn" id="notifications-btn"><span>🔔</span></button>
 </header>
 
+<!-- 플로팅 버튼 -->
 <a href="create-scrap.html" class="floating-action-button"><span>✎</span></a>
 
 <main class="container">
-
     <div class="archive-profile-card">
         <img src="../../../static/images/avatar-placeholder.png" alt="Profile Avatar" class="profile-avatar">
         <div class="profile-info">
@@ -62,29 +64,11 @@
         </div>
         <div class="user-list" id="following-list"></div>
     </div>
-
 </main>
 
-<nav class="bottom-nav">
-    <a href="feed.html" class="nav-item"> 
-        <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
-        <span class="nav-label">피드</span>
-    </a>
-    <a href="archive.html" class="nav-item active">
-        <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
-        <span class="nav-label">아카이브</span>
-    </a>
-    <a href="main.html" class="nav-item">
-        <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
-        <span class="nav-label">추천</span>
-    </a>
-    <a href="community.html" class="nav-item">
-        <div class="nav-icon-wrapper"><span class="nav-icon">⚙️</span></div>
-        <span class="nav-label">커뮤니티</span>
-    </a>
-</nav>
+<!-- nav는 JS에서 자동 생성 -->
+<nav class="bottom-nav"></nav>
 
 <!-- JS 파일 불러오기 -->
+<script src="../../../static/js/nav.js"></script>
 <script src="../../../static/js/archive.js"></script>
-</body>
-</html>

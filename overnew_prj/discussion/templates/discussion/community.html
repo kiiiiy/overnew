@@ -6,14 +6,16 @@
     <title>커뮤니티 - OVERNEW</title>
     <link rel="stylesheet" href="../../../static/css/style.css">
 </head>
-<body class="with-fixed-nav"> <header class="main-header">
-        <a href="settings-logged-in.html" class="icon-btn menu-btn"><span>☰</span></a>
+<body class="with-fixed-nav">
+    <header class="main-header">
+        <!-- 햄버거 버튼 -->
+        <button type="button" class="icon-btn menu-btn" id="settings-menu-btn"><span>☰</span></button>
         <h1 class="logo header-logo">OVERNEW</h1>
-        <a href="notifications.html" class="icon-btn bell-btn"><span>◒</span></a>
+        <!-- 알람 버튼 -->
+        <button type="button" class="icon-btn bell-btn" id="notifications-btn"><span>◒</span></button>
     </header>
 
     <main class="container">
-        
         <div class="keyword-list">
             <button class="keyword-tag" data-topic="politics">정치</button>
             <button class="keyword-tag" data-topic="economy">경제</button>
@@ -23,38 +25,14 @@
             <button class="keyword-tag" data-topic="world">세계</button>
         </div>
 
-        <div class="discussion-feed" id="discussion-list">
-            </div>
-
+        <div class="discussion-feed" id="discussion-list"></div>
     </main>
 
-    <nav class="bottom-nav">
-        <a href="feed.html" class="nav-item"> 
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">◆</span>
-            </div>
-            <span class="nav-label">피드</span>
-        </a>
-        <a href="archive.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">●</span>
-            </div>
-            <span class="nav-label">아카이브</span>
-        </a>
-        <a href="main.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">▲</span>
-            </div>
-            <span class="nav-label">추천</span>
-        </a>
-        <a href="community.html" class="nav-item active">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">◐</span>
-            </div>
-            <span class="nav-label">커뮤니티</span>
-        </a>
-    </nav>
+    <!-- nav는 JS에서 자동 생성 -->
+    <nav class="bottom-nav"></nav>
 
+    <!-- JS 파일 불러오기 -->
+    <script src="../../../static/js/nav.js"></script>
     <script src="community.js"></script>
 </body>
 </html>

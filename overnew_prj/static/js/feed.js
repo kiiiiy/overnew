@@ -25,11 +25,11 @@ const dummyData = {
 };
 
 // ====================
-// HOT 카드 생성
+// 카드 생성
 // ====================
 function createHotCardHTML(cardData) {
     return `
-        <a href="article-detail.html" class="article-card">
+        <a href="../../../article-detail.html" class="article-card">
             <div class="card-text">
                 <span class="card-category">${cardData.category}</span>
                 <span class="card-source">${cardData.source}</span>
@@ -44,9 +44,6 @@ function createHotCardHTML(cardData) {
     `;
 }
 
-// ====================
-// FOLLOWING 카드 생성
-// ====================
 function createFollowingCardHTML(cardData) {
     return `
         <div class="following-card-group">
@@ -54,7 +51,7 @@ function createFollowingCardHTML(cardData) {
                 <img src="avatar-placeholder.png" class="card-avatar-small">
                 <strong>${cardData.followerName}</strong>님이 열람한 기사입니다
             </div>
-            <a href="article-detail.html" class="article-card">
+            <a href="../../../article-detail.html" class="article-card">
                 <div class="card-text">
                     <span class="card-category">${cardData.category}</span>
                     <span class="card-source">${cardData.articleSource}</span>
@@ -73,68 +70,82 @@ function createFollowingCardHTML(cardData) {
 // ====================
 // 피드 렌더링
 // ====================
-function renderFeedPage() {
-    const currentView = document.getElementById('view-hot').checked ? 'hot' : 'following';
-    const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
-
+function renderFeedPage(view, topic) {
     const feedHotContainer = document.getElementById('feed-hot');
     const feedFollowingContainer = document.getElementById('feed-following');
-    const feedContainer = currentView === 'hot' ? feedHotContainer : feedFollowingContainer;
+    const feedContainer = view === 'hot' ? feedHotContainer : feedFollowingContainer;
 
     feedContainer.innerHTML = '';
 
-    const articles = dummyData[currentView][currentTopic] || [];
-
+    const articles = dummyData[view][topic] || [];
     if (articles.length === 0) {
         feedContainer.innerHTML = '<p style="text-align:center; color:#888; margin-top:40px;">이 주제의 기사 없음</p>';
         return;
     }
 
     let html = '';
-    if (currentView === 'hot') {
-        articles.forEach(a => html += createHotCardHTML(a));
-    } else {
-        articles.forEach(a => html += createFollowingCardHTML(a));
-    }
+    if (view === 'hot') articles.forEach(a => html += createHotCardHTML(a));
+    else articles.forEach(a => html += createFollowingCardHTML(a));
 
     feedContainer.innerHTML = html;
 }
 
 // ====================
-// 이벤트 리스너
+// DOMContentLoaded
 // ====================
 document.addEventListener('DOMContentLoaded', () => {
-
     const keywordList = document.getElementById('keyword-list-container');
 
-    // 초기 설정
-    document.getElementById('feed-hot').style.display = 'flex';
-    document.getElementById('feed-following').style.display = 'none';
-    keywordList.style.display = 'none';
+    let currentView = document.getElementById('view-hot').checked ? 'hot' : 'following';
+    let currentTopic = 'politics';
 
-    // HOT 클릭
+    // 로그인 상태 예시
+    const isLoggedIn = true; 
+
+    // 초기 표시
+    document.getElementById('feed-hot').style.display = currentView === 'hot' ? 'flex' : 'none';
+    document.getElementById('feed-following').style.display = currentView === 'following' ? 'flex' : 'none';
+    keywordList.style.display = currentView === 'following' ? 'flex' : 'none';
+    renderFeedPage(currentView, currentTopic);
+
+    // 라디오 버튼 클릭 이벤트
     document.getElementById('view-hot').addEventListener('change', () => {
+        currentView = 'hot';
         document.getElementById('feed-hot').style.display = 'flex';
         document.getElementById('feed-following').style.display = 'none';
         keywordList.style.display = 'none';
-        renderFeedPage();
+        renderFeedPage(currentView, currentTopic);
     });
 
-    // FOLLOWING 클릭
     document.getElementById('view-following').addEventListener('change', () => {
+        currentView = 'following';
         document.getElementById('feed-hot').style.display = 'none';
         document.getElementById('feed-following').style.display = 'flex';
         keywordList.style.display = 'flex';
-        renderFeedPage();
+        renderFeedPage(currentView, currentTopic);
     });
 
+    // 키워드 클릭
     document.querySelectorAll('.keyword-tag').forEach(tag => {
         tag.addEventListener('click', () => {
+            currentTopic = tag.dataset.topic;
             document.querySelectorAll('.keyword-tag').forEach(t => t.classList.remove('active'));
             tag.classList.add('active');
-            renderFeedPage();
+            renderFeedPage(currentView, currentTopic);
         });
     });
 
-    renderFeedPage();
+    // 햄버거 버튼
+    document.getElementById('settings-menu-btn').addEventListener('click', () => {
+        if (isLoggedIn) {
+            window.location.href = '../../../account/templates/account/settings-logged-in.html';
+        } else {
+            window.location.href = '../../../account/templates/account/settings-logged-out.html';
+        }
+    });
+
+    // 알람 버튼
+    document.getElementById('notifications-btn').addEventListener('click', () => {
+        window.location.href = '../../../account/templates/account/notifications.html';
+    });
 });

@@ -1,77 +1,67 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"                <span class="nav-icon">◐</span>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>익명 토론방 - OVERNEW</title>
-    <link rel="stylesheet" href="../../../static/css/style.css">
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
 </head>
 <body class="with-fixed-comment-bar"> 
 
-    <header class="main-header">
-        <a href="settings-logged-in.html" class="icon-btn menu-btn"><span>☰</span></a>
-        <h1 class="logo header-logo">OVERNEW</h1>
-        <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
-    </header>
+<header class="main-header">
+    <a href="settings-logged-in.html" class="icon-btn menu-btn"><span>☰</span></a>
+    <h1 class="logo header-logo">OVERNEW</h1>
+    <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+</header>
 
-    <main class="container">
-        
-        <div class="discussion-article-header">
-            <div class="article-category-source">
-                <span class="card-category topic-it">IT/과학</span>
-                <span class="card-source">뉴스웍스</span>
-            </div>
-            <h2 class="article-title">국민 건강 위협하는 '수입식품'...AI가 자동으로 걸러낸다</h2>
-            
-            <div class="discussion-meta">
-                <div class="meta-left">
-                    <span class="time-left">🕒 12 hours left</span>
-                    <span class="participant-count">💬 130명이 토론에 참여중입니다.</span>
-                </div>
-                <button type="button" class="sort-toggle-btn" id="sort-btn">
-                    <span>⇅</span> 최신순
-                </button>
-            </div>
+<main class="container">
+    <div class="discussion-article-header">
+        <div class="article-category-source">
+            <span class="card-category topic-it">IT/과학</span>
+            <span class="card-source">뉴스웍스</span>
         </div>
-
-        <div class="comment-list" id="comment-list">
+        <h2 class="article-title">국민 건강 위협하는 '수입식품'...AI가 자동으로 걸러낸다</h2>
+        
+        <div class="discussion-meta">
+            <div class="meta-left">
+                <span class="time-left">🕒 12 hours left</span>
+                <span class="participant-count">💬 130명이 토론에 참여중입니다.</span>
             </div>
-
-    </main>
-
-    <div class="comment-input-bar">
-        <img src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤" alt="내 프로필" id="my-avatar" class="card-avatar-small">
-        <input type="text" id="comment-input" placeholder="Add a comment">
-        <button type="button" class="comment-submit-btn" id="submit-comment-btn">업로드</button>
+            <button type="button" class="sort-toggle-btn" id="sort-btn">
+                <span>⇅</span> 최신순
+            </button>
+        </div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="feed.html" class="nav-item"> 
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">◆</span>
-            </div>
-            <span class="nav-label">피드</span>
-        </a>
-        <a href="archive.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">●</span>
-            </div>
-            <span class="nav-label">아카이브</span>
-        </a>
-        <a href="main.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">▲</span>
-            </div>
-            <span class="nav-label">추천</span>
-        </a>
-        <a href="community.html" class="nav-item active">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">⚙️</span>
-            </div>
-            <span class="nav-label">커뮤니티</span>
-        </a>
-    </nav>
+    <div class="comment-list" id="comment-list"></div>
+</main>
 
-    <script src="discussion-anonymous.js"></script>
+<div class="comment-input-bar">
+    <img src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤" alt="내 프로필" id="my-avatar" class="card-avatar-small">
+    <input type="text" id="comment-input" placeholder="Add a comment">
+    <button type="button" class="comment-submit-btn" id="submit-comment-btn">업로드</button>
+</div>
+
+<nav class="bottom-nav">
+    <a href="feed.html" class="nav-item"> 
+        <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
+        <span class="nav-label">피드</span>
+    </a>
+    <a href="archive.html" class="nav-item">
+        <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
+        <span class="nav-label">아카이브</span>
+    </a>
+    <a href="main.html" class="nav-item">
+        <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
+        <span class="nav-label">추천</span>
+    </a>
+    <a href="community.html" class="nav-item active">
+        <div class="nav-icon-wrapper"><span class="nav-icon">⚙️</span></div>
+        <span class="nav-label">커뮤니티</span>
+    </a>
+</nav>
+
+<!-- JS 분리 -->
+<script src="../../../static/js/discussion-anonymous.js"></script>
 </body>
 </html>

@@ -1121,10 +1121,28 @@ body.with-fixed-nav {
     color: #FFFFFF;
     align-self: flex-start; /* 태그 크기만큼만 자리 차지 */
 }
-/* 토픽별 색상 (임시) */
+/* 토픽별 색상 */
 .topic-it { background-color: #0D47A1; } /* IT/과학 (파랑) */
 .topic-economy { background-color: #1B5E20; } /* 경제 (초록) */
 .topic-society { background-color: #E65100; } /* 사회 (주황) */
+/* 정치 */
+.topic-politics { background-color: #34c5ff; } 
+
+/* 생활/문화 */
+.topic-culture { background-color: #9a0e0e; } 
+
+/* 세계 */
+.topic-world { background-color: #00838F; }
+
+/* 연예 */
+.topic-enter { background-color: #e31abb; } 
+
+/* 스포츠 */
+.topic-sport { background-color: #67982a; } 
+
+/* 기본값 (매칭되지 않을 경우) */
+.topic-default { background-color: #757575; }
+
 
 .card-source {
     font-size: 12px;
@@ -1197,8 +1215,8 @@ body.with-fixed-nav {
    재사용하므로, 추가 스타일이 거의 필요 없습니다. */
 
 /* (수정) topic-politics 색상 추가 */
-.topic-politics { background-color: #4A148C; } /* 정치 (진한 보라) */
-.topic-default { background-color: #555; } /* 기본 (회색) */
+/* .topic-politics { background-color: #4A148C; } /* 정치 (진한 보라) */
+/* .topic-default { background-color: #555; } 기본 (회색) */ 
 
 /* ----- 17. (추가) 아카이브 페이지 스타일 ----- */
 

@@ -2132,3 +2132,19 @@ h1.splash-logo {
     /* 기존 스타일 유지 */
     bottom: 20px; /* 화면 하단에서 조금 더 위로 올림 */
 }
+
+/* style.css 파일에 추가 */
+.emoji-img {
+    /* 🚨 원하는 크기로 직접 설정 (예시: 80px) */
+    width: 80px; 
+    height: 80px;
+    
+    /* 이미지가 찌그러지지 않도록 비율 유지 (선택 사항) */
+    object-fit: contain; 
+}
+
+/* 🚨 이미지를 중앙에 배치하기 위한 컨테이너 스타일 (선택 사항이지만 추천) */
+.completion-message .emoji {
+    text-align: center;
+    /* 또는 display: flex; justify-content: center; */
+}

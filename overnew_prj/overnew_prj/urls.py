@@ -16,8 +16,10 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("discussion/", include("discussion.urls")),
+    path("", include("discussion.urls")),  # 루트 URL에서도 접근 가능
 ]

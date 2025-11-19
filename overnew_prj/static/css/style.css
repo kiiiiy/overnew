@@ -1,0 +1,2157 @@
+/* ----- 1. 기본 & 전체 설정 ----- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* [수정] 요청하신 기본 배경색 (라이트 모드) */
+    background-color: #F9F4E7; 
+    
+    /* [수정] 밝은 배경에 맞춘 기본 글자색 */
+    color: #333333;            
+    
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+/* ----- 2. 메인 콘텐츠 레이아웃 ----- */
+.container {
+    max-width: 450px;
+    margin: 0 auto;   
+    padding: 40px 20px;
+    padding-bottom: 120px; /* 하단 버튼에 가려지지 않게 */
+}
+
+/* ----- 3. 개별 요소 스타일링 (위에서 아래로) ----- */
+
+/* 1. 로고 */
+.logo {
+    /* [수정] 요청하신 포인트 보라색 */
+    color: #620B95;     
+    text-align: center;
+    font-size: 34px;
+    /* [추가] Abhaya Libre 폰트 지정 */
+    font-family: 'Abhaya Libre', serif;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+/* 2. 진행률 표시줄 */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    /* [수정] 밝은 배경에 어울리게 트랙 색상 변경 */
+    background-color: rgba(0, 0, 0, 0.1); 
+    border-radius: 3px;
+    margin-bottom: 50px;
+    overflow: hidden;
+}
+
+.progress-value {
+    width: 15%; 
+    height: 100%;
+    /* [수정] 포인트 보라색 */
+    background-color: #6155F5; 
+    border-radius: 3px;
+}
+
+/* 3. 환영 텍스트 */
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #000000; /* 진한 검은색 */
+}
+
+.subtitle {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 40px;
+    color: #555555; /* 약간 연한 검은색 */
+}
+
+/* 4. 폼 그룹 (라벨 + 인풋) */
+.form-group {
+    margin-bottom: 25px; 
+}
+
+.form-group label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;      
+    margin-bottom: 10px;
+}
+
+/* '이름', '나이', '비밀번호' 입력창 스타일 */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="url"] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.07); 
+    color: #222222; 
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* '나이' 입력창만 너비 조절 */
+.form-group input[type="number"] {
+    width: 120px; 
+}
+
+::placeholder {
+    color: #AAAAAA; /* 회색 placeholder */
+}
+
+/* '성별' 토글 버튼 */
+.gender-toggle {
+    display: flex;
+    /* 🚨 버튼 사이에 간격(gap) 추가 */
+    gap: 10px; 
+    
+    /* 🚨 컨테이너 자체의 배경색을 제거 (버튼이 개별적으로 색상을 가집니다) */
+    background-color: transparent; 
+    
+    border-radius: 50px; /* 컨테이너 모양은 둥글게 유지 */
+    overflow: visible; /* 틈을 감추지 않습니다 */
+}
+
+/* 2. 라디오 버튼 숨김 (유지) */
+.gender-toggle input[type="radio"] {
+    display: none;
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* 3. 각 라벨 (버튼) 스타일 */
+.gender-toggle label {
+    flex: 1; 
+    text-align: center;
+    line-height: 50px; /* 높이와 중앙 정렬 */
+    font-size: 16px;
+    font-weight: 600;
+    
+    /* 🚨 버튼 자체에 기본 배경색 부여 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    color: #AAAAAA; /* 선택 안 된 글자색 */
+    
+    cursor: pointer;
+    transition: all 0.2s ease-in-out; 
+    
+    /* 🚨 padding과 margin-right 제거 */
+    padding: 0 16px; /* 좌우 패딩을 주어 너비 확보 */
+    margin-right: 0; 
+    border-radius: 50px; /* 개별 버튼의 둥근 모양 */
+    box-shadow: none;
+    outline: none; 
+    user-select: none; 
+}
+
+/* 4. '선택된' 라벨 스타일 */
+.gender-toggle input[type="radio"]:checked + label {
+    /* [수정] 포인트 보라색 */
+    background-color: #620B95; 
+    /* [수정] 흰색 글자 */
+    color: #FFFFFF;
+    
+    /* 선택된 버튼이 독립적임을 강조 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    border-radius: 50px;
+}
+
+/* ----- 4. 하단 고정 NEXT 버튼 ----- */
+.next-button {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: calc(100% - 40px);
+    max-width: 410px; 
+    
+    padding: 16px;
+    /* [수정] 요청하신 포인트 보라색 */
+    background-color: #620B95; 
+    color: #FFFFFF;            
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+}
+
+/* ----- 5. (추가) 정보기입2 페이지 스타일 ----- */
+
+/* '성별' 토글과 비슷하지만, 4개 항목용입니다 */
+.stance-toggle {
+    display: flex;
+    justify-content: space-between; /* 4개 버튼 사이 간격 동일하게 */
+    gap: 10px; /* 버튼 사이 최소 10px 간격 */
+}
+
+/* (핵심) 실제 라디오 버튼은 숨깁니다 */
+.stance-toggle input[type="radio"] {
+    display: none;
+}
+
+/* 라디오 버튼 대신 꾸며줄 'label'의 스타일 */
+.stance-toggle label {
+    flex: 1; /* 4개 버튼이 1:1:1:1 비율로 공간 차지 */
+    padding: 14px 10px; /* 상하 여백, 좌우는 조금 작게 */
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    
+    /* [수정] '000000 7%' (연한 회색) 배경 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    
+    /* [수정] 선택 안 된 글자색 */
+    color: #AAAAAA;      
+    
+    cursor: pointer;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    transition: all 0.2s ease-in-out; 
+}
+
+/* (핵심) '선택된' 라디오 버튼 바로 뒤의 'label' 스타일 변경 */
+.stance-toggle input[type="radio"]:checked + label {
+    /* [수정] 포인트 보라색 */
+    background-color: #620B95; 
+    
+    /* [수정] 흰색 글자 */
+    color: #FFFFFF;            
+    
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+
+/* ----- 6. (추가) 정보기입3 페이지 스타일 ----- */
+
+/* (복수 선택 가능) 텍스트를 위한 작은 주석 스타일 */
+.subtitle-comment {
+    display: block; /* 줄바꿈 */
+    font-size: 16px;
+    color: #888888; /* 주석 회색 */
+    margin-top: 8px;
+}
+
+/* 체크박스 버튼들을 감싸는 컨테이너 */
+.topics-toggle {
+    display: flex;
+    flex-direction: column; /* Row 1, Row 2 (세로 배치) */
+    gap: 12px; /* 두 줄 사이의 간격 */
+}
+.topic-row {
+    display: flex;
+    justify-content: space-between; /* 4개 버튼 동일 간격 */
+    gap: 10px; /* 버튼 사이 최소 간격 */
+}
+
+/* (핵심) 실제 체크박스는 숨깁니다 */
+.topic-row input[type="checkbox"] {
+    display: none;
+}
+
+/* 체크박스 대신 꾸며줄 'label'의 스타일 */
+.topic-row label {
+    flex: 1; /* 4개 버튼이 1:1:1:1 비율 차지 */
+    padding: 14px 5px; /* 상하 14, 좌우 5 (글자가 많으므로) */
+    text-align: center;
+    font-size: 15px; /* 폰트 크기 살짝 줄임 */
+    font-weight: 600;
+    
+    /* [동일] '000000 7%' (연한 회색) 배경 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    
+    /* [동일] 선택 안 된 글자색 */
+    color: #AAAAAA;      
+    
+    cursor: pointer;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    transition: all 0.2s ease-in-out; 
+}
+
+/* (핵심) '선택된' 체크박스 바로 뒤의 'label' 스타일 변경 */
+.topic-row input[type="checkbox"]:checked + label {
+    /* [동일] 포인트 보라색 */
+    background-color: #620B95; 
+    
+    /* [동일] 흰색 글자 */
+    color: #FFFFFF;            
+    
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+
+/* ----- 7. (추가) 정보기입4 페이지 스타일 ----- */
+
+/* '종합', '방송/통신' 섹션 제목 스타일 */
+.section-title {
+    display: inline-block; /* 글자 크기만큼만 너비 차지 */
+    padding: 8px 16px;
+    margin-bottom: 16px; /* 아래 버튼들과의 간격 */
+    
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF; /* 흰색 글자 */
+    
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 50px; /* 둥근 알약 모양 */
+}
+
+/* (핵심) 줄바꿈(wrap)이 되는 버튼 컨테이너 */
+.media-toggle {
+    display: flex;
+    flex-wrap: wrap; /* 버튼이 넘치면 다음 줄로 */
+    gap: 10px; /* 버튼 사이의 상하좌우 간격 */
+}
+
+/* (핵심) 실제 체크박스는 숨깁니다 */
+.media-toggle input[type="checkbox"] {
+    display: none;
+}
+
+/* 체크박스 대신 꾸며줄 'label'의 스타일 */
+.media-toggle label {
+    /* flex: 1; (X) -> 이 속성을 빼야 버튼이 자기 글자 크기만큼 너비를 가집니다.
+    */
+    padding: 12px 16px; /* 상하 12, 좌우 16 */
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    
+    /* [동일] '000000 7%' (연한 회색) 배경 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    
+    /* [동일] 선택 안 된 글자색 */
+    color: #AAAAAA;      
+    
+    cursor: pointer;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    transition: all 0.2s ease-in-out; 
+}
+
+/* (핵심) '선택된' 체크박스 바로 뒤의 'label' 스타일 변경 */
+.media-toggle input[type="checkbox"]:checked + label {
+    /* [동일] 포인트 보라색 */
+    background-color: #620B95; 
+    
+    /* [동일] 흰색 글자 */
+    color: #FFFFFF;            
+    
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+
+
+/* ----- 8. (추가) 회원가입 완료 페이지 스타일 ----- */
+
+.completion-message {
+    /* 텍스트들을 화면 중앙에 정렬시킵니다 */
+    text-align: center;
+    
+    /* 프로그레스 바 아래로 충분한 여백을 줍니다 */
+    margin-top: 100px;
+}
+
+.completion-message .emoji {
+    font-size: 48px; /* 이모지 크기 */
+    margin-bottom: 20px;
+}
+
+.completion-message .title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 12px;
+}
+
+.completion-message .subtitle {
+    font-size: 24px;
+    font-weight: 500;
+    color: #555555;
+    margin-bottom: 30px; /* 마지막 설명 텍스트와의 간격 */
+}
+
+.completion-message .description {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333333;
+}
+/* ----- 9. (추가) 로그인 페이지 스타일 ----- */
+
+/* 'E-mail' 입력창도 다른 입력창과 동일하게 스타일 적용 */
+.form-group input[type="email"] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.07); 
+    color: #222222; 
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* (핵심) 비밀번호 인풋창과 아이콘 배치 */
+.input-with-icon {
+    position: relative; /* 아이콘의 기준점이 됨 */
+}
+.input-with-icon .input-icon {
+    position: absolute; /* 인풋창 위에 뜸 */
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px; /* 아이콘 크기 (조절 필요) */
+    cursor: pointer;
+    opacity: 0.5; /* 아이콘 투명도 */
+}
+/* 아이콘이 겹치지 않게 패스워드 인풋 오른쪽에 여백(padding) 추가 */
+.form-group input[type="password"] {
+    padding-right: 45px !important;
+}
+
+/* "Forgot Password?" 링크 스타일 */
+.forgot-password {
+    text-align: right;
+    margin-top: -15px; /* 패스워드 창과 가깝게 */
+    margin-bottom: 25px;
+}
+.forgot-password a {
+    color: #620B95; /* 포인트 보라색 */
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+/* "Or Login with" 구분선 스타일 */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #AAAAAA; /* 회색 글자 */
+    font-size: 14px;
+    font-weight: 500;
+    margin: 30px 0; /* 위아래 여백 */
+}
+/* 구분선 양쪽의 가로줄 */
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1; /* 남는 공간을 1:1로 차지 */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* 연한 회색 줄 */
+}
+.divider::before {
+    margin-right: 15px; /* 글자와 왼쪽 줄 사이 여백 */
+}
+.divider::after {
+    margin-left: 15px; /* 글자와 오른쪽 줄 사이 여백 */
+}
+
+/* 소셜 로그인 버튼 영역 */
+.social-logins {
+    display: flex;
+    gap: 15px; /* 버튼 3개 사이의 간격 */
+    margin-bottom: 40px; /* 하단 링크와의 간격 */
+}
+.social-button {
+    flex: 1; /* 1:1:1 비율로 공간 차지 */
+    padding: 14px;
+    
+    /* 스크린샷대로 흰색 배경 적용 */
+    background-color: #FFFFFF; 
+    
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 연한 그림자 */
+    cursor: pointer;
+    
+    /* 로고가 중앙에 오도록 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.social-button [Image] {
+    height: 24px; /* 로고 이미지 크기 */
+}
+
+/* "Don't have an account?" 하단 링크 스타일 */
+.bottom-link {
+    text-align: center;
+    font-size: 15px;
+    color: #555555; /* 기본 글자색 */
+}
+.bottom-link a {
+    color: #620B95; /* 포인트 보라색 */
+    text-decoration: none; /* 밑줄 제거 */
+    font-weight: 600;
+}
+
+/* ----- 10. (추가) 설정 페이지 스타일 ----- */
+
+/* 'Settings' 상단 헤더 */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 양쪽 정렬 */
+    padding: 16px;
+    
+    /* 배경색은 body의 #F9F4E7을 그대로 사용합니다.
+      필요시 background-color: #FFFFFF; 등으로 변경
+    */
+}
+.page-header h1 {
+    /* flex: 1; text-align: center; 대신 중앙을 정확히 맞춤 */
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+.page-header .back-arrow {
+    font-size: 28px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #333;
+    width: 40px; /* 아이콘 영역 너비 */
+}
+.page-header .header-spacer {
+    width: 40px; /* back-arrow와 동일한 너비로 중앙 정렬 */
+}
+
+/* "로그인이 필요해요" 카드 */
+.login-prompt-card {
+    display: flex;
+    align-items: center;
+    
+    /* 스크린샷의 흰색 배경 + 그림자 적용 */
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px; /* 아래 메뉴와의 간격 */
+    
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+.profile-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* 원형 */
+    
+    /* 연한 회색 배경 (rgba(0,0,0, 0.07) 사용) */
+    background-color: rgba(0, 0, 0, 0.07); 
+    
+    margin-right: 15px; /* 텍스트와의 간격 */
+}
+/* ">" 화살표 */
+.login-prompt-card .arrow {
+    margin-left: auto; /* 맨 오른쪽으로 밀어내기 */
+    font-size: 20px;
+    color: #AAAAAA; /* 회색 화살표 */
+}
+
+/* 설정 메뉴 리스트 (프로필 수정, 로그아웃...) */
+.settings-menu {
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    overflow: hidden; /* 둥근 모서리 안쪽으로 선이 삐져나오지 않게 */
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: #333;
+    
+    /* 항목 사이 구분선 */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+/* 마지막 항목의 구분선은 제거 */
+.settings-menu .menu-item:last-child {
+    border-bottom: none;
+}
+.menu-item .icon {
+    font-size: 20px;
+    margin-right: 15px;
+    width: 24px; /* 아이콘 영역 너비 고정 (텍스트 정렬) */
+    text-align: center;
+    color: #555; /* 아이콘 색상 */
+}
+.menu-item span {
+    font-size: 16px;
+    font-weight: 500;
+}
+.menu-item .arrow {
+    margin-left: auto; /* 맨 오른쪽으로 밀어내기 */
+    font-size: 20px;
+    color: #AAAAAA;
+}
+
+/* ----- 11. (추가) 설정 (로그인 후) 스타일 ----- */
+
+/* '나소공' 프로필 카드 */
+.profile-card {
+    display: flex;
+    align-items: center;
+    
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px; /* 아래 메뉴와의 간격 */
+}
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* 원형 */
+    
+    /* (임시) 이미지가 없을 때를 대비한 배경색 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    
+    margin-right: 15px; /* 텍스트와의 간격 */
+    
+    /* (참고) 실제 이미지에 맞게 조절 필요 */
+    object-fit: cover; 
+}
+.profile-info {
+    display: flex;
+    flex-direction: column; /* 닉네임과 태그를 세로로 배치 */
+}
+.profile-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px; /* 태그와의 간격 */
+}
+.profile-tags {
+    font-size: 14px;
+    font-weight: 500;
+    color: #888888; /* 태그 회색 */
+}
+
+
+/* ----- 12. (추가) 알림창/메인 페이지 스타일 ----- */
+
+/* (핵심) 상/하단 고정 바가 있을 때 body에 여백 주기 */
+body.with-fixed-nav {
+    /* 상단 헤더 높이(약 60px) + 하단 네비게이션 높이(약 70px) */
+    padding-top: 60px;
+    padding-bottom: 70px;
+}
+
+/* 1. 상단 메인 헤더 */
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    
+    background-color: #F9F4E7; /* body와 동일한 배경색 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 연한 그림자 */
+    z-index: 100; /* 다른 요소들 위에 오도록 */
+}
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    width: 40px; /* 영역 확보 */
+    text-align: center;
+    text-decoration: none;
+}
+.header-logo {
+    /* 기존 .logo 스타일을 상속받되, 헤더에 맞게 크기/여백 조절 */
+    font-size: 28px !important;
+    margin-bottom: 0 !important;
+}
+
+/* 2. 하단 내비게이션 바 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    display: flex;
+    justify-content: space-around; /* 4개 항목 균등 배치 */
+    
+    /* (수정) 피그마처럼 흰색 배경이 아닌 연한 배경색 사용 */
+    background-color: #F9F4E7;
+    /* (수정) 위쪽으로 그림자 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); 
+    
+    padding: 8px 0;
+    padding-bottom: env(safe-area-inset-bottom); /* 아이폰 하단 대응 */
+    z-index: 100;
+}
+.nav-item {
+    display: flex;
+    flex-direction: column; /* 아이콘과 텍스트 세로 배치 */
+    align-items: center;
+    text-decoration: none;
+    
+    /* (비활성) 회색 */
+    color: #AAAAAA;
+}
+.nav-icon-wrapper {
+    width: 44px;
+    height: 32px; /* 피그마의 둥근 사각형 높이 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px; /* 둥근 사각형 */
+}
+.nav-icon {
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+.nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+/* (활성) '피드' 아이템 스타일 */
+.nav-item.active {
+    /* (활성) 보라색 */
+    color: #620B95;
+    font-weight: 600;
+}
+.nav-item.active .nav-icon-wrapper {
+    /* (활성) 보라색 배경 */
+    background-color: #620B95;
+}
+.nav-item.active .nav-icon {
+    /* (활성) 흰색 아이콘 */
+    color: #FFFFFF;
+    /* (활성) 연한 보라색 배경 */
+    background-color: rgba(98, 11, 149, 0.1); 
+}
+
+/* 3. 알림 리스트 스타일 */
+.time-group {
+    margin-bottom: 24px;
+}
+.time-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #888888;
+    margin-bottom: 10px;
+    padding-left: 5px; /* 카드와 정렬 맞춤 */
+}
+.notification-item {
+    display: flex;
+    align-items: flex-start; /* 아이콘과 텍스트 상단 정렬 */
+    
+    /* (수정) 7% 검은색 배경 (기본 알림) */
+    background-color: rgba(0, 0, 0, 0.07);
+    
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+}
+/* '팔로우' 알림 (특별 배경색) */
+.notification-item.follow {
+    /* (수정) 연한 보라색 배경 */
+    background-color: rgba(98, 11, 149, 0.1); 
+}
+.notif-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 원형 */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    margin-right: 15px;
+    flex-shrink: 0; /* 텍스트가 길어져도 찌그러지지 않게 */
+}
+.notif-icon {
+    font-size: 20px;
+}
+/* '팔로우'의 빨간 원 */
+.notif-icon-bg {
+    width: 40px;
+    height: 40px;
+    background-color: #E53935; /* (임시) 빨간색 */
+    border-radius: 50%;
+}
+.notif-text-wrapper {
+    flex: 1; /* 남은 공간 모두 차지 */
+}
+.notif-content {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5; /* 줄간격 */
+}
+.notif-timestamp {
+    display: block; /* 줄바꿈 */
+    text-align: right; /* 오른쪽 정렬 */
+    font-size: 12px;
+    color: #888888;
+    margin-top: 8px;
+}
+
+/* ----- 13. (수정) 추천 탭 (main.html) 스타일 ----- */
+/* (기존 .feed-card 스타일을 .user-feed-group 내부로 이동) */
+
+/* 1. (NEW) 사용자 그룹 컨테이너 (예: '왼가비' 그룹) */
+.user-feed-group {
+    background-color: #FFFFFF; /* 카드 흰색 배경 */
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 15px; /* 그룹 사이 간격 */
+    overflow: hidden;
+}
+
+/* 2. (NEW) 사용자 그룹 헤더 (프로필 + 팔로우 버튼) */
+.user-feed-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    user-feed-group .article-card {
+    margin-top: 0; 
+}
+}
+.user-profile-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex: 1; /* 남는 공간 차지 */
+}
+.card-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.07);
+    margin-right: 10px;
+}
+.card-username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* (NEW) 팔로우 버튼 (기존 .pin-btn 수정) */
+.follow-btn {
+    background: rgba(0, 0, 0, 0.07); /* 비활성 회색 */
+    color: #555;
+    border: none;
+    border-radius: 50px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+/* (NEW) 팔로우 '된' 버튼 스타일 */
+.follow-btn.followed {
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF;
+}
+
+/* 3. (NEW) 그룹 내부의 기사 카드 (1~2개) */
+.user-article {
+    padding: 0 16px 16px 16px; /* 좌우, 하단 여백 */
+    border-top: 1px solid rgba(0, 0, 0, 0.05); /* 헤더와 구분선 */
+    margin-top: 10px;
+}
+/* 두 번째 기사부터는 위쪽 여백 추가 */
+.user-article + .user-article {
+    margin-top: 16px;
+    padding-top: 16px;
+}
+
+/* (이하 스타일은 feed.html의 .article-card와 유사/재사용) */
+.user-article .card-image-link {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.user-article .card-image {
+    width: 100%;
+    height: 180px; /* (임시) 이미지 높이 */
+    object-fit: cover;
+    border-radius: 8px;
+}
+/* 기사가 2개일 때 (이미지 없음, 제목만) */
+.user-article.no-image .card-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.user-article.no-image .card-meta {
+    font-size: 12px;
+}
+
+/* ----- 14. (추가) 기사 상세 페이지 스타일 ----- */
+
+/* 1. 좌측 플로팅 액션 바 */
+.floating-action-bar {
+    position: fixed;
+    /* (수정) 화면 좌측 중앙이 아닌, 헤더 밑 특정 위치에 고정 */
+    top: 250px; /* (조절 필요) 헤더와 제목 밑 적절한 위치 */
+    left: 10px;  /* (조절 필요) 화면 좌측 여백 */
+    
+    display: flex;
+    flex-direction: column; /* 아이콘 세로 배치 */
+    gap: 12px; /* 버튼 사이 간격 */
+    
+    z-index: 50; /* 콘텐츠보다 위에, 헤더보다 아래에 */
+}
+.action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%; /* 원형 */
+    
+    background-color: #FFFFFF; /* 흰색 배경 */
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* 그림자 */
+    
+    cursor: pointer;
+    font-size: 20px;
+    color: #555; /* 아이콘 기본색 */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+/* 버튼 클릭 시 (활성화) 스타일 */
+.action-btn:active,
+.action-btn.active {
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF; /* 아이콘 흰색 */
+    transform: scale(1.1); /* 살짝 커지는 효과 */
+}
+
+/* 2. 기사 콘텐츠 영역 */
+
+/* (중요) 기사 본문이 플로팅 바에 가려지지 않도록 
+   좌측에 추가 여백(padding)을 줍니다.
+*/
+.article-container {
+    padding-left: 65px !important; /* (44px 버튼 + 2*10px 여백) */
+    padding-right: 20px !important;
+}
+
+.article-content {
+    /* (기본 .container 스타일을 사용) */
+}
+.article-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #222;
+    margin-bottom: 15px;
+}
+.article-meta {
+    display: flex;
+    flex-direction: column; /* 정보 세로로 나열 */
+    gap: 5px;
+    font-size: 12px;
+    color: #888888;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07); /* 7% 검은색 구분선 */
+}
+.article-figure {
+    margin: 0 0 20px 0; /* 위아래 여백 */
+}
+.article-image {
+    width: 100%;
+    border-radius: 12px;
+}
+.article-caption {
+    font-size: 13px;
+    color: #777;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+.article-body {
+    font-size: 16px;
+    line-height: 1.8; /* 가독성을 위한 줄간격 */
+    color: #333333;
+}
+.article-body p {
+    margin-bottom: 25px; /* 문단 사이 간격 */
+}
+.article-embedded-content {
+    margin-top: 30px;
+}
+.article-embedded-content img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+/* ----- 15. (추가) 메인 피드 (feed.html) 스타일 ----- */
+
+.article-list {
+    display: flex;
+    flex-direction: column !important;
+    gap: 12px; /* 카드 사이 간격 */
+}
+
+/* 피드 페이지의 기사 카드 (a 태그) */
+.article-card {
+    display: flex;
+    background-color: #FFFFFF; /* 카드 흰색 배경 */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: #333;
+    gap: 15px; /* 텍스트와 썸네일 사이 간격 */
+}
+
+/* 마지막 카드의 하단 여백 (하단 바에 가려지지 않게) */
+.article-card:last-child {
+    margin-bottom: 20px; 
+}
+
+/* 카드 좌측 텍스트 영역 */
+.card-text {
+    flex: 1; /* 텍스트 영역이 남는 공간 다 차지 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 카드 카테고리 태그 (IT/과학, 경제...) */
+.card-category {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 4px;
+    margin-right: 5px;
+    color: #FFFFFF;
+    align-self: flex-start; /* 태그 크기만큼만 자리 차지 */
+}
+/* 토픽별 색상 (임시) */
+.topic-it { background-color: #0D47A1; } /* IT/과학 (파랑) */
+.topic-economy { background-color: #1B5E20; } /* 경제 (초록) */
+.topic-society { background-color: #E65100; } /* 사회 (주황) */
+
+.card-source {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px; /* 카테고리 태그와의 간격 */
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin: 8px 0;
+    line-height: 1.4;
+    
+    /* 텍스트가 텍스트 영역을 벗어나지 않도록 */
+    flex-grow: 1; /* 제목이 남은 공간을 채움 */
+}
+
+/* 조회수, 시간 */
+.card-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #888;
+    align-items: center;
+    margin-top: auto; /* 맨 아래로 밀어내기 */
+}
+
+/* 카드 우측 썸네일 이미지 */
+.card-thumbnail {
+    width: 90px;
+    height: 90px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0; /* 찌그러지지 않게 */
+}
+
+/* ----- 16. (추가) 메인 피드 (Following) 스타일 ----- */
+
+/* '...님이 열람한 기사입니다' 헤더 그룹 */
+.following-card-group {
+    /* 각 카드 그룹 사이의 간격 */
+    margin-bottom: 12px;
+}
+
+.follower-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background-color: rgba(0, 0, 0, 0.07); /* 7% 검은색 */
+    border-radius: 8px;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 0px; /* 아래 기사 카드와의 간격 */
+}
+
+.card-avatar-small {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-right: 8px;
+}
+.follower-header strong {
+    color: #000;
+    margin-right: 4px;
+}
+
+/* 'FOLLOWING' 탭의 기사 카드는 기존 .article-card 스타일을 
+   재사용하므로, 추가 스타일이 거의 필요 없습니다. */
+
+/* (수정) topic-politics 색상 추가 */
+.topic-politics { background-color: #4A148C; } /* 정치 (진한 보라) */
+.topic-default { background-color: #555; } /* 기본 (회색) */
+
+/* ----- 17. (추가) 아카이브 페이지 스타일 ----- */
+
+/* 1. 아카이브 프로필 카드 (settings의 프로필 카드와 유사) */
+.archive-profile-card {
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px; /* 아래 탭과의 간격 */
+}
+/* .profile-avatar, .profile-info, .profile-name, .profile-tags
+   스타일은 settings-logged-in.html (CSS 블록 11번)에서 재사용됩니다. */
+
+/* (NEW) 팔로워 텍스트 스타일 */
+.profile-followers {
+    font-size: 13px;
+    font-weight: 500;
+    color: #555; /* 닉네임/태그보다 조금 진하게 */
+    margin-top: 5px;
+}
+/* 2. (수정) 탭 전체 스타일 */
+.view-toggle {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.07);
+    border-radius: 25px;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.view-toggle input[type="radio"] {
+    display: none;
+}
+
+.view-toggle label {
+    flex: 1;
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.view-toggle input[type="radio"]:checked + label {
+    background-color: #620B95;
+    color: #FFFFFF;
+}
+/* 2. (수정) 3개짜리 탭 (.view-toggle 재사용) */
+.view-toggle.three-tabs label {
+    flex: 1 1 33.33%; /* 3개 탭이 1:1:1 비율 */
+    font-size: 14px; /* 폰트 살짝 줄임 */
+}
+
+/* 3. 보라색 플로팅 액션 버튼 (FAB) */
+.floating-action-button {
+    position: fixed;
+    /* (수정) 하단 네비게이션 바 바로 위에 */
+    bottom: 90px; /* (조절 필요) 70px(하단바) + 20px(여백) */
+    right: 20px;
+    
+    width: 56px;
+    height: 56px;
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF; /* 흰색 아이콘 */
+    
+    border-radius: 50%; /* 원형 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* 진한 그림자 */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    text-decoration: none;
+    font-size: 28px; /* 아이콘 크기 */
+    font-weight: bold;
+    
+    z-index: 90; /* 헤더(100)보단 낮고, 콘텐츠보단 높게 */
+    transition: transform 0.2s ease;
+}
+.floating-action-button:active {
+    transform: scale(0.95); /* 클릭 시 살짝 작아짐 */
+}
+
+/* (수정) article-list의 마지막 카드 하단 여백 
+   (FAB에 가려지지 않게 넉넉하게)
+*/
+.article-list .article-card:last-child {
+    margin-bottom: 40px; 
+}
+
+/* ----- 18. (추가) 기사 스크랩 페이지 스타일 ----- */
+
+/* 1. 토픽 선택 그리드 (8개 버튼) */
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개씩 */
+    gap: 10px; /* 버튼 사이 간격 */
+    margin-top: 20px;
+}
+.topic-grid-button {
+    padding: 14px 5px; /* 상하 14, 좌우 5 */
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    
+    /* (기본) '000000 7%' (연한 회색) 배경 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    color: #AAAAAA; /* 선택 안 된 글자색 */
+    
+    border: none;
+    border-radius: 50px; /* 둥근 알약 모양 */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out; 
+}
+/* (핵심) 선택된 토픽 버튼 스타일 */
+.topic-grid-button.active {
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF; /* 흰색 글자 */
+}
+
+/* 2. 링크 입력창 (X 버튼 포함) */
+.input-with-clear {
+    position: relative; /* 'x' 버튼의 기준점 */
+}
+/* (재사용) form-group input[type="url"] 스타일은
+   type="text"와 동일하게 적용됩니다. (CSS 블록 15번)
+*/
+.form-group input[type="url"] {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.07); 
+    color: #222222; 
+    font-size: 16px;
+    font-weight: 500;
+    
+    /* (수정) x 버튼이 겹치지 않게 오른쪽 여백 확보 */
+    padding-right: 45px !important;
+}
+
+/* 'x' 버튼 스타일 */
+.clear-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    background: #AAAAAA; /* 회색 배경 */
+    color: #FFFFFF; /* 흰색 'x' */
+    
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px; /* 'x' 중앙 정렬 */
+    
+    cursor: pointer;
+    opacity: 0.7;
+}
+.clear-btn:hover {
+    opacity: 1;
+}
+
+/* 3. "기사 스크랩하기" 버튼 
+   (.next-button 스타일을 재사용하므로 CSS 추가 불필요) 
+*/
+
+/* ----- 19. (추가) 아카이브-팔로잉 탭 스타일 ----- */
+
+/* 1. 팔로잉 검색창 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: rgba(0, 0, 0, 0.07); /* 7% 검은색 */
+    border-radius: 50px; /* 둥근 알약 모양 */
+    margin: 20px 0; /* 위아래 여백 */
+}
+.search-bar .search-icon,
+.search-bar .mic-icon {
+    font-size: 20px;
+    color: #888;
+}
+.search-bar input {
+    flex: 1; /* 남은 공간 모두 차지 */
+    border: none;
+    background: none;
+    outline: none;
+    
+    font-size: 16px;
+    color: #333;
+    
+    margin: 0 10px; /* 아이콘과의 여백 */
+}
+.search-bar input::placeholder {
+    color: #AAAAAA;
+}
+
+/* 2. 사용자 목록 */
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 목록 아이템 사이 간격 */
+    margin-bottom: 40px; /* 하단 바 여백 */
+}
+
+/* 3. 사용자 목록 아이템 (한 명) */
+.user-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+/* (핵심) 팔로우 안 한 사람 (흰색) */
+.user-list-item.not-followed {
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+/* (핵심) 팔로우 한 사람 (연한 배경) */
+.user-list-item.followed {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+/* 유저 프로필 (아바타 + 정보) */
+.user-list-item .card-avatar-small {
+    /* .follower-header에서 만든 스타일 재사용 */
+    width: 40px;
+    height: 40px;
+}
+.user-info {
+    flex: 1; /* 닉네임, 태그가 남는 공간 차지 */
+    margin: 0 12px;
+}
+.user-info .nickname {
+    font-size: 16px;
+    font-weight: 600;
+}
+.user-info .user-tags {
+    display: flex;
+    flex-wrap: wrap; /* 태그 줄바꿈 */
+    gap: 5px;
+    margin-top: 5px;
+}
+.user-info .user-tags .tag {
+    font-size: 12px;
+    font-weight: 500;
+    color: #620B95; /* 포인트 보라색 */
+    padding: 4px 8px;
+    background-color: rgba(98, 11, 149, 0.1); /* 연한 보라 */
+    border-radius: 4px;
+}
+
+/* ----- 20. (추가) 커뮤니티 탭 스타일 ----- */
+
+.discussion-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 카드 사이 간격 */
+    padding-bottom: 20px; /* 하단 여백 */
+}
+
+/* 1. 토론 카드 전체 (새로운 레이아웃) */
+.discussion-card {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    padding: 16px;
+    padding-bottom: 0; /* 하단은 버튼이 차지 */
+}
+
+/* 2. 카드 카테고리 태그 */
+.discussion-card .card-category {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 4px;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    align-self: flex-start;
+}
+
+/* 3. 카드 제목 */
+.discussion-card .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+/* 4. 카드 이미지 (전체 너비) */
+.discussion-card-image {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-bottom: 12px;
+}
+
+/* 5. 카드 메타 (시간) */
+.discussion-card-meta {
+    margin-bottom: 12px;
+}
+.time-left {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* 6. 카드 푸터 (통계 + 액션) */
+.discussion-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+}
+.discussion-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+}
+.discussion-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* (NEW) 북마크 활성화 시 보라색 */
+.discussion-actions .bookmark-btn.active {
+    color: #620B95;
+    transform: scale(1.1);
+}
+
+/* 7. 토론 참여하기 버튼 */
+.discussion-join-btn {
+    display: block;
+    width: calc(100% + 32px); /* 카드 패딩 벗어나게 */
+    margin: 0 -16px; /* 카드 양쪽 끝까지 */
+    
+    padding: 16px;
+    background-color: #620B95; 
+    color: #FFFFFF;            
+    border: none;
+    border-radius: 0 0 16px 16px; /* 카드 하단 모서리만 둥글게 */
+    
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ----- 21. (추가) 토론 입장 선택 페이지 스타일 ----- */
+
+.discussion-choice-card {
+    /* (재사용) 7% 검은색 배경 */
+    background-color: rgba(0, 0, 0, 0.07); 
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px; /* 카드 사이 간격 */
+    text-align: center;
+}
+
+.discussion-choice-card .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+.discussion-choice-card .card-description {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 24px; /* 버튼과의 간격 */
+}
+
+/* (NEW) 보라색 '입장하기' 버튼 (a 태그) */
+.entry-button {
+    display: block; /* 가로 100% */
+    width: 100%;
+    
+    padding: 16px;
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF;            
+    border: none;
+    border-radius: 12px;
+    
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.entry-button:active {
+    transform: scale(0.98); /* 클릭 시 살짝 작아짐 */
+}
+
+/* ----- 22. (추가) 실명 토론방 페이지 스타일 ----- */
+
+/* 0. 하단 2중 고정 바를 위한 body 패딩 (수정) */
+body.with-fixed-comment-bar {
+    /* 하단 네비(70px) + 댓글 입력창(60px) + 여백(10px) 
+      = 약 140px의 하단 여백 필요 
+    */
+    padding-bottom: 140px !important; 
+}
+
+/* (NEW) 토론방 기사 헤더 스타일 */
+.discussion-article-header {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.article-category-source {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.discussion-article-header .article-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.discussion-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.meta-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meta-left .time-left,
+.meta-left .participant-count {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.sort-toggle-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 1. 기사 헤더 링크 */
+.article-header-link {
+    display: block;
+    padding: 16px;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+.article-header-link .card-category {
+    /* .article-card (CSS 블록 15번) 스타일 재사용 */
+}
+.article-header-link .card-source {
+    /* .article-card (CSS 블록 15번) 스타일 재사용 */
+}
+.article-header-link .card-title {
+    /* .article-card (CSS 블록 15번) 스타일 재사용 */
+    font-size: 18px; /* 기사 제목이므로 조금 더 크게 */
+    margin: 8px 0 0 0; /* 여백 수정 */
+}
+
+/* 2. 토론 정보 (시간, 인원, 정렬) */
+.discussion-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px 15px 5px; /* 좌우 5px, 하단 15px */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+.info-left {
+    display: flex;
+    flex-direction: column; /* 세로 배치 */
+    gap: 5px;
+}
+.time-left, .participant-count {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+}
+.sort-toggle-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.sort-toggle-btn span {
+    margin-right: 4px;
+}
+
+/* 3. 댓글 목록 */
+.comment-list {
+    padding-top: 20px;
+}
+.comment-item {
+    display: flex;
+    gap: 10px; /* 아바타와 콘텐츠 간격 */
+    margin-bottom: 20px;
+}
+.comment-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.07);
+}
+.comment-content {
+    flex: 1;
+}
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.comment-user {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+}
+.comment-date {
+    font-size: 12px;
+    color: #999;
+}
+.comment-text {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+.comment-actions {
+    display: flex;
+    gap: 15px;
+}
+.comment-actions .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+    padding: 0;
+}
+.comment-actions .action-btn span {
+    margin-right: 3px;
+}
+.comment-actions .action-btn.active {
+    color: #620B95; /* 좋아요/답글 활성 (보라색) */
+}
+
+/* 4. 대댓글 (Replies) */
+.reply-list {
+    margin-top: 20px;
+    padding-left: 20px; /* 들여쓰기 */
+    border-left: 2px solid rgba(0, 0, 0, 0.07);
+}
+.reply-list .comment-item {
+    margin-bottom: 15px;
+}
+.reply-list .comment-avatar {
+    width: 30px; /* 대댓글 아바타는 조금 작게 */
+    height: 30px;
+}
+.reply-list .comment-user {
+    font-size: 14px;
+}
+.reply-list .comment-text {
+    font-size: 14px;
+}
+
+/* 5. (핵심) 하단 고정 댓글 입력창 */
+.comment-input-bar {
+    position: fixed;
+    bottom: 70px; /* (중요) 하단 네비(70px) 바로 위에 위치 */
+    left: 0;
+    width: 100%;
+    
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    padding: 10px 16px;
+    background-color: #FFFFFF; /* 흰색 배경 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); /* 위쪽 그림자 */
+    z-index: 100;
+}
+.comment-input-bar .card-avatar-small {
+    /* .follower-header (CSS 블록 16번) 스타일 재사용 */
+    width: 32px;
+    height: 32px;
+}
+.comment-input-bar input[type="text"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.07); /* 7% 검은색 */
+    border-radius: 50px;
+    font-size: 15px;
+}
+.comment-input-bar .comment-submit-btn {
+    /* (재사용) .follow-btn (CSS 블록 13번) 스타일 재사용 */
+    background: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ----- (22-1. 추가) 익명 토론방 아바타 스타일 ----- */
+
+.comment-avatar.anonymous-placeholder {
+    background-color: #E0E0E0; /* 피그마의 회색 원 */
+    /* img 태그 대신 div이므로, 기존 .comment-avatar의 
+       width/height/border-radius가 적용됨 */
+}
+
+/* ----- 23. (수정) 프로필 상세 페이지 스타일 ----- */
+
+/* 프로필 카드 자체 (archive.html과 재사용) */
+.archive-profile-card {
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px; 
+}
+/* .profile-avatar, .profile-info 등은 (CSS 블록 11번)에서 재사용 */
+
+/* (NEW) 프로필 페이지의 '팔로우' 버튼 (보라색/회색) */
+.profile-follow-btn {
+    border: none;
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    /* (기본) 보라색 (Not Followed) */
+    background-color: #620B95;
+    color: #FFFFFF;
+
+    margin-left: auto; /* info 영역이 남는 공간 다 차지 */
+    align-self: center; /* 세로 중앙 */
+}
+/* (수정) 'followed' 클래스가 붙으면 = 회색 (Followed) */
+.profile-follow-btn.followed {
+    background-color: #E0E0E0; /* 피그마의 회색 */
+    color: #555;
+}
+
+/* 2개짜리 탭 (.view-toggle 재사용) */
+.view-toggle label {
+    /* flex: 1; (기본값) */
+}
+
+/* 탭 콘텐츠 (스크랩 목록 등) */
+.tab-content {
+    margin-top: 20px;
+}
+
+/* ----- 24. (추가) 스플래시 화면 스타일 ----- */
+
+/* (중요) 스플래시 화면은 상/하단 바가 없으므로 
+   기본 body 배경색(F9F4E7)을 덮어씁니다. 
+*/
+body.splash-body {
+    background-color: #F9F4E7; /* 기본 배경 */
+    
+    /* (NEW) 스플래시 배경 이미지 */
+    /*  */
+    background-image: url('/overnew_prj/static/image/splash-bg.png'); 
+    background-size: cover;
+    background-position: center center;
+    
+    /* body.with-fixed-nav의 패딩을 덮어씀 */
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.splash-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* 화면 전체 높이 */
+    width: 100%;
+    
+    /* (선택) 배경 이미지가 너무 튀지 않게 살짝 덮어줌 */
+    background-color: rgba(249, 244, 231, 0.5); /* 50% 투명한 베이지 */
+}
+
+/* (NEW) 스플래시 화면의 로고 스타일 */
+h1.splash-logo {
+    /* .logo의 기본 보라색(#620B95)을 상속받음 */
+    font-size: 48px; /* 폰트 크기 크게 */
+    font-weight: 800;
+    
+    /* (선택) 텍스트에 살짝 그림자 */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+/* ----- 25. (추가) 이미지 에러 처리 ----- */
+
+/* 이미지 로딩 실패 시 기본 스타일 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 아바타 이미지 에러 시 기본 배경 */
+.profile-avatar,
+.comment-avatar,
+.card-avatar,
+.card-avatar-small {
+    background-color: rgba(0, 0, 0, 0.07);
+    object-fit: cover;
+}
+
+/* 카드 썸네일 이미지 에러 시 기본 배경 */
+.card-thumbnail,
+.card-image {
+    background-color: rgba(0, 0, 0, 0.05);
+    object-fit: cover;
+}
+
+/* ----- 26. (추가) 키워드 태그 버튼 스타일 ----- */
+
+.keyword-list {
+    display: flex;
+    flex-wrap: nowrap; /* 줄바꿈 없이 한 줄로 */
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto; /* 가로 스크롤 */
+    padding: 0 4px 8px 4px; /* 스크롤바 공간 */
+    scrollbar-width: thin; /* Firefox */
+}
+
+/* 웹킷 기반 브라우저 스크롤바 스타일 */
+.keyword-list::-webkit-scrollbar {
+    height: 4px;
+}
+
+.keyword-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+}
+
+.keyword-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+
+.keyword-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.keyword-tag {
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.07);
+    color: #666;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    flex-shrink: 0; /* 버튼 크기 고정 */
+}
+
+.keyword-tag:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.keyword-tag.active {
+    background-color: #620B95;
+    color: #FFFFFF;
+}
+
+.keyword-tag:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(98, 11, 149, 0.3);
+}
+
+.splash-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* 화면 전체 높이 */
+    width: 100%;
+    
+    /* (선택) 배경 이미지가 너무 튀지 않게 살짝 덮어줌 */
+    background-color: rgba(249, 244, 231, 0.5); /* 50% 투명한 베이지 */
+}
+
+/* (NEW) 스플래시 화면의 로고 스타일 */
+h1.splash-logo {
+    /* .logo의 기본 보라색(#620B95)을 상속받음 */
+    font-size: 48px; /* 폰트 크기 크게 */
+    font-weight: 800;
+    
+    /* (선택) 텍스트에 살짝 그림자 */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+/* 탭 전체 컨테이너 스타일 */
+.view-toggle {
+    display: flex;
+    /* 이미지와 유사한 연한 회색 배경 */
+    background-color: #e5e5e5; 
+    border-radius: 30px; /* 둥근 모서리 */
+    padding: 5px; /* 내부 여백 (탭들 사이에 간격이 생김) */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 은은한 그림자 효과 */
+    margin: 20px 0; /* 상하 여백 */
+    position: relative; /* 자식 요소 위치 지정을 위해 */
+}
+/* 실제 라디오 버튼 숨기기 */
+.view-toggle input[type="radio"] {
+    display: none;
+}
+
+/* 탭 레이블 (버튼) 기본 스타일 */
+.view-toggle label {
+    flex: 1; /* 컨테이너 내에서 균등한 너비 */
+    text-align: center;
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333; /* 비활성 텍스트 색상 */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    border-radius: 25px; /* 탭 버튼 자체의 둥근 모서리 */
+    z-index: 2; /* 탭이 컨테이너 위에 오도록 */
+    background-color: transparent; /* 기본 배경색은 컨테이너 배경색을 따름 */
+}
+/*  활성화된 탭 스타일 (흰색 배경) */
+.view-toggle input[type="radio"]:checked + label {
+    background-color: white;
+    color: black; /* 텍스트는 진한 색 */
+    /* 활성 탭이 그림자 효과를 가지도록 설정 (선택 효과 강조) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    
+}
+/* style.css 파일에 추가/수정합니다. */
+
+/* 키워드 목록 컨테이너 (버튼들을 담는 부모) */
+.keyword-list {
+    display: flex;
+    /* 버튼들이 넘치면 다음 줄로 넘어가지 않고, 스크롤되도록 설정 */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px; /* 버튼들 사이의 간격 */
+    padding: 10px 0; /* 상하 여백 */
+    margin-bottom: 10px;
+    /* 스크롤바 숨기기 (선택 사항) */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.keyword-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+/* 개별 키워드 버튼 스타일 */
+.keyword-tag {
+    /* 버튼처럼 보이도록 설정 */
+    flex-shrink: 0; /* 스크롤될 때 크기가 줄어들지 않도록 방지 */
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 10px; /* 둥근 알약 모양 */
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    
+    /* 비활성 상태 (연한 배경/테두리) */
+    background-color: transparent;
+    border: 1px solid #DEDEDE; /* 연한 테두리 */
+    color: #555555;
+    
+    /*  첫 번째 이미지처럼 비활성 상태에 연한 배경을 원한다면 */
+    background-color: #F0F0F0; 
+    border: none;
+}
+
+/* 활성화(선택)된 키워드 버튼 스타일 */
+.keyword-tag.active {
+    /*  첫 번째 이미지처럼 약간 어둡고 톤 다운된 배경 */
+    background-color: #EBEBEB; 
+    color: #222222; /* 글자색은 진하게 */
+    font-weight: 600;
+    
+    /* 활성 테두리가 있다면 추가 */
+    /* border: 1px solid #AAAAAA; */
+}
+
+/*notification*/
+/* 읽지 않은 알림 (기본 상태 - 배경색이 있어야 함) */
+.notification-item {
+    background-color: rgba(0, 0, 0, 0.07) !important;  /* 원래 배경색 */
+    transition: background-color 0.3s ease;
+}
+
+/* 읽은 알림 스타일 (배경색을 없애거나 더 연하게) */
+.notification-item.read {
+    /* 읽었을 때 배경색을 투명하게 만듭니다. (안 읽은 알림보다 연해짐) */
+   background-color: rgba(0, 0, 0, 0.07) !important;
+}
+
+/* 보라색 알림도 읽었을 때 연해지도록 */
+.notification-item.follow.read {
+     background-color: rgba(0, 0, 0, 0.03) !important;} /* 원래 보라색보다 훨씬 연하게 */
+
+     
+/* --- 기존 style.css 파일에 추가 --- */
+
+/* 페이지 헤더 (프로필 수정, 설정 페이지 등에서 사용) */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EEEEEE;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.page-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+    flex-grow: 1; /* 제목이 중앙에 오도록 */
+    text-align: center;
+}
+
+.page-header .back-arrow {
+    font-size: 24px;
+    color: #333333;
+    text-decoration: none;
+    padding: 0 10px;
+    line-height: 1; /* 세로 정렬 맞춤 */
+}
+
+.page-header .header-spacer {
+    width: 24px; /* 뒤로가기 화살표 너비만큼 공간 확보 */
+    padding: 0 10px;
+}
+
+/* 프로필 수정 페이지의 메인 컨테이너 패딩 조정 (상단 헤더와 겹치지 않게) */
+#page-profile-edit-form main.container {
+    padding-top: 20px; /* 헤더 아래 콘텐츠 시작 */
+    padding-bottom: 100px; /* 저장 버튼과 겹치지 않도록 */
+}
+
+/* 폼 그룹 내 라벨 스타일 (기존 .form-group label 활용) */
+/* 폼 그룹 내 입력 필드 스타일 (기존 .form-group input[...] 활용) */
+/* 성별 토글 스타일 (기존 .gender-toggle 활용) */
+/* 관심 분야 토글 스타일 (기존 .topics-toggle 활용) */
+/* 하단 고정 버튼 (기존 .next-button 활용) */
+.next-button {
+    /* 기존 스타일 유지 */
+    bottom: 20px; /* 화면 하단에서 조금 더 위로 올림 */
+}
+
+/* style.css 파일에 추가 */
+.emoji-img {
+    /* 🚨 원하는 크기로 직접 설정 (예시: 80px) */
+    width: 80px; 
+    height: 80px;
+    
+    /* 이미지가 찌그러지지 않도록 비율 유지 (선택 사항) */
+    object-fit: contain; 
+}
+
+/* 🚨 이미지를 중앙에 배치하기 위한 컨테이너 스타일 (선택 사항이지만 추천) */
+.completion-message .emoji {
+    text-align: center;
+    /* 또는 display: flex; justify-content: center; */
+}
+
+/* 내부 아이콘 이미지 크기 설정 */
+.action-btn .action-icon {
+    width: 24px;       /* 버튼 크기(50px)보다 작게 설정 (예: 24px) */
+    height: 24px;      /* 가로와 동일한 크기로 설정 */
+    object-fit: contain; /* 이미지가 찌그러지지 않도록 비율 유지 */
+}

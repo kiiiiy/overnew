@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Article, NewsCategory, Scrap, Media
 from .utils import fetch_article_metadata
+from django.shortcuts import render
+
 
 
 def get_user_or_404(user_id: int) -> User:
@@ -127,5 +129,14 @@ def scrap_list(request, user_id: int):
 def ping(request):
     return HttpResponse("archive API OK")
 
-def index(request):
-    return render(request, "archive/index.html")
+def archive_main(request):
+    return render(request, "archive/archive.html")
+
+def article_detail(request):
+    return render(request, "archive/article-detail.html")
+
+def create_scrap(request):
+    return render(request, "archive/create-scrap.html")
+
+def profile_detail(request):
+    return render(request, "archive/profile-detail.html")

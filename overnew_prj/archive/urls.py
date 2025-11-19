@@ -4,7 +4,10 @@ from . import views
 
 urlpatterns = [
     #HTML
-    path("", views.index, name="archive_index"),
+    path("", views.archive_main, name="archive_main"),
+    path("article/", views.article_detail, name="article_detail"),
+    path("scrap/create/", views.create_scrap, name="create_scrap"),
+    path("profile/", views.profile_detail, name="profile_detail"),
 
     #API 엔드포인트
     path("ping/", views.ping, name="ping"),

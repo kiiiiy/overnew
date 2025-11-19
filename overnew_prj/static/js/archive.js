@@ -1,20 +1,18 @@
 // ----- 1. Dummy Data -----
+// 주의: dummyAllUsers 데이터는 JavaScript가 실행될 때마다 초기 상태로 돌아갑니다.
+// 실제 앱에서는 서버나 localStorage에 저장해야 상태가 영구적으로 유지됩니다.
 const dummyScrapData = {
     scrap: {
         politics: [{ category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'jung-chung-rae.jpg' }],
         economy: [{ category: '경제', source: 'SBS', title: 'APEC 효과?...', views: '32.6k', time: '4 hours ago', image: 'apec-market.jpg' }],
-        society: [], 
-        it: [], 
-        culture: [{ category: '생활/문화', source: '문화일보', title: '생활 문화 뉴스입니다.', views: '1.2k', time: '1일 전', image: 'image-placeholder.jpg' }], // ⭐ 임시 데이터 추가
-        world: [{ category: '세계', source: 'CNN', title: '해외 주요 소식입니다.', views: '5.5k', time: '5시간 전', image: 'image-placeholder.jpg' }],     // ⭐ 임시 데이터 추가
-        enter: [], sport: []
+        society: [], it: [], 
+        culture: [{ category: '생활/문화', source: '문화일보', title: '생활 문화 뉴스입니다.', views: '1.2k', time: '1일 전', image: 'image-placeholder.jpg' }], 
+        world: [{ category: '세계', source: 'CNN', title: '해외 주요 소식입니다.', views: '5.5k', time: '5시간 전', image: 'image-placeholder.jpg' }],     
+        enter: [], sport: [] 
     },
     bookmark: {
         politics: [{ category: '정치', source: '뉴스웍스', title: "북마크한 정치 기사입니다.", views: '31.9k', time: '5 hours ago', image: 'lg-cns-award.jpg' }],
-        economy: [], society: [], it: [], 
-        culture: [], // ⭐ 임시 데이터 필요 시 추가
-        world: [],   // ⭐ 임시 데이터 필요 시 추가
-        enter: [], sport: []
+        economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: []
     }
 };
 
@@ -28,56 +26,65 @@ const dummyAllUsers = [
     { id: 'AnotherUser', nickname: 'Another User', tags: ['정치'], isFollowing: false, avatar: 'avatar-placeholder.png' }
 ];
 
-// ----- 2. HTML 생성 함수 (카테고리 표시 및 스타일 클래스 최종 수정) -----
+// ----- 2. HTML 생성 함수 -----
 function createArticleCardHTML(cardData) {
-    // data-topic 값(politics, economy 등 소문자 영문)과 표시할 한글 이름 매핑 (렌더링 시 사용)
     const topicDisplayMap = {
         'IT/과학': 'IT/과학', '경제': '경제', '사회': '사회', '정치': '정치', '연예': '연예', '스포츠': '스포츠', '생활/문화': '생활/문화', '세계': '세계',
         'Politics': '정치', 'Economy': '경제', 'Society': '사회', 'Culture': '생활/문화', 'It': 'IT/과학', 'World': '세계', 
         'Enter': '연예', 'Sport': '스포츠' 
     };
     
-    // CSS 클래스 매핑 (저장된 대문자 시작 카테고리와 더미 데이터의 한글 카테고리 모두 처리)
     const topicClassMap = { 
         'IT/과학': 'topic-it', '경제': 'topic-economy', '사회': 'topic-society', '정치': 'topic-politics', '연예': 'topic-enter', '스포츠': 'topic-sport', '생활/문화': 'topic-culture', '세계': 'topic-world', 
         'Politics': 'topic-politics', 'Economy': 'topic-economy', 'Society': 'topic-society', 'Culture': 'topic-culture', 'It': 'topic-it', 'World': 'topic-world', 
-        'Entertainment': 'topic-enter', 'Sports': 'topic-sport' 
+        'Enter': 'topic-enter', 'Sport': 'topic-sport' 
     };
 
     const categoryText = topicDisplayMap[cardData.category] || cardData.category;
     const categoryClass = topicClassMap[cardData.category] || 'topic-default';
 
+    const cardSource = cardData.source || "출처 정보 없음"; 
+    const cardTitle = cardData.title || "제목 정보 없음";
+    const cardViews = cardData.views || "0k";
+    const cardTime = cardData.time || "방금 전";
+
     return `
         <a href="article-detail.html" class="article-card">
             <div class="card-text">
                 <span class="card-category ${categoryClass}">${categoryText}</span>
-                <span class="card-source">${cardData.source}</span>
-                <h3 class="card-title">${cardData.title}</h3>
+                <span class="card-source">${cardSource}</span>
+                <h3 class="card-title">${cardTitle}</h3>
                 <div class="card-stats">
-                    <span class="views">👁️ ${cardData.views}</span>
-                    <span class="time">${cardData.time}</span>
+                    <span class="views">👁️ ${cardViews}</span>
+                    <span class="time">${cardTime}</span>
                 </div>
             </div>
-            <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardData.title}" class="card-thumbnail">
+            <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardTitle}" class="card-thumbnail">
         </a>`;
 }
 
 function createUserListItemHTML(userData) {
-    const tagsHTML = userData.tags.map(tag => `<span class="tag">#${tag}</span>`).join(' ');
-    const followingClass = userData.isFollowing ? 'followed' : 'not-followed';
-    return `
-        <a href="profile-detail.html" class="user-list-item ${followingClass}">
-            <img src="${userData.avatar}" alt="${userData.nickname}" class="card-avatar-small">
-            <div class="user-info">
-                <span class="nickname">${userData.nickname}</span>
-                <div class="user-tags">${tagsHTML}</div>
-            </div>
-        </a>`;
+    const tagsHTML = userData.tags.map(tag => `<span class="tag">#${tag}</span>`).join(' ');
+    const followingClass = userData.isFollowing ? 'followed' : 'not-followed'; 
+    const buttonText = userData.isFollowing ? '언팔로우' : '팔로우'; 
+    
+    return `
+        <div class="user-list-item-wrapper ${followingClass}">
+            <a href="profile-detail.html?user_id=${userData.id}" class="user-list-item-info">
+                <img src="${userData.avatar}" alt="${userData.nickname}" class="card-avatar-small">
+                <div class="user-info">
+                    <span class="nickname">${userData.nickname}</span>
+                    <div class="user-tags">${tagsHTML}</div>
+                </div>
+            </a>
+            <button type="button" class="follow-toggle-btn ${followingClass}" data-user-id="${userData.id}" data-is-following="${userData.isFollowing}">
+                ${buttonText}
+            </button>
+        </div>`;
 }
 
 // ----- 3. 렌더링 함수 (오류 방지 코드 포함) -----
 function renderFeed() {
-    // 탭 요소가 없으면 실행 중단 (오류 방지)
     const tabInput = document.querySelector('input[name="archive-tab"]:checked');
     if (!tabInput) return; 
 
@@ -97,7 +104,7 @@ function renderFeed() {
         const defaultArticles = dummyScrapData.scrap[currentTopic] || [];
         const savedArticles = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
         const savedTopicArticles = savedArticles[currentTopic] || [];
-        articles = savedTopicArticles.concat(defaultArticles); // 로컬 스토리지 기사가 더미 데이터보다 우선
+        articles = savedTopicArticles.concat(defaultArticles); 
     } else if (currentTab === 'bookmark') {
         articles = dummyScrapData.bookmark[currentTopic] || [];
     }
@@ -118,36 +125,149 @@ function renderFollowingList(searchTerm = "") {
     const listContainer = document.getElementById('following-list');
     if (!listContainer) return; 
     
-    listContainer.innerHTML = '';
+    // ⭐ 필터링 로직: 검색어가 없으면 isFollowing이 true인 사용자만 표시
+    const normalizedSearch = searchTerm.toLowerCase();
+    let usersToShow = dummyAllUsers.filter(user => {
+        const match = user.nickname.toLowerCase().includes(normalizedSearch) || user.id.toLowerCase().includes(normalizedSearch);
+        return searchTerm ? match : user.isFollowing; 
+    });
 
-    const normalizedSearch = searchTerm.toLowerCase();
-    const usersToShow = dummyAllUsers.filter(user => {
-        const match = user.nickname.toLowerCase().includes(normalizedSearch);
-        return searchTerm ? match : user.isFollowing;
-    });
+    listContainer.innerHTML = ''; 
 
-    if (usersToShow.length === 0) {
-        listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">일치하는 사용자가 없습니다.</p>';
-        return;
-    }
-    usersToShow.forEach(user => {
-        listContainer.innerHTML += createUserListItemHTML(user);
-    });
+    if (usersToShow.length === 0) {
+        listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">일치하는 사용자가 없습니다.</p>';
+        return;
+    }
+    
+    usersToShow.forEach(user => {
+        listContainer.innerHTML += createUserListItemHTML(user);
+    });
+
+    // 이벤트 리스너 연결: 목록 렌더링 후 버튼에 이벤트 연결
+    document.querySelectorAll('.follow-toggle-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const userId = button.dataset.userId;
+            const isFollowing = button.dataset.isFollowing === 'true'; 
+
+            const userIndex = dummyAllUsers.findIndex(u => u.id === userId);
+            if (userIndex !== -1) {
+                dummyAllUsers[userIndex].isFollowing = !isFollowing;
+            }
+            
+            // 목록을 다시 그려서 변경 사항 즉시 반영
+            renderFollowingList(searchTerm); 
+        });
+    });
 }
 
-// ----- 4. 기사 스크랩 기능 (언론사 및 X버튼 작동 보장) -----
-function initScrapFeature() {
-    // 필수 요소들 모두 가져오기 
+// ⭐⭐ 새로운 함수: 프로필 상세 페이지 초기화 함수 ⭐⭐
+function initProfileDetailPage() {
+    const followBtn = document.getElementById('profile-follow-btn');
+    const profileNicknameEl = document.getElementById('profile-nickname');
+    const profileTagsEl = document.getElementById('profile-tags');
+    const profileFollowersEl = document.getElementById('profile-followers');
+
+    if (!followBtn || !profileNicknameEl) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user_id') || 'Natali'; 
+    const targetUser = dummyAllUsers.find(u => u.id === targetUserId);
+
+    if (!targetUser) {
+        profileNicknameEl.textContent = "사용자 없음";
+        followBtn.style.display = 'none'; 
+        return;
+    }
+    
+    // 버튼 텍스트와 스타일을 상태에 맞게 업데이트하는 함수
+    const updateFollowButton = () => {
+        if (targetUser.isFollowing) {
+            followBtn.textContent = '언팔로우';
+            followBtn.classList.add('followed');
+            followBtn.classList.remove('not-followed');
+        } else {
+            followBtn.textContent = '팔로우';
+            followBtn.classList.add('not-followed');
+            followBtn.classList.remove('followed');
+        }
+    };
+
+    // 프로필 정보 설정 및 버튼 초기화
+    profileNicknameEl.textContent = targetUser.nickname;
+    if (profileTagsEl) profileTagsEl.textContent = targetUser.tags.map(t => `#${t}`).join(' ');
+    if (profileFollowersEl) profileFollowersEl.textContent = `팔로워: ${targetUser.id.length * 100}명 (dummy)`; 
+    updateFollowButton();
+
+
+    // 버튼 클릭 이벤트: 팔로우 상태 토글
+    followBtn.addEventListener('click', () => {
+        targetUser.isFollowing = !targetUser.isFollowing; 
+        updateFollowButton(); // 버튼 업데이트
+    });
+
+    // ⭐ 프로필 상세 페이지 탭 전환 및 렌더링 로직 (추가) ⭐
+    const tabInputs = document.querySelectorAll('input[name="profile-tab"]');
+    const keywordTags = document.querySelectorAll('.keyword-list .keyword-tag'); 
+    
+    const renderProfileFeed = () => {
+        const currentTab = document.querySelector('input[name="profile-tab"]:checked').value;
+        const activeTag = document.querySelector('.keyword-list .keyword-tag.active');
+        const currentTopic = activeTag ? activeTag.dataset.topic : 'politics';
+        
+        const listContainer = document.getElementById(`profile-${currentTab}-list`);
+        
+        let articles = [];
+        if (currentTab === 'scrap') {
+             articles = dummyScrapData.scrap[currentTopic] || [];
+        } else if (currentTab === 'bookmark') {
+             articles = dummyScrapData.bookmark[currentTopic] || [];
+        }
+
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
+        
+        if (articles.length === 0) {
+            listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 20px;">이 주제의 기사가 없습니다.</p>';
+            return;
+        }
+        articles.forEach(article => {
+            listContainer.innerHTML += createArticleCardHTML(article);
+        });
+    };
+    
+    // 탭 이벤트 연결
+    tabInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            document.getElementById('content-scrap').style.display = (input.value === 'scrap') ? 'block' : 'none';
+            document.getElementById('content-bookmark').style.display = (input.value === 'bookmark') ? 'block' : 'none';
+            renderProfileFeed();
+        });
+    });
+    
+    // 키워드 태그 이벤트 연결
+    keywordTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            keywordTags.forEach(t => t.classList.remove('active'));
+            tag.classList.add('active');
+            renderProfileFeed();
+        });
+    });
+
+    // 초기 렌더링
+    renderProfileFeed();
+}
+
+
+// ----- 4. 기사 스크랩 기능 (생략) -----
+function initScrapFeature() { 
     const topicButtons = document.querySelectorAll('.topic-grid-button');
     const linkInput = document.getElementById('article-link');
     const clearLinkBtn = document.getElementById('clear-link-btn'); 
     const submitBtn = document.getElementById('submit-scrap-btn');
     
-    // 언론사 관련 요소들
     const sourceInput = document.getElementById('article-source');
     const clearSourceBtn = document.getElementById('clear-source-btn');
 
-    // 필수 요소 체크
     if (!topicButtons.length || !linkInput || !submitBtn || !sourceInput || !clearLinkBtn || !clearSourceBtn) {
         return; 
     }
@@ -162,12 +282,10 @@ function initScrapFeature() {
         });
     });
 
-    // 언론사 'x' 버튼 작동
     clearSourceBtn.addEventListener('click', () => {
         sourceInput.value = ''; 
     });
 
-    // 링크 'x' 버튼 작동
     clearLinkBtn.addEventListener('click', () => {
         linkInput.value = '';
     });
@@ -186,19 +304,17 @@ function initScrapFeature() {
         }
 
         let savedScraps = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
-        // 로컬 스토리지에 저장할 때 카테고리 명을 대문자 시작 영문으로 통일 (렌더링 함수에서 한글로 변환됨)
         const capitalizedCategory = selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1);
         
         const newArticle = {
             category: capitalizedCategory,
             source: sourceValue || '외부기사', 
-            title: linkValue,
+            title: linkValue, 
             views: '0k',
-            time: 'Just now',
+            time: '방금 전', 
             image: 'image-placeholder.jpg'
         };
 
-        // selectedTopic (소문자 영문 키)를 사용하여 배열에 저장
         if (!savedScraps[selectedTopic]) savedScraps[selectedTopic] = [];
         savedScraps[selectedTopic].unshift(newArticle);
         localStorage.setItem('scrapped_articles', JSON.stringify(savedScraps));
@@ -208,41 +324,71 @@ function initScrapFeature() {
     });
 }
 
+
 // ----- 5. DOMContentLoaded (최종 버전) -----
 document.addEventListener('DOMContentLoaded', () => {
-    // 탭 입력 요소가 있으면 아카이브 페이지로 간주합니다.
     const tabInputs = document.querySelectorAll('input[name="archive-tab"]');
     const isArchivePage = tabInputs.length > 0;
     
-    // 스크랩 버튼이 있으면 스크랩 페이지로 간주합니다.
     const submitBtn = document.getElementById('submit-scrap-btn');
     const isScrapPage = !!submitBtn;
 
+    const isProfileDetailPage = document.title.includes('프로필');
+
     // --- A. 로그인 확인 ---
     const nicknameEl = document.getElementById('user-nickname');
-    if (nicknameEl || isArchivePage || isScrapPage) { 
+    if (nicknameEl || isArchivePage || isScrapPage || isProfileDetailPage) { 
         const userInfo = JSON.parse(localStorage.getItem('user-info'));
         if (!userInfo) {
             alert('로그인이 필요한 페이지입니다.');
             window.location.href = 'login.html';
             return;
         }
-        // 프로필 정보 설정 (nicknameEl이 있는 페이지에서만)
         const tagsEl = document.getElementById('user-tags');
         const followersEl = document.getElementById('user-followers');
         if (nicknameEl) nicknameEl.textContent = userInfo.nickname || '사용자';
         if (tagsEl) tagsEl.textContent = (userInfo.topics && userInfo.topics.length > 0) ? userInfo.topics.map(t => `#${t}`).join(' ') : '#관심분야_없음';
         if (followersEl) followersEl.textContent = '팔로워 : 2023명 (dummy)';
     }
+    
+    // --- B. 뒤로 가기 시 탭 상태 강제 복원 로직 ---
+    const activeArchiveTab = document.querySelector('input[name="archive-tab"]:checked');
+    
+    if (isArchivePage && activeArchiveTab) {
+        
+        const scrapBookmarkContent = document.getElementById('scrap-bookmark-content');
+        const followingContent = document.getElementById('following-content');
 
-    // --- B. 스크랩 생성 기능 초기화 (create-scrap.html) ---
+        if (activeArchiveTab.value === 'following') {
+            if (scrapBookmarkContent) scrapBookmarkContent.style.display = 'none';
+            if (followingContent) followingContent.style.display = 'block';
+            
+            if (typeof renderFollowingList === 'function') {
+                renderFollowingList(document.getElementById('search-user')?.value || "");
+            }
+        } else {
+            if (scrapBookmarkContent) scrapBookmarkContent.style.display = 'block';
+            if (followingContent) followingContent.style.display = 'none';
+            
+            if (typeof renderFeed === 'function') {
+                renderFeed();
+            }
+        }
+    }
+    // ------------------------------------------
+
+    // --- C. 스크랩 생성 기능 초기화 (create-scrap.html) ---
     if (isScrapPage) {
         initScrapFeature();
     }
     
-    // --- C. 아카이브 페이지 기능 초기화 (archive.html) ---
+    // --- D. 프로필 상세 페이지 초기화 (profile-detail.html) ---
+    if (isProfileDetailPage) {
+        initProfileDetailPage();
+    }
+    
+    // --- E. 아카이브 페이지 기능 초기화 (archive.html) ---
     if (isArchivePage) { 
-        // 탭 전환 및 렌더링 로직은 아카이브 페이지에서만 실행됩니다.
         const scrapBookmarkContent = document.getElementById('scrap-bookmark-content');
         const followingContent = document.getElementById('following-content');
         const fab = document.querySelector('.floating-action-button');
@@ -284,19 +430,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFollowingList(e.target.value);
             });
         }
-
-        // 초기 렌더
-        renderFeed();
+        
+        // 뒤로가기 복원 로직이 초기 렌더링을 담당했으므로, 여기서 다시 호출하지 않습니다.
+        // renderFeed(); 
     }
-    // 기사 스크랩 페이지용 뒤로가기
-const backButton = document.getElementById('back-button');
-if (backButton) {
-    backButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.history.back();
-    });
-}
-
+    
+    const backButton = document.getElementById('back-button');
+    if (backButton) {
+        backButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.history.back();
+        });
+    }
 });
-
-

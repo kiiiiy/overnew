@@ -5,3 +5,6 @@ from .models import *
 
 admin.site.register(Article)
 admin.site.register(Media)
+admin.site.register(MediaCategory)
+admin.site.register(NewsCategory)
+admin.site.register(UserMedia)

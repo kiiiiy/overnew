@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser  # BaseUserManager 필요 �
 class User(AbstractUser):
     email = models.CharField(max_length=50, unique=True)
     nickname = models.CharField(max_length=15)
-    age = models.IntegerField()
+    age = models.IntegerField(null=True)
     gender = models.CharField(max_length=2)
 
     def __str__(self):

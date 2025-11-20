@@ -29,6 +29,7 @@ class UserMedia(models.Model):
 class NewsCategory(models.Model):
     nc_id = models.AutoField(primary_key=True)
     news_category = models.CharField(max_length=10)
+    
 
     def __str__(self):
         return self.news_category
@@ -60,7 +61,7 @@ class Article(models.Model):
 
 
 class Scrap(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # ✅ User 직접 import X
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     news = models.ForeignKey(Article, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -70,7 +71,7 @@ class Scrap(models.Model):
 
 class Discussion(models.Model):
     news = models.ForeignKey(Article, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # ✅
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

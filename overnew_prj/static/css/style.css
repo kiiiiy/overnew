@@ -664,6 +664,7 @@ body.with-fixed-nav {
     z-index: 100; /* 다른 요소들 위에 오도록 */
 }
 .icon-btn {
+    display: flex;
     background: none;
     border: none;
     font-size: 24px;
@@ -675,8 +676,9 @@ body.with-fixed-nav {
 }
 .header-logo {
     /* 기존 .logo 스타일을 상속받되, 헤더에 맞게 크기/여백 조절 */
-    font-size: 28px !important;
-    margin-bottom: 0 !important;
+    margin: 0; 
+    font-size: 26px; 
+    text-align: center;
 }
 
 /* 2. 하단 내비게이션 바 */

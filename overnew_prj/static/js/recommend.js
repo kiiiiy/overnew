@@ -65,7 +65,7 @@ function createUserGroupHTML(groupData, view) {
 
         const noImageClass = article.noImage ? 'no-image' : '';
         const imageHTML = article.noImage ? '' : `
-            <a href="article-detail.html?id=${article.id}" class="card-image-link">
+            <a href="../../../archive/templates/archive/article-detail.html?id=${article.id}" class="card-image-link">
                 <img src="${article.image || 'image-placeholder.jpg'}" alt="${article.title}" class="card-image">
             </a>`;
 
@@ -73,7 +73,7 @@ function createUserGroupHTML(groupData, view) {
         <div class="user-article ${noImageClass}">
             ${imageHTML}
             <div class="card-content">
-                <a href="article-detail.html?id=${article.id}" class="card-title-link">
+                <a href="../../../archive/templates/archive/profile-detail.html?id=${article.id}" class="card-title-link">
                     <h3 class="card-title">${article.title}</h3>
                 </a>
                 <div class="card-meta">
@@ -88,7 +88,7 @@ function createUserGroupHTML(groupData, view) {
     return `
     <div class="user-feed-group">
         <div class="user-feed-header">
-            <a href="profile-detail.html?user=${groupData.userId}" class="user-profile-link">
+            <a href="../../../archive/templates/archive/profile-detail.html?user=${groupData.userId}" class="user-profile-link">
                 <img src="${groupData.avatar}" alt="${groupData.user}" class="card-avatar">
                 <span class="card-username">${groupData.user}</span>
             </a>

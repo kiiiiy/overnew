@@ -620,7 +620,7 @@ body {
 /* (핵심) 상/하단 고정 바가 있을 때 body에 여백 주기 */
 body.with-fixed-nav {
     /* 상단 헤더 높이(약 60px) + 하단 네비게이션 높이(약 70px) */
-    padding-top: 60px;
+    padding-top: 60px !important;
     padding-bottom: 70px;
 }
 
@@ -630,7 +630,7 @@ body.with-fixed-nav {
     top: 0;
     left: 0;
     width: 100%;
-    
+    height : 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;

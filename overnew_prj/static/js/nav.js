@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     '/overnew_prj/recommend/templates/recommend/main.html',
     '/overnew_prj/discussion/templates/discussion/community.html',
     '/overnew_prj/discussion/templates/discussion/discussion-anonymous.html', 
+    
+    '/overnew_prj/discussion/templates/discussion/discussion-detail.html', 
     '/overnew_prj/discussion/templates/discussion/discussion-realname.html' 
 ];
 
@@ -51,4 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = "/overnew_prj/account/templates/account/notifications.html";
         });
     }
+    document.getElementById("back-button").addEventListener("click", function () {
+    history.back();
+});
 });

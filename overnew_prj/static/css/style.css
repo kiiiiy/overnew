@@ -2250,3 +2250,99 @@ h1.splash-logo {
     height: 24px;      /* 가로와 동일한 크기로 설정 */
     object-fit: contain; /* 이미지가 찌그러지지 않도록 비율 유지 */
 }
+
+/* --- 약관 동의 페이지 스타일 --- */
+
+/* 약관 전체를 감싸는 그룹 스타일 */
+.terms-group {
+    padding: 20px 0;
+}
+
+/* 약관 항목 공통 스타일 */
+.term-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 항목명과 '보기' 링크를 양 끝으로 분리 */
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+/* 전체 동의 항목 스타일 */
+.term-item.check-all {
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* 구분선 */
+.term-divider {
+    border: 0;
+    border-top: 1px solid #EEEEEE;
+    margin: 15px 0;
+}
+
+/* '보기' 링크 스타일 */
+.term-item .view-detail {
+    color: #999999;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+/* --- 커스텀 체크박스 스타일 --- */
+
+/* 실제 체크박스 숨기기 */
+.terms-group input[type="checkbox"] {
+    display: none;
+}
+
+/* 체크박스 대신 사용할 커스텀 박스 */
+.terms-group label::before {
+    content: '';
+    display: inline-block;
+    width: 18px; /* 체크박스 크기 */
+    height: 18px;
+    margin-right: 10px;
+    border: 2px solid #DDDDDD; /* 비활성화 테두리 */
+    border-radius: 4px;
+    vertical-align: middle;
+    transition: all 0.2s;
+}
+
+/* 체크되었을 때의 스타일 */
+.terms-group input[type="checkbox"]:checked + label::before {
+    content: '✓'; /* 체크 표시 */
+    background-color: #620B95; /* 포인트 색상 */
+    border-color: #620B95;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 16px;
+    font-size: 14px;
+}
+/* --- 약관 상세 내용 스타일 --- */
+.term-detail-content {
+    display: none; /* 기본적으로 숨김 */
+    padding: 15px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    max-height: 0; /* 애니메이션을 위해 초기 높이 0 */
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* 부드러운 전환 효과 */
+}
+
+/* 상세 내용이 보일 때의 스타일 */
+.term-detail-content.show {
+    display: block; /* 보이도록 설정 */
+    max-height: 200px; /* 실제 내용보다 충분히 큰 값 (애니메이션을 위함) */
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* 추가적으로, 약관 항목과 상세 내용 사이 간격 조절 */
+.term-item + .term-detail-content {
+    margin-bottom: 15px; /* 다음 항목과의 간격 */
+}

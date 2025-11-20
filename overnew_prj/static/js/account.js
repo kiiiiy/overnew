@@ -345,6 +345,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (bodyId === 'page-signup-complete') {
         initSignupCompletePage();
     }
+    // 🚨 [여기에 추가] 방금 만든 약관 동의 페이지 연결
+    else if (bodyId === 'page-terms-agreement') {
+        initTermsAgreementPage();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -415,3 +419,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+// ----------------------------------------------------
+// 약관 동의 창
+// account.js 파일 내부에 추가
+// [Terms Agreement] terms-agreement.html
+// 🚨 [수정됨] 약관 동의 페이지 초기화 함수 (initTermsAgreementPage)
+function initTermsAgreementPage() {
+    const checkAll = document.getElementById('check-all');
+    const allTerms = document.querySelectorAll('input[name="term"]');
+    const requiredTerms = document.querySelectorAll('.term-item.required input[name="term"]'); 
+    const nextButton = document.getElementById('next-btn-terms');
+    const viewDetailLinks = document.querySelectorAll('.view-detail'); // '보기' 링크들
+
+    // 1. 전체 동의 체크박스 클릭 시
+    if (checkAll) {
+        checkAll.addEventListener('change', () => {
+            allTerms.forEach(checkbox => {
+                checkbox.checked = checkAll.checked;
+            });
+        });
+    }
+
+    // 2. 개별 체크박스 클릭 시 '전체 동의' 상태 업데이트
+    allTerms.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const isAllChecked = Array.from(allTerms).every(cb => cb.checked);
+            checkAll.checked = isAllChecked;
+        });
+    });
+
+    // 🚨 [수정됨] '보기' 링크 클릭 시 상세 내용 토글 기능
+    viewDetailLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); // 기본 새로고침/스크롤 이동 방지
+            
+            const targetId = link.dataset.target; // data-target 속성에서 ID 가져오기
+            const detailContent = document.getElementById(targetId);
+
+            if (detailContent) {
+                // 'show' 클래스를 토글하여 보이고 숨김
+                detailContent.classList.toggle('show');
+            }
+        });
+    });
+
+    // 4. NEXT 버튼 클릭 시 검사 로직
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            const isRequiredChecked = Array.from(requiredTerms).every(cb => cb.checked);
+            if (isRequiredChecked) {
+                // 모든 필수 약관에 동의했으면 다음 단계로 이동
+                window.location.href = 'info-step1.html'; 
+            } else {
+                // 필수 약관 미동의 시 경고
+                alert('필수 약관에 모두 동의해야 다음 단계로 진행할 수 있습니다.');
+            }
+        });
+    }
+}
+
+// (메인 라우터는 그대로 유지)

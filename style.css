@@ -1374,6 +1374,8 @@ body.with-fixed-nav {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     padding: 16px;
+    margin-top : 20px !important;
+    top:90px;
     padding-bottom: 0; /* 하단은 버튼이 차지 */
 }
 
@@ -1515,7 +1517,7 @@ body.with-fixed-comment-bar {
     /* 하단 네비(70px) + 댓글 입력창(60px) + 여백(10px) 
       = 약 140px의 하단 여백 필요 
     */
-    padding-bottom: 140px !important; 
+    padding-bottom: 80px !important; 
 }
 
 /* (NEW) 토론방 기사 헤더 스타일 */
@@ -1525,6 +1527,7 @@ body.with-fixed-comment-bar {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 20px;
     margin-bottom: 20px;
+    margin-top: 80px !important;
 }
 
 .article-category-source {
@@ -1842,7 +1845,7 @@ h1.splash-logo {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
-* ----- 25. (추가) 이미지 에러 처리 ----- */
+/* ----- 25. (추가) 이미지 에러 처리 ----- */
 
 /* 이미지 로딩 실패 시 기본 스타일 */
 img {

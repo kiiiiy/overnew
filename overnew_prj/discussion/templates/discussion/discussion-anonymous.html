@@ -9,10 +9,15 @@
 <body class="with-fixed-comment-bar"> 
 
 <header class="main-header">
-    <!-- 뒤로가기 버튼 추가 -->
-    <a href="#" class="back-arrow" id="back-button"> &lt; </a>
+    <!-- 뒤로가기 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
 
     <h1 class="logo header-logo">OVERNEW</h1>
+
+    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+    <div style="width:40px;"></div>
 </header>
 
 <main class="container">
@@ -42,29 +47,10 @@
     <input type="text" id="comment-input" placeholder="Add a comment">
     <button type="button" class="comment-submit-btn" id="submit-comment-btn">업로드</button>
 </div>
+    <nav class="bottom-nav"></nav>
 
-<nav class="bottom-nav">
-    <a href="feed.html" class="nav-item"> 
-        <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
-        <span class="nav-label">피드</span>
-    </a>
-    <a href="archive.html" class="nav-item">
-        <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
-        <span class="nav-label">아카이브</span>
-    </a>
-    <a href="main.html" class="nav-item">
-        <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
-        <span class="nav-label">추천</span>
-    </a>
-    <a href="community.html" class="nav-item active">
-        <div class="nav-icon-wrapper"><span class="nav-icon">⚙️</span></div>
-        <span class="nav-label">커뮤니티</span>
-    </a>
-</nav>
-
-<!-- JS 분리 -->
-<script src="../../../static/js/discussion-anonymous.js"></script>
-<script src="/static/js/menu.js"></script>
-
+    <!-- JS 파일 불러오기 -->
+    <script src="../../../static/js/nav.js"></script>
+    <script src="../../../static/js/discussion-realname.js"></script>
 </body>
 </html>

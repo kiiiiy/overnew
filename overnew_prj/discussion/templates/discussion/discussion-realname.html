@@ -8,11 +8,17 @@
 </head>
 <body class="with-fixed-comment-bar"> 
 
-    <header class="main-header">
-        <!-- 뒤로가기 버튼 추가 -->
-        <a href="#" class="back-arrow" id="back-button"> &lt; </a>
-        <h1 class="logo header-logo">OVERNEW</h1>
-    </header>
+<header class="main-header">
+    <!-- 뒤로가기 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+    <div style="width:40px;"></div>
+</header>
 
     <main class="container">
         
@@ -72,6 +78,11 @@
         </a>
     </nav>
 
+    <!-- nav는 JS에서 자동 생성 -->
+    <nav class="bottom-nav"></nav>
+
+    <!-- JS 파일 불러오기 -->
+    <script src="../../../static/js/nav.js"></script>
     <script src="../../../static/js/discussion-realname.js"></script>
 </body>
 </html>

@@ -2,16 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const navContainer = document.querySelector('.bottom-nav');
     if (!navContainer) return;
 
-    // nav가 보여질 메인 페이지 경로
+    // 실제 프로젝트에 존재하는 main 페이지들
     const mainPages = [
-        '/feed.html',
-        '/archive.html',
-        '/main.html',
-        '/community.html'
-    ];
+    '/overnew_prj/feed/templates/feed/feed.html',
+    '/overnew_prj/archive/templates/archive/archive.html',
+    '/overnew_prj/recommend/templates/recommend/main.html',
+    '/overnew_prj/discussion/templates/discussion/community.html',
+    '/overnew_prj/discussion/templates/discussion/discussion-anonymous.html', 
+    '/overnew_prj/discussion/templates/discussion/discussion-realname.html' 
+];
+
+
 
     const currentPath = window.location.pathname;
-    const isMainPage = mainPages.some(page => currentPath.includes(page));
+    const isMainPage = mainPages.some(page => currentPath.endsWith(page));
 
     if (!isMainPage) {
         navContainer.style.display = 'none';
@@ -26,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     navContainer.innerHTML = navItems.map(item => `
-        <a href="${item.href}" class="nav-item ${currentPath.includes(item.href) ? 'active' : ''}">
+        <a href="${item.href}" class="nav-item ${currentPath.endsWith(item.href) ? 'active' : ''}">
             <div class="nav-icon-wrapper"><span class="nav-icon">${item.icon}</span></div>
             <span class="nav-label">${item.label}</span>
         </a>

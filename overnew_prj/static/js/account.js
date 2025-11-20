@@ -356,6 +356,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. 사용자 정보를 불러와 화면에 표시하는 함수
     function displayUserInfo() {
+        // 🚨 [수정 핵심] 'user-info'가 아니라 'current-session'을 확인해야 함!
+        // 로그아웃 상태라면 current-session이 없으므로 null이 됩니다.
+        const sessionInfo = JSON.parse(localStorage.getItem('current-session'));
         // 로컬 스토리지에서 최신 정보 로드
         const userInfo = JSON.parse(localStorage.getItem('user-info') || 'null');
         

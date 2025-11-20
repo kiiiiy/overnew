@@ -2346,3 +2346,12 @@ h1.splash-logo {
 .term-item + .term-detail-content {
     margin-bottom: 15px; /* 다음 항목과의 간격 */
 }
+
+/* style.css에 추가 */
+.card-stats .stat-icon {
+    width: 14px; /* 적절한 크기로 조절 */
+    height: 14px;
+    vertical-align: middle; /* 텍스트와 수직 정렬 */
+    margin-right: 4px;
+    margin-top: -2px; /* 미세 조정 */
+}

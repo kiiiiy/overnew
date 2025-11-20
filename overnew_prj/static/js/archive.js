@@ -23,7 +23,11 @@ const dummyAllUsers = [
     { id: 'Orlando', nickname: 'Orlando Diggs', tags: ['경제'], isFollowing: true, avatar: 'avatar-placeholder.png' },
     { id: 'Andi', nickname: 'Andi Lane', tags: ['it', '스포츠', '경제'], isFollowing: true, avatar: 'avatar-placeholder.png' },
     { id: 'NonFollow', nickname: 'Non Follow User', tags: ['사회'], isFollowing: false, avatar: 'avatar-placeholder.png' },
-    { id: 'AnotherUser', nickname: 'Another User', tags: ['정치'], isFollowing: false, avatar: 'avatar-placeholder.png' }
+    { id: 'AnotherUser', nickname: 'Another User', tags: ['정치'], isFollowing: false, avatar: 'avatar-placeholder.png' },
+// 🚨 [추가] 추천 페이지(main.js)에 있던 유저 ID들을 여기에 추가해야 매칭이 됩니다!
+    { id: 'kwon', nickname: '권또또', tags: ['정치', '사회'], avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권' },
+    { id: 'leftgabi', nickname: '왼가비', tags: ['경제'], avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼' },
+    { id: 'kimlinky', nickname: '김링키', tags: ['경제'], avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김' }
 ];
 
 // ----- 2. HTML 생성 함수 -----
@@ -121,21 +125,43 @@ function renderFeed() {
     });
 }
 
+// archive.js 내부 함수 교체
+
 function renderFollowingList(searchTerm = "") {
     const listContainer = document.getElementById('following-list');
     if (!listContainer) return; 
     
-    // ⭐ 필터링 로직: 검색어가 없으면 isFollowing이 true인 사용자만 표시
-    const normalizedSearch = searchTerm.toLowerCase();
-    let usersToShow = dummyAllUsers.filter(user => {
-        const match = user.nickname.toLowerCase().includes(normalizedSearch) || user.id.toLowerCase().includes(normalizedSearch);
-        return searchTerm ? match : user.isFollowing; 
+    // 1. 로컬 스토리지 동기화
+    let realFollowingList = JSON.parse(localStorage.getItem('following_list')) || [];
+    dummyAllUsers.forEach(user => {
+        user.isFollowing = realFollowingList.includes(user.id);
     });
 
+    // 2. 필터링 (🚨 닉네임만 검색되도록 수정됨)
+    const normalizedSearch = searchTerm.toLowerCase();
+    
+    let usersToShow = dummyAllUsers.filter(user => {
+        if (searchTerm) {
+            // 🚨 [수정] user.id 검색 조건 삭제함 -> 오직 닉네임만 확인
+            return user.nickname.toLowerCase().includes(normalizedSearch);
+        } else {
+            // 검색어 없으면 팔로잉 중인 사람만
+            return user.isFollowing;
+        }
+    });
+
+    // 3. 정렬 (팔로우한 사람을 위로)
+    usersToShow.sort((a, b) => {
+        if (a.isFollowing === b.isFollowing) return 0;
+        return a.isFollowing ? -1 : 1;
+    });
+
+    // 4. 화면 그리기
     listContainer.innerHTML = ''; 
 
     if (usersToShow.length === 0) {
-        listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">일치하는 사용자가 없습니다.</p>';
+        const msg = searchTerm ? '일치하는 사용자가 없습니다.' : '팔로잉 중인 사용자가 없습니다.';
+        listContainer.innerHTML = `<p style="text-align: center; color: #888; margin-top: 50px;">${msg}</p>`;
         return;
     }
     
@@ -143,18 +169,23 @@ function renderFollowingList(searchTerm = "") {
         listContainer.innerHTML += createUserListItemHTML(user);
     });
 
-    // 이벤트 리스너 연결: 목록 렌더링 후 버튼에 이벤트 연결
+    // 5. 버튼 이벤트 연결
     document.querySelectorAll('.follow-toggle-btn').forEach(button => {
         button.addEventListener('click', () => {
             const userId = button.dataset.userId;
-            const isFollowing = button.dataset.isFollowing === 'true'; 
+            const isNowFollowing = button.classList.contains('followed'); 
+            let currentList = JSON.parse(localStorage.getItem('following_list')) || [];
 
-            const userIndex = dummyAllUsers.findIndex(u => u.id === userId);
-            if (userIndex !== -1) {
-                dummyAllUsers[userIndex].isFollowing = !isFollowing;
+            if (isNowFollowing) {
+                currentList = currentList.filter(id => id !== userId);
+            } else {
+                if (!currentList.includes(userId)) currentList.push(userId);
             }
             
-            // 목록을 다시 그려서 변경 사항 즉시 반영
+            localStorage.setItem('following_list', JSON.stringify(currentList));
+            console.log('Updated Following List:', currentList);
+            
+            // 검색 상태 유지하면서 리스트 갱신
             renderFollowingList(searchTerm); 
         });
     });
@@ -341,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const userInfo = JSON.parse(localStorage.getItem('user-info'));
         if (!userInfo) {
             alert('로그인이 필요한 페이지입니다.');
-            window.location.href = 'login.html';
+            window.location.href = '../../../account/templates/account/login.html';
             return;
         }
         const tagsEl = document.getElementById('user-tags');

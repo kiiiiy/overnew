@@ -21,11 +21,27 @@ function createDiscussionCardHTML(cardData) {
     const topicClassMap = { 'IT/과학': 'topic-it', '정치': 'topic-politics', '경제': 'topic-economy' };
     const categoryClass = topicClassMap[cardData.category] || 'topic-default';
 
+    // 🚨 [수정 1] 경로를 두 개로 분리했습니다.
+    // A. 기사 보러 가는 경로 (아카이브 폴더)
+    const articlePath = '../../../archive/templates/archive/article-detail.html';
+    const articleLink = `${articlePath}?id=${cardData.id}`;
+
+    // B. 토론 참여하러 가는 경로 (디스커션 폴더)
+    const discussionPath = '../../../discussion/templates/discussion/discussion-detail.html';
+    const discussionLink = `${discussionPath}?id=${cardData.id}`;
+
     return `
     <div class="discussion-card" data-article-id="${cardData.id}">
         <span class="card-category ${categoryClass}">${cardData.category}</span>
-        <h3 class="card-title">${cardData.title}</h3>
-        <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardData.title}" class="discussion-card-image">
+        
+        <a href="${articleLink}" class="card-title-link">
+            <h3 class="card-title">${cardData.title}</h3>
+        </a>
+        
+        <a href="${articleLink}" class="card-image-link">
+            <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardData.title}" class="discussion-card-image">
+        </a>
+
         <div class="discussion-card-meta">
             <span class="time-left">🕒 ${cardData.time}</span>
         </div>
@@ -40,7 +56,8 @@ function createDiscussionCardHTML(cardData) {
                 <button class="icon-btn bookmark-btn ${isBookmarked ? 'active' : ''}"><span>□</span></button>
             </div>
         </div>
-        <a href="discussion-detail.html?id=${cardData.id}" class="discussion-join-btn">
+        
+        <a href="${discussionLink}" class="discussion-join-btn">
             토론 참여하기
         </a>
     </div>
@@ -106,7 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareButton = e.target.closest('.share-btn');
         if (shareButton) {
             const card = shareButton.closest('.discussion-card');
-            const url = window.location.origin + '/discussion-detail.html?id=' + card.dataset.articleId;
+            
+            // 🚨 [공유 링크] 공유는 보통 '토론방' 링크를 공유하므로 discussion 경로로 설정
+            const url = `${window.location.origin}/discussion/templates/discussion/discussion-detail.html?id=${card.dataset.articleId}`;
 
             // 클립보드 복사
             navigator.clipboard.writeText(url).then(() => {

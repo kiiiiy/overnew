@@ -103,10 +103,54 @@
     // DOMContentLoaded
     // ====================
     document.addEventListener('DOMContentLoaded', () => {
-        const keywordList = document.getElementById('keyword-list-container');
-        let currentView = document.getElementById('view-hot').checked ? 'hot' : 'following';
-        let currentTopic = currentView === 'hot' ? null : 'politics';
+    const keywordList = document.getElementById('keyword-list-container');
+    const viewHot = document.getElementById('view-hot');
+    const viewFollowing = document.getElementById('view-following'); // 요소 가져오기
+    const bottomNav = document.querySelector('.bottom-nav');         // 하단바 가져오기
 
+    let currentView = viewHot.checked ? 'hot' : 'following';
+    let currentTopic = currentView === 'hot' ? null : 'politics';
+
+    // 🚨 [수정] 실제 로그인 상태 확인 로직으로 교체
+    const userInfo = JSON.parse(localStorage.getItem('current-session'));
+    const isLoggedIn = !!(userInfo && userInfo.nickname);
+
+    // 🚨 [추가] 로그인 필요 알림 함수 (코드 중복 방지)
+    function requireLogin(e) {
+        e.preventDefault(); // 클릭 막기
+        e.stopPropagation(); // 이벤트 전파 중단
+        
+        // 뷰가 Following으로 넘어가는 것 시각적 방지
+        if(viewHot) viewHot.checked = true; 
+
+        // SweetAlert2 혹은 기본 Alert 사용
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'OVERNEW',
+                text: '로그인이 필요한 기능이에요.',
+                icon: 'warning',
+                confirmButtonText: '로그인 하러가기',
+                confirmButtonColor: '#6c5ce7'
+            }).then((result) => {
+                if (result.isConfirmed) window.location.href = '../../../account/templates/account/login.html'; // 경로 확인
+            });
+        } else {
+            alert('로그인이 필요합니다.');
+            window.location.href = '../../../account/templates/account/login.html'; // 경로 확인
+        }
+    }
+
+    // 🚨 [추가] 비로그인 시 차단 로직 (하단바 & 팔로잉 탭)
+    if (!isLoggedIn) {
+        // 1. 팔로잉 탭 클릭 시 차단
+        if (viewFollowing) {
+            viewFollowing.addEventListener('click', requireLogin);
+        }
+        // 2. 하단바 클릭 시 차단 (캡처링 모드 true로 강력하게 막음)
+        if (bottomNav) {
+            bottomNav.addEventListener('click', requireLogin, true);
+        }
+    } 
         // 초기 표시
         document.getElementById('feed-hot').style.display = currentView === 'hot' ? 'flex' : 'none';
         document.getElementById('feed-following').style.display = currentView === 'following' ? 'flex' : 'none';
@@ -143,7 +187,7 @@
         });
 
         // 버튼 예시
-        const isLoggedIn = true;
+        
         document.getElementById('settings-menu-btn').addEventListener('click', () => {
         if (isLoggedIn) {
             // 로그인 상태: 로그인된 설정 페이지로 이동
@@ -153,8 +197,15 @@
             window.location.href = accountPath + 'settings-logged-out.html';
         }
     });
-        document.getElementById('notifications-btn').addEventListener('click', () => {
-        // 알림 페이지로 이동
-        window.location.href = accountPath + 'notifications.html';
+        document.getElementById('notifications-btn').addEventListener('click', (e) => {
+        // 🚨 [수정] 알림 버튼도 비로그인 시 차단 함수 연결
+        // if (!isLoggedIn) {
+        //     requireLogin(e);
+        // } else {
+        //     window.location.href = '../account/templates/account/notifications.html';
+        // }
     });
-    });
+    }
+
+
+);

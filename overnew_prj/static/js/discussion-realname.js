@@ -199,6 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCommentInputMode(); // placeholder 원복
         renderComments(); // 새 댓글 포함해서 다시 그리기
     });
+    document.getElementById("back-button").addEventListener("click", function () {
+    history.back();
+});
 
     // 5. 페이지 첫 로드
     renderComments();

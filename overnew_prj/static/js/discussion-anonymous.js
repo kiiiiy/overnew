@@ -192,7 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCommentInputMode();
         renderComments();
     });
-
+    document.getElementById("back-button").addEventListener("click", function () {
+    history.back();
+});
     // 첫 렌더링
     renderComments();
 });

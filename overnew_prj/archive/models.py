@@ -76,3 +76,13 @@ class Discussion(models.Model):
 
     class Meta:
         unique_together = ('news', 'user')
+
+class UserNews(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(NewsCategory, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'category')  # 중복 선택 방지
+
+    def __str__(self):
+        return f"{self.user.username} - {self.category.news_category}"

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    닉네임: {{request.user.nickname}}
+    선택:
+    {% for category in selected_categories %}
+    #{{ category.news_category }}
+{% empty %}
+    선택한 카테고리가 없습니다.
+{% endfor %}
+<br>
+    <a href="#">프로필 수정</a>
+    <a href="#">로그아웃</a>
+    <a href="#">알림 설정</a>
+    <a href="#">탈퇴하기</a>
+</body>
+</html>

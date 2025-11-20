@@ -8,12 +8,16 @@
 </head>
 <body class="with-fixed-nav">
     <header class="main-header">
-        <!-- 햄버거 버튼 -->
-        <button type="button" class="icon-btn menu-btn" id="settings-menu-btn"><span>☰</span></button>
-        <h1 class="logo header-logo">OVERNEW</h1>
-        <!-- 알람 버튼 -->
-        <button type="button" class="icon-btn bell-btn" id="notifications-btn"><span>◒</span></button>
-    </header>
+    <a href="../../../account/templates/account/settings-logged-in.html" class="icon-btn menu-btn">
+        <img src="../../../static/image/hamburger.png" alt="메뉴" class="header-icon">
+    </a>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <a href="../../../account/templates/account/notifications.html" class="icon-btn bell-btn" id="notifications-btn">
+        <img src="../../../static/image/bell.png" alt="알림" style="width: 26px; height: 26px; vertical-align: middle;">
+    </a>
+</header>
 
     <main class="container">
         <div class="keyword-list">

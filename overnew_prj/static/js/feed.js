@@ -2,15 +2,15 @@
 // 1. 데이터 영역
 // ====================
 
-// [HOT 탭용 데이터] - 기존 dummyData 유지
+// [HOT 탭용 데이터]
 const dummyData = {
     hot: {
         politics: [
-            { category: 'IT/과학', source: '빅데이터뉴스', title: "삼성SDS, IT서비스 상장기업 브랜드 평판 11월 빅데이터 분석 1위", views: '42.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' },
-            { category: '경제', source: 'SBS', title: 'APEC 효과?...한은 "경제 심리 4년 3개월만에 최고"', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
+            { id: 'hot-pol-1', category: 'IT/과학', source: '빅데이터뉴스', title: "삼성SDS, IT서비스 상장기업 브랜드 평판 11월 빅데이터 분석 1위", views: '42.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' },
+            { id: 'hot-pol-2', category: '경제', source: 'SBS', title: 'APEC 효과?...한은 "경제 심리 4년 3개월만에 최고"', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
         ],
         economy: [
-            { category: '경제', source: 'SBS', title: '경제 심리 최고', views: '31.5k', time: '3 hours ago', image: 'https://via.placeholder.com/100x60' }
+            { id: 'hot-eco-1', category: '경제', source: 'SBS', title: '경제 심리 최고', views: '31.5k', time: '3 hours ago', image: 'https://via.placeholder.com/100x60' }
         ]
     }
 };
@@ -21,31 +21,30 @@ const dummyUserDatabase = {
         name: '권또또',
         avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권',
         activities: [
-            { topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
-            { topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'kwon-1', topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
+            { id: 'kwon-2', topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
         ]
     },
     'leftgabi': {
         name: '왼가비',
         avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼',
         activities: [
-            { topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
-            { topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기...", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'left-1', topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
+            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기...", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
         ]
     },
     'kimlinky': {
         name: '김링키',
         avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김',
         activities: [
-            { topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'kim-1', topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
         ]
     },
-    // 아카이브에 있는 다른 유저들 추가
     'ByeWind': {
         name: 'ByeWind',
         avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=B',
         activities: [
-            { topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
         ]
     }
 };
@@ -53,10 +52,16 @@ const dummyUserDatabase = {
 // ====================
 // 2. 카드 생성 함수
 // ====================
+
 function createHotCardHTML(cardData) {
     const viewIconPath = '../../../static/image/view.png'; 
+    
+    // 기사 상세 페이지 경로
+    const articlePath = '../../../archive/templates/archive/article-detail.html';
+    const articleLink = `${articlePath}?id=${cardData.id || 'dummy'}`;
+
     return `
-        <a href="#" class="article-card">
+        <a href="${articleLink}" class="article-card">
             <div class="card-text">
                 <span class="card-category">${cardData.category}</span>
                 <span class="card-source">${cardData.source}</span>
@@ -70,15 +75,26 @@ function createHotCardHTML(cardData) {
     `;
 }
 
-function createFollowingCardHTML(userData, articleData) {
+function createFollowingCardHTML(userId, userData, articleData) {
     const viewIconPath = '../../../static/image/view.png'; 
+    
+    // 1. 기사 상세 경로
+    const articlePath = '../../../archive/templates/archive/article-detail.html';
+    const articleLink = `${articlePath}?id=${articleData.id || 'dummy'}`;
+
+    // 2. 프로필 상세 경로 (유저 아이디 포함)
+    const profilePath = '../../../archive/templates/archive/profile-detail.html';
+    const profileLink = `${profilePath}?user_id=${userId}`;
+
     return `
         <div class="following-card-group">
             <div class="follower-header">
-                <img src="${userData.avatar}" class="card-avatar-small">
-                <strong>${userData.name}</strong>님이 열람한 기사
+                <a href="${profileLink}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+                    <img src="${userData.avatar}" class="card-avatar-small">
+                    <strong>${userData.name}</strong>님이 열람한 기사
+                </a>
             </div>
-            <a href="#" class="article-card">
+            <a href="${articleLink}" class="article-card">
                 <div class="card-text">
                     <span class="card-category">${articleData.category}</span>
                     <span class="card-source">${articleData.source}</span>
@@ -123,7 +139,6 @@ function renderFeedPage(view, topic) {
     
     // --- [B] FOLLOWING 탭 렌더링 (localStorage 연동) ---
     else {
-        // 1. 로컬 스토리지에서 팔로잉 목록 가져오기
         const followingList = JSON.parse(localStorage.getItem('following_list')) || [];
         let hasContent = false;
 
@@ -133,16 +148,15 @@ function renderFeedPage(view, topic) {
             return;
         }
 
-        // 2. 팔로우한 유저의 기사 찾기
         followingList.forEach(userId => {
-            const user = dummyUserDatabase[userId]; // DB에서 유저 정보 찾기
+            const user = dummyUserDatabase[userId];
             
             if (user && user.activities) {
-                // 현재 토픽과 일치하는 기사 필터링
                 const matchedArticles = user.activities.filter(act => act.topic === topic);
                 
                 matchedArticles.forEach(article => {
-                    html += createFollowingCardHTML(user, article);
+                    // userId를 인자로 전달
+                    html += createFollowingCardHTML(userId, user, article);
                     hasContent = true;
                 });
             }

@@ -57,11 +57,11 @@ def hot_feed_api(request):
     for a in qs:
         articles.append({
             "id": a.article_id,
-            "category": a.nc.news_category if a.nc else "",
-            "source": a.media.media_name if a.media else "",
+            "category": a.nc.news_category if a.nc else "",   
+            "source": a.media.media_name if a.media else "",     
             "title": a.title,
             "views": a.view_count,
-            "time": format_time(a),
+            "time": a.created_at.strftime('%Y-%m-%d %H:%M'),
             "image": a.image or "https://via.placeholder.com/100x60",
         })
 

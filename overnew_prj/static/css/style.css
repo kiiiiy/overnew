@@ -2403,6 +2403,24 @@ h1.splash-logo {
 }
 
 .keyword-tag.active {
-    background-color: #6a0dad !important;
-    color: white !important;
+    background-color: #D0D0D0 ;
+    color: white ;
+}
+
+.follower-read-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F4F1DA;       /* 네가 예시로 준 연한 베이지 */
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.follower-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
 }

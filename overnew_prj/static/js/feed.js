@@ -2,6 +2,17 @@
 // 1. 카드 생성 함수 (데이터 심기)
 // ====================
 
+const CATEGORY_TO_TOPIC_CLASS = {
+    'IT/과학': 'topic-it',
+    '경제': 'topic-economy',
+    '사회': 'topic-society',
+    '정치': 'topic-politics',
+    '생활/문화': 'topic-culture',
+    '세계': 'topic-world',
+    '연예': 'topic-enter',
+    '스포츠': 'topic-sport',
+};
+
 // HOT 탭 카드
 function createHotCardHTML(cardData) {
     const viewIconPath = '../../../static/image/view.png';
@@ -9,11 +20,19 @@ function createHotCardHTML(cardData) {
         .replace(/'/g, "&#39;")
         .replace(/"/g, "&quot;");
 
+    // 🔹 카테고리에 맞는 topic- 클래스 선택
+    const topicClass =
+        CATEGORY_TO_TOPIC_CLASS[cardData.category] || 'topic-default';
+
     return `
         <a href="#" class="article-card" data-article-json='${jsonString}'>
             <div class="card-text">
-                <span class="card-category">${cardData.category || ''}</span>
-                <span class="card-source">${cardData.source || ''}</span>
+                <div class="card-meta-row">
+                    <span class="card-category ${topicClass}">
+                        ${cardData.category || ''}
+                    </span>
+                    <span class="card-source">${cardData.source || ''}</span>
+                </div>
                 <h3 class="card-title">${cardData.title || ''}</h3>
                 <div class="card-stats">
                     <span>
@@ -34,10 +53,16 @@ function createFollowingCardHTML(userData, articleData) {
     const profilePath = '/account/profile/'; // 필요에 따라 수정
     const profileLink = `${profilePath}?user_id=${userData.id}`;
 
+    // 북마크 여부
     const bookmarkedList = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
     const isBookmarked = bookmarkedList.some(item => item.id === articleData.id);
     const activeClass = isBookmarked ? 'active' : '';
 
+    // 카테고리 색 클래스 (topic-xxx)
+    const topicClass =
+        CATEGORY_TO_TOPIC_CLASS[articleData.category] || 'topic-default';
+
+    // JSON 문자열로 카드 데이터 심기
     const jsonString = JSON.stringify(articleData)
         .replace(/'/g, "&#39;")
         .replace(/"/g, "&quot;");
@@ -54,8 +79,14 @@ function createFollowingCardHTML(userData, articleData) {
             <div class="article-card-wrapper" style="position: relative;">
                 <a href="#" class="article-card" data-article-json='${jsonString}'>
                     <div class="card-text">
-                        <span class="card-category">${articleData.category || ''}</span>
-                        <span class="card-source">${articleData.source || ''}</span>
+                        <div class="card-meta-row">
+                            <span class="card-category ${topicClass}">
+                                ${articleData.category || ''}
+                            </span>
+                            <span class="card-source">
+                                ${articleData.source || ''}
+                            </span>
+                        </div>
                         <h3 class="card-title">${articleData.title || ''}</h3>
                         <div class="card-stats">
                             <span>
@@ -78,9 +109,12 @@ function createFollowingCardHTML(userData, articleData) {
     `;
 }
 
+
 // ====================
 // 2. 피드 렌더링 함수 (HOT/FOLLOWING 둘 다 카테고리 필터)
 // ====================
+
+
 async function renderFeedPage(view, topic) {
     const feedHot = document.getElementById('feed-hot');
     const feedFollowing = document.getElementById('feed-following');

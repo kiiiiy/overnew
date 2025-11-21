@@ -1,4 +1,4 @@
-# app_name/models.py
+#recpmmend/models.py
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -81,4 +81,3 @@ class Scrap(models.Model):
         unique_together = (('user', 'article'),)
         db_table = 'Scrap'
 
-# DiscussionRoom, MediaCategory, UserMedia 등 다른 모델은 생략

@@ -1,6 +1,7 @@
 from django.db import models
 from archive.models import *
 from django.utils import timezone
+from users.models import *
 
 # Create your models here.
 
@@ -10,9 +11,11 @@ class DiscussionRoom(models.Model):
     finish_time = models.DateTimeField(null=True, blank=True)
     article = models.OneToOneField(Article, on_delete=models.CASCADE)
     is_anonymous = models.BooleanField(default=False)
+    bookmark=models.ManyToManyField(User, related_name="bookmark_room")
 
     def __str__(self):
         return f"Room for {self.article.title}"
+    
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)

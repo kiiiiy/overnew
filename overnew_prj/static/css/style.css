@@ -1012,13 +1012,12 @@ body.with-fixed-nav {
     justify-content: center;
     transition: all 0.2s ease;
 }
-/* 버튼 클릭 시 (활성화) 스타일 */
-.action-btn:active,
+/* ⭐ 활성화 상태 (클릭 시) ⭐ */
 .action-btn.active {
-    background-color: #620B95; /* 포인트 보라색 */
-    color: #FFFFFF; /* 아이콘 흰색 */
-    transform: scale(1.1); /* 살짝 커지는 효과 */
+    background-color: #a999e5; /* ⭐ 보라색 계열로 변경 */
+    color: #FFFFFF; /* 텍스트 아이콘 색상 변경 */
 }
+
 
 /* 2. 기사 콘텐츠 영역 */
 

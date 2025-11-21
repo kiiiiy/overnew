@@ -474,3 +474,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = ['like-btn', 'discuss-btn', 'bookmark-btn'];
+
+    buttons.forEach(id => {
+        const btn = document.getElementById(id);
+        if(btn){
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+            });
+        }
+    });
+});

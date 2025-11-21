@@ -34,13 +34,23 @@ function createCommentHTML(commentData) {
     // 2. 부모 댓글 HTML 생성
     return `
     <div class="comment-item ${commentData.replies.length > 0 ? 'has-replies' : ''}" data-comment-id="${commentData.id}">
-        <img src="${commentData.avatar}" alt="${commentData.user}" class="comment-avatar">
+        
+        <!-- (핵심 추가) 프로필 클릭 가능 -->
+        <img src="${commentData.avatar}" 
+             alt="${commentData.user}" 
+             class="comment-avatar comment-profile" 
+             data-username="${commentData.user}">
+
         <div class="comment-content">
             <div class="comment-header">
-                <span class="comment-user">${commentData.user}</span>
+                <!-- (핵심 추가) 이름도 클릭 가능 -->
+                <span class="comment-user comment-profile" data-username="${commentData.user}">
+                    ${commentData.user}
+                </span>
                 <span class="comment-date">${commentData.date}</span>
             </div>
             <p class="comment-text">${commentData.text}</p>
+
             <div class="comment-actions">
                 <button class="action-btn like-btn ${isLiked ? 'active' : ''}">
                     <span>👍</span> <span class="count">${commentData.likes}</span>
@@ -61,15 +71,105 @@ function createCommentHTML(commentData) {
 function renderComments() {
     const commentContainer = document.getElementById('comment-list');
     
-    // 1. 정렬
-    dummyComments.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
-    });
+// =========================================================================
+// ******** 2. DOMContentLoaded 이벤트 리스너 (기존 코드 대체) *********
+// =========================================================================
 
-    // 2. 렌더링
-    commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- (A) 핀 고정 기능 관련 기존 코드 ---
+    const pinBtn = document.getElementById('pin-btn');
+    const pinnedBox = document.getElementById('pinned-discussion-box');
+
+    const storageKey = 'pinned_discussions';
+    const storageDataKey = 'pinned_discussions_data';
+    let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
+    let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
+
+    const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
+    
+    // [수정] document.querySelector('.article-title') 등이 null일 경우를 대비해 기본값 설정
+    const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
+    const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
+    const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
+
+    if (pinBtn && pinnedDiscussions.includes(discussionId)) {
+        pinBtn.classList.add('active');
+        pinBtn.textContent = '📌 고정됨';
+    }
+
+    function renderPinnedBox() {
+        if (pinnedBox) {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedBox.innerHTML = `<div class="pinned-item">
+                    📌 ${discussionTitle} 
+                    <button class="unpin-btn" style="margin-left:8px;cursor:pointer;">❌ 고정 해제</button>
+                </div>`;
+                const unpinBtn = pinnedBox.querySelector('.unpin-btn');
+                if (unpinBtn) {
+                     unpinBtn.addEventListener('click', () => {
+                        pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                        delete pinnedData[discussionId];
+                        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+                        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+                        if (pinBtn) {
+                           pinBtn.classList.remove('active');
+                           pinBtn.textContent = '📌 고정';
+                        }
+                        renderPinnedBox();
+                        alert('고정이 해제되었습니다.');
+                    });
+                }
+            } else {
+                pinnedBox.innerHTML = '';
+            }
+        }
+    }
+
+    renderPinnedBox();
+
+    if (pinBtn) {
+        pinBtn.addEventListener('click', () => {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                delete pinnedData[discussionId];
+                pinBtn.classList.remove('active');
+                pinBtn.textContent = '📌 고정';
+            } else {
+                pinnedDiscussions.push(discussionId);
+                pinnedData[discussionId] = {
+                    id: discussionId,
+                    title: discussionTitle,
+                    category: discussionCategory,
+                    source: discussionSource
+                };
+                pinBtn.classList.add('active');
+                pinBtn.textContent = '📌 고정됨';
+            }
+            localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+            localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+            renderPinnedBox();
+            alert('커뮤니티 상단에 고정되었습니다.');
+        });
+    }
+
+    // 뒤로가기 버튼
+    const backButton = document.getElementById("back-button");
+    if (backButton) {
+        backButton.addEventListener("click", function () {
+            history.back();
+        });
+    }
+});
+
+// 1. 정렬
+dummyComments.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
+});
+
+// 2. 렌더링
+commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
 }
 
 // (NEW) 댓글 입력창 상태 업데이트
@@ -90,116 +190,193 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentInput = document.getElementById('comment-input');
     const submitBtn = document.getElementById('submit-comment-btn');
 
-    // 1. 로그인 확인 및 내 정보 표시
+    // 1. 로그인 확인
     const userInfo = JSON.parse(localStorage.getItem('user-info'));
     if (!userInfo) {
         alert('로그인이 필요한 페이지입니다.');
         window.location.href = 'login.html';
         return;
     }
-    // (핵심) 하단 입력창에 내 프로필 표시
-    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나'; // (user-info에 avatar가 있다고 가정)
-    
-    // 2. 정렬 버튼 클릭
+
+    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나';
+
+    // 2. 정렬 버튼
     sortBtn.addEventListener('click', () => {
         currentSortOrder = (currentSortOrder === 'oldest') ? 'newest' : 'oldest';
         sortBtn.innerHTML = `<span>⇅</span> ${currentSortOrder === 'oldest' ? '오래된순' : '최신순'}`;
-        renderComments(); // 정렬 후 다시 그리기
+        renderComments();
     });
 
-    // 3. (핵심) 댓글 목록에서 '좋아요' 또는 '답글' 버튼 클릭 (이벤트 위임)
+    // 3. 댓글 목록에서 클릭 이벤트 위임
     commentList.addEventListener('click', (e) => {
         const targetCommentElement = e.target.closest('.comment-item');
-        if (!targetCommentElement) return;
-        
-        const clickedCommentId = targetCommentElement.dataset.commentId;
+        const clickedCommentId = targetCommentElement?.dataset.commentId;
 
-        // 3-1. '좋아요' 버튼 클릭
+        // ----- (NEW) 프로필 클릭 → 상세 프로필 페이지 이동 -----
+        const profileEl = e.target.closest('.comment-profile');
+        if (profileEl) {
+            const username = profileEl.dataset.username;
+            window.location.href = `../../../archive/templates/archive/profile-detail.html?user=${username}`;
+            return;
+        }
+
+        // ----- 좋아요 처리 -----
         if (e.target.closest('.like-btn')) {
             const likeButton = e.target.closest('.like-btn');
-            
-            // 댓글 데이터 찾기 (메인 댓글 또는 답글에서)
+
             let targetComment = dummyComments.find(c => c.id === clickedCommentId);
             if (!targetComment) {
-                // 답글에서 찾기
                 for (let comment of dummyComments) {
                     targetComment = comment.replies.find(r => r.id === clickedCommentId);
                     if (targetComment) break;
                 }
             }
-            
+
             if (targetComment) {
-                const isCurrentlyLiked = likedComments.includes(clickedCommentId);
-                
-                if (isCurrentlyLiked) {
-                    // 좋아요 취소
-                    likeButton.classList.remove('active');
-                    likedComments = likedComments.filter(id => id !== clickedCommentId);
-                    targetComment.likes = Math.max(0, targetComment.likes - 1);
+                const isLiked = likedComments.includes(targetComment.id);
+                if (isLiked) {
+                    likedComments = likedComments.filter(id => id !== targetComment.id);
+                    targetComment.likes--;
                 } else {
-                    // 좋아요 추가
-                    likeButton.classList.add('active');
-                    likedComments.push(clickedCommentId);
-                    targetComment.likes += 1;
+                    likedComments.push(targetComment.id);
+                    targetComment.likes++;
                 }
-                
-                // 숫자 업데이트
-                const countSpan = likeButton.querySelector('.count');
-                if (countSpan) {
-                    countSpan.textContent = targetComment.likes;
-                }
-                
                 localStorage.setItem('comment_likes', JSON.stringify(likedComments));
+                renderComments();
             }
+            return;
         }
 
-        // 3-2. '답글' 버튼 클릭
+        // ----- 답글 버튼 클릭 -----
         if (e.target.closest('.reply-btn')) {
-            // (핵심) 답글 달 대상(부모 댓글)을 저장
-            const parentComment = dummyComments.find(c => c.id === clickedCommentId) || dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
-            replyTarget = { id: clickedCommentId, user: parentComment.user };
-            updateCommentInputMode(); // 입력창 placeholder 변경
+            const replyButton = e.target.closest('.reply-btn');
+            const commentItem = replyButton.closest('.comment-item');
+            const commentId = commentItem.dataset.commentId;
+
+            // 대댓글 입력란이 열려있으면 닫기
+            const openReplyInput = commentItem.querySelector('.reply-input');
+            if (openReplyInput) {
+                openReplyInput.remove();
+                return;
+            }
+
+            // 새로 대댓글 입력란 생성
+            const replyInputHTML = `
+            <div class="reply-input" style="display:none; margin-top:8px;">
+                <img src="${userInfo.avatar}" alt="내 프로필" class="comment-avatar" style="width:32px;height:32px;">
+                <textarea class="reply-textarea" placeholder="답글을 입력하세요..." rows="1"></textarea>
+                <div class="reply-actions" style="margin-top:4px;">
+                    <button class="action-btn submit-reply-btn">답글 달기</button>
+                    <button class="action-btn cancel-reply-btn">취소</button>
+                </div>
+            </div>
+            `;
+            commentItem.insertAdjacentHTML('beforeend', replyInputHTML);
+
+            const replyInput = commentItem.querySelector('.reply-input');
+            const textarea = replyInput.querySelector('.reply-textarea');
+            const cancelReplyBtn = replyInput.querySelector('.cancel-reply-btn');
+
+            // (NEW) 대댓글 입력란 토글 기능
+            replyButton.classList.toggle('active');
+            if (replyButton.classList.contains('active')) {
+                replyButton.innerHTML = '답글 취소';
+                replyInput.style.display = 'block';
+                textarea.focus();
+            } else {
+                replyButton.innerHTML = '답글 달기';
+                replyInput.style.display = 'none';
+                textarea.value = '';
+            }
+
+            // (NEW) 대댓글 입력란에서 Enter 키로 전송
+            textarea.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const text = textarea.value.trim();
+                    if (text) {
+                        // 대댓글 데이터 생성
+                        const newReply = {
+                            id: `c${Date.now()}`,
+                            user: userInfo.name,
+                            avatar: userInfo.avatar,
+                            date: new Date().toISOString().slice(0, 10),
+                            text: text,
+                            likes: 0,
+                            replies: []
+                        };
+
+                        // 부모 댓글 찾기
+                        let parentComment = dummyComments.find(c => c.id === commentId);
+                        if (!parentComment) {
+                            for (let comment of dummyComments) {
+                                parentComment = comment.replies.find(r => r.id === commentId);
+                                if (parentComment) break;
+                            }
+                        }
+
+                        if (parentComment) {
+                            parentComment.replies.push(newReply);
+                            localStorage.setItem('dummy_comments', JSON.stringify(dummyComments));
+                            renderComments();
+                        }
+                    }
+                }
+            });
+
+            // (NEW) 대댓글 입력란에서 취소 버튼 클릭 시 동작
+            cancelReplyBtn.addEventListener('click', () => {
+                replyButton.classList.remove('active');
+                replyButton.innerHTML = '답글 달기';
+                replyInput.remove();
+            });
+
+            return;
         }
     });
 
-    // 4. (핵심) '업로드' 버튼 클릭 (새 댓글 또는 답글 등록)
-    submitBtn.addEventListener('click', () => {
-        const commentText = commentInput.value.trim();
-        if (commentText === '') return;
-
+    const submitComment = (text) => {
         const newComment = {
-            id: 'c' + (Math.random() * 1000), // 임시 ID
-            user: userInfo.nickname || '나', // (핵심) 내 실명
-            avatar: userInfo.avatar || 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=나',
-            date: new Date().toISOString().split('T')[0], // (임시) 오늘 날짜
-            text: commentText,
+            id: `c${Date.now()}`,
+            user: userInfo.name,
+            avatar: userInfo.avatar,
+            date: new Date().toISOString().slice(0, 10),
+            text: text,
             likes: 0,
             replies: []
         };
 
-        if (replyTarget) {
-            // [답글 등록]
-            // 1. 부모 댓글 찾기 (1~2 depth)
-            let parent = dummyComments.find(c => c.id === replyTarget.id);
-            if (parent) {
-                parent.replies.push(newComment);
-            } else {
-                dummyComments.forEach(c => {
-                    let parentReply = c.replies.find(r => r.id === replyTarget.id);
-                    if(parentReply) parentReply.replies.push(newComment); // (3 depth 이상)
-                });
-            }
-            replyTarget = null; // 답글 모드 해제
-        } else {
-            // [새 댓글 등록]
-            dummyComments.push(newComment);
-        }
+        dummyComments.push(newComment);
+        localStorage.setItem('dummy_comments', JSON.stringify(dummyComments));
+        renderComments();
+    };
 
-        commentInput.value = ''; // 입력창 비우기
-        updateCommentInputMode(); // placeholder 원복
-        renderComments(); // 새 댓글 포함해서 다시 그리기
+    // 4. 댓글 입력 후 엔터 키 또는 버튼 클릭 시 댓글 등록
+    commentInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const text = commentInput.value.trim();
+            if (text) {
+                submitComment(text);
+                commentInput.value = '';
+            }
+        }
     });
 
-    // 5. 페이지 첫 로드
+    submitBtn.addEventListener('click', () => {
+        const text = commentInput.value.trim();
+        if (text) {
+            submitComment(text);
+            commentInput.value = '';
+        }
+    });
+});
+
+// (NEW) 페이지 로드 시 더미 데이터로 댓글 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    const storedComments = JSON.parse(localStorage.getItem('dummy_comments'));
+    if (storedComments && storedComments.length > 0) {
+        dummyComments = storedComments;
+    }
     renderComments();
 });

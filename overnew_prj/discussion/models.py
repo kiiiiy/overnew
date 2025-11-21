@@ -9,7 +9,7 @@ class DiscussionRoom(models.Model):
     start_time = models.DateTimeField()
     finish_time = models.DateTimeField(null=True, blank=True)
     article = models.OneToOneField(Article, on_delete=models.CASCADE)
-    is_anoymous=models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Room for {self.article.title}"

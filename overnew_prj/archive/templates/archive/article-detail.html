@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기사 상세 - OVERNEW</title>
+    
+    <link rel="stylesheet" href="../../../static/css/style.css">
+</head>
+<body class="with-fixed-nav">
+
+<header class="main-header">
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <div style="width:40px;"></div>
+</header>
+
+<aside class="floating-action-bar">
+    <button type="button" class="action-btn" id="like-btn">
+        <img src="../../../static/image/like.png" alt="좋아요" class="action-icon">
+    </button>
+    <button type="button" class="action-btn" id="discuss-btn">
+        <img src="../../../static/image/comment_icon.png" alt="댓글 달기" class="action-icon">
+    </button>
+    <button type="button" class="action-btn" id="bookmark-btn">
+        <img src="../../../static/image/bookmark-white.png" alt="북마크" class="action-icon">
+    </button>
+</aside>
+
+<main class="container article-container">
+
+    <article class="article-content">
+        <div class="article-category-source">
+            <span class="article-category"></span> | <span class="source-text"></span>
+        </div>
+        
+        <h1 class="article-title"></h1> 
+
+        <div class="article-meta"></div>
+
+        <figure class="article-figure">
+            <img src="" alt="기사 이미지" class="article-image">
+            <figcaption class="article-caption"></figcaption>
+        </figure>
+
+        <div class="article-body"></div>
+
+        <div class="article-embedded-content">
+            <img src="" alt="Embedded content" class="article-embedded-image">
+        </div>
+
+    </article>
+
+</main>
+
+<nav class="bottom-nav">
+    <a href="feed.html" class="nav-item active"> 
+        <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
+        <span class="nav-label">피드</span>
+    </a>
+    <a href="archive.html" class="nav-item">
+        <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
+        <span class="nav-label">아카이브</span>
+    </a>
+    <a href="main.html" class="nav-item">
+        <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
+        <span class="nav-label">추천</span>
+    </a>
+    <a href="community.html" class="nav-item">
+        <div class="nav-icon-wrapper"><span class="nav-icon">◐</span></div>
+        <span class="nav-label">커뮤니티</span>
+    </a>
+</nav>
+
+<script src="../../../static/js/article.js"></script>
+
+</body>
+</html>

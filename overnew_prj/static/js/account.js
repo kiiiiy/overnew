@@ -233,6 +233,7 @@ function initNotificationPage() {
         element.textContent = userInfo.nickname; 
     });
     initializeNotifications(); 
+<<<<<<< HEAD
     // -----------------------------
     // "몇일 전" 옆 X 버튼으로 time-group 삭제
     // -----------------------------
@@ -272,6 +273,8 @@ function initNotificationPage() {
         });
     });
 
+=======
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
 }
 
 // [Settings - Logged In] settings-logged-in.html
@@ -289,7 +292,11 @@ function initSettingsLoggedInPage() {
     // 🚨 [수정!] 'current-session' 사용
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     if (!userInfo) {
+<<<<<<< HEAD
         //alert('로그인이 필요한 페이지입니다.');
+=======
+        alert('로그인이 필요한 페이지입니다.');
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
         window.location.href = 'settings-logged-out.html'; 
         return; 
     }
@@ -384,10 +391,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (bodyId === 'page-signup-complete') {
         initSignupCompletePage();
     }
+<<<<<<< HEAD
     // 🚨 [여기에 추가] 방금 만든 약관 동의 페이지 연결
     else if (bodyId === 'page-terms-agreement') {
         initTermsAgreementPage();
     }
+=======
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -395,9 +405,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. 사용자 정보를 불러와 화면에 표시하는 함수
     function displayUserInfo() {
+<<<<<<< HEAD
         // 🚨 [수정 핵심] 'user-info'가 아니라 'current-session'을 확인해야 함!
         // 로그아웃 상태라면 current-session이 없으므로 null이 됩니다.
         const sessionInfo = JSON.parse(localStorage.getItem('current-session'));
+=======
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
         // 로컬 스토리지에서 최신 정보 로드
         const userInfo = JSON.parse(localStorage.getItem('user-info') || 'null');
         
@@ -435,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 3. 로그아웃 버튼 이벤트 리스너 (기존 코드)
     // ----------------------------------------------------
+<<<<<<< HEAD
     // const logoutButton = document.getElementById('logout-button');
     // if (logoutButton) {
     //     logoutButton.addEventListener('click', (e) => {
@@ -448,6 +462,21 @@ document.addEventListener('DOMContentLoaded', () => {
     //         }
     //     });
     // }
+=======
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            if (confirm('정말 로그아웃 하시겠습니까?')) {
+                // 🚨 수정: 등록 정보(user-info)는 보존하고 세션만 삭제합니다.
+                localStorage.removeItem('current-session');
+                alert('로그아웃되었습니다.');
+                // 🚨 수정: settings-logged-out.html로 이동합니다. (login.html은 settings-logged-out에서 다시 연결될 수 있음)
+                window.location.href = 'settings-logged-out.html'; 
+            }
+        });
+    }
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
     
     // ----------------------------------------------------
     // 4. 프로필 수정 버튼 이벤트 리스너 (settings -> profile-edit으로 이동)
@@ -460,6 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'profile-edit.html'; 
         });
     }
+<<<<<<< HEAD
 });
 
 
@@ -523,3 +553,6 @@ function initTermsAgreementPage() {
 }
 
 // (메인 라우터는 그대로 유지)
+=======
+});
+>>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16

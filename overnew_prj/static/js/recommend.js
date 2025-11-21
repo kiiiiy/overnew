@@ -101,7 +101,7 @@ function createUserGroupHTML(userData, articleData) {
                 <div class="card-meta">
                     <span class="card-source">${articleData.source}</span>
                     <span class="card-reactions">
-                        👁️ ${articleData.views}
+                        <img src="../../../static/image/view.png" alt="조회수" style="width: 16px; height: 16px; vertical-align: middle;" class="stat-icon"> ${articleData.views}
                     </span>
                 </div>
             </div>

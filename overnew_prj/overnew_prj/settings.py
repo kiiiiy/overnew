@@ -114,16 +114,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-<<<<<<< HEAD
-=======
-STATIC_URL = "/static/"
->>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-<<<<<<< HEAD
 
 AUTH_USER_MODEL='users.User'
 
@@ -134,10 +129,3 @@ STATICFILES_DIRS=[
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
-=======
-AUTH_USER_MODEL = "account.User"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
->>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

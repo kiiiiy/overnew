@@ -2,6 +2,348 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
+    <title>OVERNEW - 피드</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #111;
+        }
+
+        .page {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #fdf7ec;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 헤더 */
+        .header {
+            padding: 16px 20px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #5c1bb8;
+        }
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        /* 탭 (HOT / FOLLOWING) */
+        .tab-bar {
+            display: flex;
+            margin: 4px 20px 12px;
+            background: #efe0cc;
+            border-radius: 999px;
+            padding: 4px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 13px;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #555;
+        }
+        .tab-active {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            font-weight: 600;
+        }
+
+        /* 카테고리 칩 */
+        .category-chips {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px 12px;
+            flex-wrap: wrap;
+        }
+        .chip {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 999px;
+            background: #f3e7d6;
+            color: #444;
+            text-decoration: none;
+        }
+        .chip-active {
+            background: #5c1bb8;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 피드 리스트 */
+        .feed-list {
+            padding: 0 16px 80px; /* 아래 네비 여백 */
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .card-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .card-topline {
+            font-size: 11px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .badge-category {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #ffd74a;
+            font-weight: 600;
+        }
+        .media-name {
+            color: #777;
+        }
+        .title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .meta {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #777;
+            display: flex;
+            gap: 12px;
+        }
+        .thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #ddd;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 팔로잉 피드 - 업로더 표시용 */
+        .activity-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: #ccc;
+        }
+        .activity-text {
+            color: #555;
+        }
+
+        /* 하단 네비게이션 (대충 모양만) */
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 430px;
+            margin: 0 auto;
+            padding: 8px 24px 12px;
+            background: #f4eee4;
+        }
+        .bottom-nav-inner {
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+        .nav-dot {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            margin: 0 auto 4px;
+            background: #e0d4ff;
+        }
+        .nav-item-active .nav-dot {
+            background: #7c3aed;
+        }
+        .nav-item-active {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="logo">OVERNEW</div>
+        <div class="header-right">
+            ☰ 🔔
+        </div>
+    </header>
+
+    <!-- HOT / FOLLOWING 탭 -->
+    <div class="tab-bar">
+        <a href="{% url 'feed:hot_feed' %}" class="tab {% if mode == 'hot' %}tab-active{% endif %}">
+            HOT
+        </a>
+        <a href="{% url 'feed:following_feed' %}" class="tab {% if mode == 'following' %}tab-active{% endif %}">
+            FOLLOWING
+        </a>
+    </div>
+
+    <!-- 카테고리 칩 (HOT / FOLLOWING 에서 사용) -->
+    {% if categories %}
+        <div class="category-chips">
+            {% for cat in categories %}
+                <a href="?category={{ cat.nc_id }}"
+                   class="chip {% if selected_category_id == cat.nc_id %}chip-active{% endif %}">
+                    {{ cat.news_category }}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- 메인 피드 -->
+    <main class="feed-list">
+
+        {# ALL / HOT 공통 카드 렌더링 #}
+        {% if mode == 'all' or mode == 'hot' %}
+            {% for article in articles %}
+                <article class="card">
+                    <div class="card-text">
+                        <div class="card-topline">
+                            {% if article.nc %}
+                                <span class="badge-category">{{ article.nc.news_category }}</span>
+                            {% endif %}
+                            {% if article.media %}
+                                <span class="media-name">{{ article.media.media_name }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="title">
+                            {{ article.title }}
+                        </div>
+
+                        <div class="meta">
+                            <span>❤ {{ article.like_count|default:0 }}</span>
+                            <span>📁 {{ article.scrap_set.count }}</span>
+                            <span>💬 {{ article.discussion_set.count }}</span>
+                            <span>{{ article.created_at|date:"m.d" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="thumb">
+                        {% if article.image %}
+                            <img src="{{ article.image }}" alt="">
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <p>표시할 게시물이 없습니다.</p>
+            {% endfor %}
+        {% endif %}
+
+        {# FOLLOWING 모드: 팔로우한 사람이 올린 글 #}
+        {% if mode == 'following' %}
+            {% for article in articles %}
+                <article class="card">
+                    <div class="card-text">
+
+                        <div class="activity-user">
+                            <div class="avatar"></div>
+                            <div class="activity-text">
+                                <b>{{ article.author.nickname|default:article.author.username }}</b>님이 올린 기사입니다
+                            </div>
+                        </div>
+
+                        <div class="card-topline">
+                            {% if article.nc %}
+                                <span class="badge-category">{{ article.nc.news_category }}</span>
+                            {% endif %}
+                            {% if article.media %}
+                                <span class="media-name">{{ article.media.media_name }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="title">
+                            {{ article.title }}
+                        </div>
+
+                        <div class="meta">
+                            <span>❤ {{ article.like_count|default:0 }}</span>
+                            <span>📁 {{ article.scrap_set.count }}</span>
+                            <span>💬 {{ article.discussion_set.count }}</span>
+                            <span>{{ article.created_at|date:"m.d" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="thumb">
+                        {% if article.image %}
+                            <img src="{{ article.image }}" alt="">
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <p>팔로우한 사용자가 올린 게시물이 없습니다.</p>
+            {% endfor %}
+        {% endif %}
+
+    </main>
+
+    <!-- 하단 네비 (모양만) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <div class="nav-item nav-item-active">
+                <div class="nav-dot"></div>
+                <div>피드</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>
+                <div>아카이브</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>
+                <div>커뮤니티</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>
+                <div>마이페이지</div>
+            </div>
+        </div>
+    </nav>
+
+</div>
+=======
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>피드 - OVERNEW</title>
     <link rel="stylesheet" href="../../../static/css/style.css">
@@ -52,5 +394,6 @@
     <script src="../../../static/js/nav.js"></script>
 
     <script src="../../../static/js/feed.js"></script>
+>>>>>>> d018a254d1431c9d467e9bce82d1eb2c25c9f1ac
 </body>
 </html>

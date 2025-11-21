@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이메일 인증 - OVERNEW</title>
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+    <link rel="stylesheet" href="/overnew_prj/static/css/email_verify.css">
+
+    <script src="/overnew_prj/static/js/account.js" defer></script>
+</head>
+
+<body id="page-email-verify">
+
+    <main class="container">
+
+        <h1 class="logo">OVERNEW</h1>
+
+        <div class="progress-bar">
+            <div class="progress-value" style="width: 30%;"></div>
+        </div>
+
+        <h2 class="title">이메일 인증</h2>
+        <p class="subtitle">가입하신 이메일로 인증번호를 받으세요.</p>
+
+        <form class="info-form">
+
+            <div class="form-group email-row">
+                <label for="signup-email">이메일</label>
+
+                <div class="email-input-wrap">
+                    <input id="signup-email" type="email" placeholder="example@domain.com">
+                    <button type="button" id="send-code-btn" class="mini-btn">전송</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="signup-code">인증번호</label>
+                <input id="signup-code" type="text" placeholder="6자리 인증번호">
+            </div>
+
+        </form>
+
+        <button type="button" class="next-button" id="verify-code-btn">인증번호 확인</button>
+
+        <p class="subtitle-comment">
+            이메일로 전송된 인증번호를 입력한 후 확인 버튼을 눌러 주세요.
+        </p>
+
+    </main>
+
+</body>
+</html>

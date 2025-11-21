@@ -37,6 +37,13 @@ class NewsCategory(models.Model):
 
 class Article(models.Model):
     article_id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(  
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='uploaded_articles'
+    )
     title = models.CharField(max_length=200)
     news_content = models.TextField(blank=True)
     image = models.URLField(blank=True)
@@ -55,6 +62,7 @@ class Article(models.Model):
     url = models.URLField(unique=True)
     summary = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    view_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -86,3 +94,18 @@ class UserNews(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.category.news_category}"
+    
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name='likes'   # Article.likes 로 역참조 가능
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'article')  # 한 유저가 한 기사에 한 번만 좋아요
+
+    def __str__(self):
+        return f"{self.user.username} - {self.article.title}"

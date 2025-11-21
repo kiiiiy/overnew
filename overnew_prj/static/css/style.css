@@ -187,6 +187,35 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
 }
+/*이메일*/
+/* 이메일 입력창 + 전송 버튼 가로 배치 */
+.email-row .email-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 이메일 입력창 */
+.email-input-wrap input {
+    flex: 1;
+}
+
+/* 오른쪽 작은 전송 버튼 */
+.mini-btn {
+    padding: 8px 12px;
+    background: #4a6eff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mini-btn:hover {
+    background: #3d59e0;
+}
+
 
 /* ----- 5. (추가) 정보기입2 페이지 스타일 ----- */
 

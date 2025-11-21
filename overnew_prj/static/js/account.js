@@ -67,9 +67,58 @@ function initInfoStep1Page() {
         }
         const userInfo = { name, age, gender };
         localStorage.setItem('user-info', JSON.stringify(userInfo));
-        window.location.href = 'info-step2.html';
+        window.location.href = 'email_verify.html';
     });
+}/* ========================================================================== 
+   이메일 인증
+   ========================================================================== */
+function initEmailVerificationPage() {
+    const sendCodeBtn = document.getElementById('send-code-btn');
+    const verifyBtn = document.getElementById('verify-code-btn');
+    const emailInput = document.getElementById('signup-email');
+    const codeInput = document.getElementById('signup-code');
+
+    let generatedCode = null;
+
+    if (sendCodeBtn) {
+        sendCodeBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            if (!email) { alert('이메일을 입력해주세요.'); return; }
+
+            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            localStorage.setItem('email-verification-code', generatedCode);
+            localStorage.setItem('email-to-verify', email);
+
+            alert(`임시 인증 코드: ${generatedCode}\n(실제 서비스에서는 이메일로 전송됩니다)`);
+        });
+    }
+
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', () => {
+            const enteredCode = codeInput.value.trim();
+            const savedCode = localStorage.getItem('email-verification-code');
+            const savedEmail = localStorage.getItem('email-to-verify');
+
+            if (!enteredCode) { alert('인증번호를 입력해주세요.'); return; }
+
+            if (enteredCode === savedCode) {
+                alert(`${savedEmail} 이메일 인증 성공!`);
+                const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
+                const newInfo = { ...oldInfo, email: savedEmail };
+                localStorage.setItem('user-info', JSON.stringify(newInfo));
+
+                localStorage.removeItem('email-verification-code');
+                localStorage.removeItem('email-to-verify');
+
+                window.location.href = 'info-step5.html';
+            } else {
+                alert('인증번호가 올바르지 않습니다.');
+            }
+        });
+    }
 }
+
+
 
 // [Step 2] info-step2.html
 function initInfoStep2Page() {
@@ -101,7 +150,7 @@ function initInfoStep3Page() {
     }
 
     document.getElementById('next-btn-step3').addEventListener('click', () => {
-        const checkedTopics = document.querySelectorAll('input[name="topic"]:checked');
+        const checkedTopics = document.querySelectorAll('input[name="topics"]:checked');
         if (checkedTopics.length === 0) {
             alert('관심 분야를 한 개 이상 선택해주세요.');
             return;
@@ -134,7 +183,7 @@ function initInfoStep4Page() {
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
         const newInfo = { ...oldInfo, media: selectedMedia };
         localStorage.setItem('user-info', JSON.stringify(newInfo));
-        window.location.href = 'info-step5.html'; 
+        window.location.href = 'signup-complete.html'; 
     });
 }
 
@@ -162,7 +211,7 @@ function initInfoStep5Page() {
             password: password
         };
         localStorage.setItem('user-info', JSON.stringify(finalUserInfo));
-        window.location.href = 'signup-complete.html'; 
+        window.location.href = 'info-step2.html'; 
     });
 }
 
@@ -383,10 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
         initSettingsLoggedOutPage();
     } else if (bodyId === 'page-signup-complete') {
         initSignupCompletePage();
-    }
-    // 🚨 [여기에 추가] 방금 만든 약관 동의 페이지 연결
-    else if (bodyId === 'page-terms-agreement') {
-        initTermsAgreementPage();
+    } else if (bodyId === 'page-terms-agreement') {
+        initTermsAgreementPage();   // ← 여기 정상 실행
+    } else if (bodyId === 'page-email-verify') {
+        initEmailVerificationPage();
     }
 });
 
@@ -523,3 +572,4 @@ function initTermsAgreementPage() {
 }
 
 // (메인 라우터는 그대로 유지)
+

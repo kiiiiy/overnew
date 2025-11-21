@@ -119,7 +119,7 @@ function renderFeed() {
 
     // 1. 내 정보 가져오기 (한글 데이터)
     const myInfo = JSON.parse(localStorage.getItem('user-info')) || {};
-    const myRawTopics = myInfo.topics || []; // ["정치", "경제", "사회"]
+    const myRawTopics = myInfo.topics || [];
 
     // 🚨 [추가] 화면 상단에 내 관심사 표시하기
     const myInterestDisplay = document.getElementById('my-interest-display');

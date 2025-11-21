@@ -34,7 +34,7 @@ TOPIC_TO_CATEGORY_NAME = {
 }
 
 def hot_feed_api(request):
-    topic = request.GET.get('topic')  # 'politics', 'economy' 같은 값
+    topic = request.GET.get('topic')  
 
     qs = (
         Article.objects
@@ -43,14 +43,14 @@ def hot_feed_api(request):
         .order_by('-like_count', '-created_at')
     )
 
-    # topic으로 필터 (선택)
-    if topic and topic in TOPIC_TO_CATEGORY_NAME:
-        qs = qs.filter(nc__news_category=TOPIC_TO_CATEGORY_NAME[topic])
+    if topic:
+        category_name = TOPIC_TO_CATEGORY_NAME.get(topic)
+        if category_name:
+            qs = qs.filter(nc__news_category=category_name)
 
-    qs = qs[:20]  # 상위 20개만
+    qs = qs[:20]
 
     def format_time(article):
-        # 일단 간단하게 날짜 문자열로
         return article.created_at.strftime('%Y-%m-%d %H:%M')
 
     articles = []
@@ -60,7 +60,7 @@ def hot_feed_api(request):
             "category": a.nc.news_category if a.nc else "",
             "source": a.media.media_name if a.media else "",
             "title": a.title,
-            "views": a.view_count,     # 프론트에서 '42.9k'로 포맷하고 싶으면 JS에서 처리
+            "views": a.view_count,
             "time": format_time(a),
             "image": a.image or "https://via.placeholder.com/100x60",
         })
@@ -68,13 +68,12 @@ def hot_feed_api(request):
     return JsonResponse({"articles": articles})
 
 
+
 @login_required
 def following_feed_api(request):
-    topic = request.GET.get('topic')  # 'politics' 등
-
+    topic = request.GET.get('topic')  # 'politics' 같은 애
     category_name = TOPIC_TO_CATEGORY_NAME.get(topic)
 
-    # 내가 팔로우한 사람들 ID
     following_ids = Following.objects.filter(
         user=request.user
     ).values_list('user2_id', flat=True)
@@ -90,11 +89,9 @@ def following_feed_api(request):
         scraps = scraps.filter(news__nc__news_category=category_name)
 
     results = []
-
     for s in scraps:
         u = s.user
         a = s.news
-
         results.append({
             "user": {
                 "id": u.id,

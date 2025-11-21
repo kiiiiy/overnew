@@ -85,13 +85,18 @@ async function renderFeedPage(view, topic) {
     let html = '';
 
     try {
-        if (view === 'hot') {
-            // /feed/api/hot/?topic=politics 이런 식으로 호출
-            const params = new URLSearchParams();
-            if (topic) params.append('topic', topic);
+        // 쿼리스트링 만들기 (?topic=politics 이런 거)
+        const params = new URLSearchParams();
+        if (topic) {
+            params.append('topic', topic);   // politics / economy / sport ...
+        }
 
+        if (view === 'hot') {
+            // 🔥 HOT 탭: /feed/api/hot/?topic=it 같은 형태로 호출
             const response = await fetch(`/feed/api/hot/?${params.toString()}`);
-            if (!response.ok) throw new Error('HOT API 오류');
+            if (!response.ok) {
+                throw new Error('HOT API 호출 실패');
+            }
 
             const data = await response.json();
             const articles = data.articles || [];
@@ -104,18 +109,16 @@ async function renderFeedPage(view, topic) {
                 html = '<p style="text-align:center; color:#888; margin-top:40px;">핫한 기사가 없습니다.</p>';
             }
         } else {
-            // FOLLOWING
-            const params = new URLSearchParams();
-            if (topic) params.append('topic', topic);
-
+            // 👥 FOLLOWING 탭: /feed/api/following/?topic=politics
             const response = await fetch(`/feed/api/following/?${params.toString()}`);
             if (!response.ok) {
+                // 로그인 안 된 상태에서 @login_required 걸려 있으면 리다이렉트 될 수 있음
                 if (response.status === 302 || response.redirected) {
-                    // 로그인 안 한 경우 로그인 페이지로 가게 할 수도 있음
-                    window.location.href = '/account/login/'; // 실제 로그인 url 맞게 수정
+                    // 실제 로그인 URL에 맞게 수정해서 쓰면 됨
+                    window.location.href = '/account/login/';
                     return;
                 }
-                throw new Error('FOLLOWING API 오류');
+                throw new Error('FOLLOWING API 호출 실패');
             }
 
             const data = await response.json();
@@ -126,7 +129,7 @@ async function renderFeedPage(view, topic) {
                     html += createFollowingCardHTML(item.user, item.article);
                 });
             } else {
-                html = '<p style="text-align:center; color:#888; margin-top:60px;">팔로우한 유저들이<br>이 주제의 기사를 스크랩하지 않았어요.</p>';
+                html = '<p style="text-align:center; color:#888; margin-top:60px;">팔로우한 유저들이<br>이 카테고리의 기사를 스크랩하지 않았어요.</p>';
             }
         }
     } catch (err) {
@@ -197,9 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedHot = document.getElementById('feed-hot');
     const feedFollowing = document.getElementById('feed-following');
 
-    if(feedHot) feedHot.style.display = currentView === 'hot' ? 'flex' : 'none';
-    if(feedFollowing) feedFollowing.style.display = currentView === 'following' ? 'flex' : 'none';
-    if(keywordList) keywordList.style.display = currentView === 'following' ? 'flex' : 'none';
+    if (feedHot) feedHot.style.display = currentView === 'hot' ? 'flex' : 'none';
+    if (feedFollowing) feedFollowing.style.display = currentView === 'following' ? 'flex' : 'none';
+    if (keywordList) keywordList.style.display = 'flex';   
+
     renderFeedPage(currentView, currentTopic);
 
     // --- 탭 전환 ---

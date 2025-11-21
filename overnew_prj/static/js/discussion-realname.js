@@ -70,7 +70,7 @@ function createCommentHTML(commentData) {
 // ----- 3. 렌더링 함수 -----
 function renderComments() {
     const commentContainer = document.getElementById('comment-list');
-    
+
     // 1. 정렬
     dummyComments.sort((a, b) => {
         const dateA = new Date(a.date);
@@ -80,6 +80,8 @@ function renderComments() {
 
     // 2. 렌더링
     commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
+
+    console.log("Rendered comments:", dummyComments);
 }
 
 // (NEW) 댓글 입력창 상태 업데이트
@@ -202,18 +204,20 @@ document.addEventListener('DOMContentLoaded', () => {
             dummyComments.push(newComment);
         }
 
+        localStorage.setItem('realname_comments', JSON.stringify(dummyComments));
+        console.log("Updated comments saved to localStorage:", dummyComments);
+
         commentInput.value = '';
         updateCommentInputMode();
         renderComments();
     });
 
-    // 뒤로가기 버튼
-    document.getElementById("back-button").addEventListener("click", function () {
-        history.back();
-    });
-    
-    // 첫 렌더링
     renderComments();
+});
+
+// 뒤로가기 버튼
+document.getElementById("back-button").addEventListener("click", function () {
+    history.back();
 });
 
 // ----- (A) 핀 고정 기능 관련 기존 코드 -----
@@ -328,4 +332,35 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPinnedBox();
     renderComments();
     updateDiscussionTimes(); // 초기 호출
+
+    // ----- (A) 핀 고정 기능 관련 기존 코드 -----
+    const pinButton = document.getElementById("pin-btn");
+
+    // 초기화: 고정 상태를 확인하고 버튼 스타일 업데이트
+    const currentDiscussionId = document.querySelector(".discussion-article-header").dataset.articleId;
+
+    if (pinnedDiscussions.includes(currentDiscussionId)) {
+        pinButton.classList.add("pinned");
+        pinButton.textContent = "📌 고정됨";
+    } else {
+        pinButton.classList.remove("pinned");
+        pinButton.textContent = "📌 고정";
+    }
+
+    // 버튼 클릭 이벤트
+    pinButton.addEventListener("click", () => {
+        if (pinButton.classList.contains("pinned")) {
+            // 고정 해제
+            pinnedDiscussions = pinnedDiscussions.filter(id => id !== currentDiscussionId);
+            localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
+            pinButton.classList.remove("pinned");
+            pinButton.textContent = "📌 고정";
+        } else {
+            // 고정 설정
+            pinnedDiscussions.push(currentDiscussionId);
+            localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
+            pinButton.classList.add("pinned");
+            pinButton.textContent = "📌 고정됨";
+        }
+    });
 });

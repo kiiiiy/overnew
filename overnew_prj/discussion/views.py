@@ -155,3 +155,19 @@ def delete_comment(request, room_id, comment_id):
     
     return redirect('discussion:discussion_detail', room_id=room_id)
 
+@login_required
+def toggle_bookmark(request, room_id):
+    room = get_object_or_404(DiscussionRoom, pk=room_id)
+    user = request.user
+
+    if user in room.bookmark.all():
+        room.bookmark.remove(user)
+        messages.info(request, "북마크를 해제했어요.")
+    else:
+        room.bookmark.add(user)
+        messages.success(request, "북마크에 추가했어요.")
+
+    if room.is_anonymous:
+        return redirect('discussion:anonymous_detail', room_id=room_id)
+    else:
+        return redirect('discussion:discussion_detail', room_id=room_id)

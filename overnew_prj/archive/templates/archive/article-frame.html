@@ -4,18 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기사 iframe 보기 - OVERNEW</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-
-        iframe {
-            width: 100%;
-            border: none;
-        }
-    </style>
+    <!-- CSS 분리 -->
+    <link rel="stylesheet" href="/static/css/article-frame.css">
 </head>
 <body>
 
@@ -27,19 +17,8 @@
     scrolling="no">
 </iframe>
 
-<!-- iframe 높이 자동 조절 -->
-<script>
-    const iframe = document.getElementById('article-iframe');
-
-    function adjustIframeHeight() {
-        if (iframe && iframe.contentWindow.document.body) {
-            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-        }
-    }
-
-    iframe.addEventListener('load', adjustIframeHeight);
-    window.addEventListener('resize', adjustIframeHeight);
-</script>
+<!-- JS 분리 -->
+<script src="/static/js/article-frame.js" defer></script>
 
 </body>
 </html>

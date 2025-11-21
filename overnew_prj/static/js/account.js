@@ -214,6 +214,9 @@ function initLoginPage() {
 
 // [Notifications] notifications.html
 function initNotificationPage() {
+    // -----------------------------
+    // 뒤로가기 버튼
+    // -----------------------------
     const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', (e) => {
@@ -221,19 +224,74 @@ function initNotificationPage() {
             window.history.back(); 
         });
     }
-    
-    // 🚨 [수정!] 'current-session' 사용
+
+    // -----------------------------
+    // 로그인 상태 확인 및 닉네임 적용
+    // -----------------------------
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     if (!userInfo || !userInfo.nickname) {
         alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html'; 
-        return; 
+        window.location.href = 'login.html';
+        return;
     }
     document.querySelectorAll('.username').forEach(element => {
         element.textContent = userInfo.nickname; 
     });
+
+    // -----------------------------
+    // 기존 알림 초기화 (시간 표시, 읽음 처리)
+    // -----------------------------
     initializeNotifications(); 
+
+    // -----------------------------
+    // 삭제 상태 관리 (localStorage)
+    // -----------------------------
+    let removedGroups = JSON.parse(localStorage.getItem('removed_notification_groups')) || [];
+
+    const timeGroups = document.querySelectorAll('.time-group');
+
+    timeGroups.forEach(group => {
+        const notifIds = Array.from(group.querySelectorAll('.notification-item')).map(item => item.dataset.notifId);
+        const header = group.querySelector('.time-label');
+        if (!header) return;
+
+        // 이미 삭제된 그룹이면 DOM에서 제거
+        if (removedGroups.includes(notifIds.join(','))) {
+            group.remove();
+            return;
+        }
+
+        // -----------------------------
+        // "몇일 전" 옆 X 버튼 추가
+        // -----------------------------
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '✕';
+        closeBtn.classList.add('time-group-close-btn');
+        
+        // 스타일
+        closeBtn.style.float = 'right';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'transparent';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.fontSize = '0.9em';
+        closeBtn.style.color = '#888';
+        closeBtn.style.transition = 'color 0.2s';
+
+        // hover 효과
+        closeBtn.addEventListener('mouseover', () => closeBtn.style.color = '#f00');
+        closeBtn.addEventListener('mouseout', () => closeBtn.style.color = '#888');
+
+        header.appendChild(closeBtn);
+
+        // 클릭 시 삭제 및 localStorage에 기록
+        closeBtn.addEventListener('click', () => {
+            group.remove();
+            removedGroups.push(notifIds.join(','));
+            localStorage.setItem('removed_notification_groups', JSON.stringify(removedGroups));
+        });
+    });
 }
+
 
 // [Settings - Logged In] settings-logged-in.html
 function initSettingsLoggedInPage() {

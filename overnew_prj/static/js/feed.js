@@ -162,7 +162,7 @@ function createHotCardHTML(cardData) {
 function createFollowingCardHTML(userId, userData, articleData) {
     const viewIconPath = '../../../static/image/view.png'; 
     const articlePath = '../../../archive/templates/archive/article-detail.html';
-    const articleLink = `${articlePath}?id=${articleData.id || 'dummy'}`;
+    const articleLink = `${articlePath}?article_id=${articleData.id || 'dummy'}`;
     const profilePath = '../../../archive/templates/archive/profile-detail.html';
     const profileLink = `${profilePath}?user_id=${userId}`;
 
@@ -390,4 +390,57 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('bookmarked_articles', JSON.stringify(bookmarks));
         });
     }
+});
+// 카드 클릭 이벤트 - feed.js 맨 아래 추가
+document.addEventListener('DOMContentLoaded', () => {
+
+    const feedHot = document.getElementById('feed-hot');
+    const feedFollowing = document.getElementById('feed-following');
+
+    function addCardClickListener(container) {
+        if (!container) return;
+
+        container.addEventListener('click', (e) => {
+            const card = e.target.closest('.article-card');
+            if (!card) return;
+
+            e.preventDefault();
+
+            // following-card-group 안이면 data-article-json 가져오기
+            const cardGroup = card.closest('.following-card-group');
+            let articleData = null;
+
+            if (cardGroup) {
+                articleData = JSON.parse(cardGroup.dataset.articleJson);
+            } else {
+                // HOT 카드일 경우, img나 div에 직접 접근해서 데이터 만들기
+                // 여기서는 id 속성을 이용해 dummyData에서 찾기
+                const articleId = card.querySelector('.card-title').textContent;
+                // HOT 카드 데이터 임시로 저장 (실제 디비 없으므로 title 기준)
+                articleData = {
+                    title: card.querySelector('.card-title').textContent,
+                    category: card.querySelector('.card-category').textContent,
+                    source: card.querySelector('.card-source').textContent,
+                    views: card.querySelector('.card-stats span').textContent,
+                    time: card.querySelector('.card-stats span:last-child').textContent,
+                    image: card.querySelector('img.card-thumbnail').src,
+                    body: ["본문 내용 예시 1", "본문 내용 예시 2"], // HOT 카드용 더미
+                    mainImage: card.querySelector('img.card-thumbnail').src,
+                    embeddedImage: card.querySelector('img.card-thumbnail').src,
+                    author: '테스트 기자',
+                    dateCreated: '2025.11.21 12:00:00',
+                    dateUpdated: '2025.11.21 12:00:00'
+                };
+            }
+
+            // localStorage에 저장
+            localStorage.setItem('selected_article', JSON.stringify(articleData));
+
+            // 상세페이지 이동
+            window.location.href = '../../../archive/templates/archive/article-detail.html';
+        });
+    }
+
+    addCardClickListener(feedHot);
+    addCardClickListener(feedFollowing);
 });

@@ -1,104 +1,177 @@
-// article.js
-document.addEventListener('DOMContentLoaded', () => {
+// article.js 파일 전체 내용
 
-    // 1. localStorage에서 데이터 꺼내기
-    const articleData = JSON.parse(localStorage.getItem('selected_article'));
+// ----- 1. 더미 데이터 (기사 목록) -----
+const dummyArticles = [
+    {
+        id: 'dog-meeting',
+        category: '생활/문화',
+        source: '노트펫',
+        title: "강아지 놀이터에서 헤어진 강아지가 다시 만날 확률은... '첫눈에 알아봤댕!'",
+        dateCreated: '2025.10.20 18:48:02',
+        dateUpdated: '2025.11.09 09:48:15',
+        author: '김기자: papercut@inbnat.co.kr',
+        body: [
+            "[노트펫] 중증보호소에서 헤어진 강아지 남매가 다시 만날 확률은 얼마나 될까?",
+            "보호소에서 다른 무리들에게 각각 입양된 강아지 남매가...서로를 알아봤다고 미국 시사주간지 뉴스위크가 전했다.",
+            "동희니 송이 지난 2020년 틱톡에 올린 동영상이...화제가 됐다. 이 영상은 28만건 넘는 '좋아요'를 받았다."
+        ],
+        mainImage: 'dog-meeting-image.jpg',
+        embeddedImage: 'dog-tiktok-image.jpg'
+    },
+    {
+        id: 'apec-market',
+        category: '경제',
+        source: 'SBS',
+        title: 'APEC 효과?... 경제 뉴스 샘플',
+        dateCreated: '2025.11.01 10:20:00',
+        dateUpdated: '2025.11.10 09:00:00',
+        author: '경제 기자',
+        body: [
+            "APEC 관련 경제 뉴스 샘플 내용입니다.",
+            "주식 시장과 환율에 영향이 있다고 합니다."
+        ],
+        mainImage: 'apec-market.jpg',
+        embeddedImage: 'apec-market-embed.jpg'
+    }
+];
 
+// LocalStorage에서 배열 상태를 로드/저장하는 범용 함수
+const loadState = (key) => JSON.parse(localStorage.getItem(key)) || [];
+const saveState = (key, state) => localStorage.setItem(key, JSON.stringify(state));
+
+// 모든 더미 기사를 ID를 키로 하는 객체로 변환 (ID로 빠르게 찾기 위함)
+const ALL_ARTICLES = dummyArticles.reduce((acc, article) => {
+    acc[article.id] = article;
+    return acc;
+}, {});
+
+
+// ----- 2. 콘텐츠 로드 및 표시 함수 -----
+function loadAndRenderArticle(articleData) {
     if (!articleData) {
-        console.error("기사 데이터가 없습니다. 피드에서 다시 접근해주세요.");
+        document.querySelector('.article-title').textContent = "기사를 찾을 수 없습니다.";
         return;
     }
-    
-    // 2. HTML 요소 가져오기
-    const titleEl = document.querySelector('.article-title') || document.getElementById('article-title');
-    const categoryEl = document.querySelector('.article-category') || document.getElementById('article-category');
-    const metaEl = document.querySelector('.article-meta') || document.getElementById('article-meta'); 
-    const bodyEl = document.querySelector('.article-body') || document.getElementById('article-content');
-    const imageEl = document.querySelector('.article-image') || document.getElementById('article-image'); 
-    const sourceEl = document.querySelector('.source-text');
-    const bookmarkBtn = document.getElementById('bookmark-btn'); // 🚨 북마크 버튼 요소 가져오기
-    
-    // 3. 북마크 초기 상태 로드 및 클릭 이벤트 등록
-    // null, undefined, id 없는 객체 자동 제거
-    let bookmarkedList = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
-    bookmarkedList = bookmarkedList.filter(item => item && item.id);
-    const isBookmarked = bookmarkedList.some(item => item.id === articleData.id);
 
-    if (bookmarkBtn) {
-        // 초기 UI 반영: 북마크 되어 있으면 active 클래스 추가
-        if (isBookmarked) {
-            bookmarkBtn.classList.add('active');
-        }
+    // HTML 요소 채우기
+    const titleEl = document.querySelector('.article-title');
+    const metaEl = document.querySelector('.article-meta');
+    const bodyEl = document.querySelector('.article-body');
+    const mainImgEl = document.querySelector('.article-figure img');
+    const captionEl = document.querySelector('.article-caption');
+    const embeddedEl = document.querySelector('.article-embedded-content img');
 
-        // 🚨 [핵심] 북마크 버튼 클릭 이벤트 핸들러 (저장 로직)
-        bookmarkBtn.addEventListener('click', () => {
-            const isCurrentlyActive = bookmarkBtn.classList.contains('active');
-            
-            if (isCurrentlyActive) {
-                // [언북마크] active 클래스 제거 & 리스트에서 해당 ID 제거
-                bookmarkBtn.classList.remove('active');
-                bookmarkedList = bookmarkedList.filter(item => item.id !== articleData.id);
-                alert('북마크가 취소되었습니다!');
-            } else {
-                // [북마크] active 클래스 추가 & 리스트에 데이터 추가
-                bookmarkBtn.classList.add('active');
-                bookmarkedList.push(articleData); // 🚨 기사 데이터 전체 저장
-                alert('기사가 북마크되었습니다!');
-            }
-            
-            // 최종 리스트 localStorage에 저장
-            localStorage.setItem('bookmarked_articles', JSON.stringify(bookmarkedList));
-        });
-    }
-
-
-    // 4. 데이터 화면에 뿌리기
-    
-    // (1) 카테고리
-    if (categoryEl) categoryEl.textContent = articleData.category || '뉴스';
-    
-    // (2) 제목
     if (titleEl) titleEl.textContent = articleData.title;
+    if (metaEl) metaEl.innerHTML = `
+        <span>작성일: ${articleData.dateCreated}</span>
+        <span>수정일: ${articleData.dateUpdated}</span>
+        <span>${articleData.author}</span>
+    `;
+    if (bodyEl) bodyEl.innerHTML = articleData.body.map(p => `<p>${p}</p>`).join('');
+    
+    if (mainImgEl) mainImgEl.src = articleData.mainImage;
+    if (captionEl) captionEl.textContent = articleData.title;
+    if (embeddedEl) embeddedEl.src = articleData.embeddedImage;
+}
 
-    // (3) 메타 정보 (기자 / 날짜)
-    if (metaEl) {
-        const author = articleData.author || articleData.source || '기자 정보 없음';
-        const date = articleData.date || articleData.time || '2025.11.21';
-        metaEl.innerHTML = `
-            <span>${author}</span>
-            <span>${date}</span>
-        `;
-    }
 
-    // (4) 본문 내용
-    if (bodyEl && Array.isArray(articleData.body)) {
-        bodyEl.innerHTML = articleData.body.map(text => `<p>${text}</p>`).join('');
-    }
+// ----- 3. 액션 버튼 기능 함수 (상태 유지 및 토글) -----
+function initActionButtons(articleId) {
+    const likeBtn = document.getElementById('like-btn');
+    const discussBtn = document.getElementById('discuss-btn');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
 
-    // (5) 메인 이미지 및 캡션
-    if (imageEl) {
-        const imgSrc = articleData.mainImage || articleData.image || '';
-        if (imgSrc) {
-            imageEl.src = imgSrc;
-            imageEl.alt = articleData.title;
+    if (!likeBtn || !bookmarkBtn || !discussBtn) return;
+
+    // LocalStorage 상태 키 정의
+    const LIKE_KEY = 'liked_articles';
+    const BOOKMARK_KEY = 'bookmarked_articles';
+    const DISCUSS_KEY = 'discussion_votes';
+
+    // 1. 초기 상태 로드
+    let likedArticles = loadState(LIKE_KEY);
+    let bookmarkedArticles = loadState(BOOKMARK_KEY);
+    let discussionVotes = loadState(DISCUSS_KEY);
+
+    // 2. 버튼 상태 설정 (로컬 스토리지 상태를 읽어와 버튼에 active 클래스를 적용합니다.)
+    const setButtonState = (button, stateArray) => {
+        if (stateArray.includes(articleId)) {
+            button.classList.add('active');
         } else {
-            imageEl.style.display = 'none';
+            button.classList.remove('active');
         }
+    };
+
+    setButtonState(likeBtn, likedArticles);
+    setButtonState(bookmarkBtn, bookmarkedArticles);
+    setButtonState(discussBtn, discussionVotes);
+
+    // 3. 상태 토글 및 LocalStorage 업데이트 범용 로직
+    const toggleState = (button, stateKey, currentArray) => {
+        button.classList.toggle('active');
+        const isActive = button.classList.contains('active');
+        let newArray = currentArray;
+
+        if (isActive) {
+            // 추가
+            if (!newArray.includes(articleId)) {
+                newArray.push(articleId);
+            }
+        } else {
+            // 삭제
+            newArray = newArray.filter(id => id !== articleId);
+        }
+        saveState(stateKey, newArray);
+        return newArray;
+    };
+
+    // 좋아요 버튼 클릭 이벤트
+    likeBtn.addEventListener('click', () => {
+        likedArticles = loadState(LIKE_KEY);
+        likedArticles = toggleState(likeBtn, LIKE_KEY, likedArticles);
+    });
+
+    // 북마크 버튼 클릭 이벤트
+    bookmarkBtn.addEventListener('click', () => {
+        bookmarkedArticles = loadState(BOOKMARK_KEY); 
+        bookmarkedArticles = toggleState(bookmarkBtn, BOOKMARK_KEY, bookmarkedArticles);
+    });
+
+    // 토론 버튼 클릭 이벤트
+    discussBtn.addEventListener('click', () => {
+        discussionVotes = loadState(DISCUSS_KEY);
+        discussionVotes = toggleState(discussBtn, DISCUSS_KEY, discussionVotes);
+    });
+}
+
+
+// ----- 4. 메인 초기화 라우터 (핵심 수정 부분) -----
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ⭐⭐⭐ 핵심 수정: LocalStorage 대신 URL 파라미터에서 ID를 읽어옵니다. ⭐⭐⭐
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('id'); // URL에서 'id' 파라미터 값을 가져옴
+    
+    // ID가 없으면 기본 기사를 로드하고, 있으면 해당 ID의 기사를 로드
+    const articleToLoadId = articleId || 'dog-meeting'; 
+    const articleData = ALL_ARTICLES[articleToLoadId];
+
+    // 3. 기사 내용 렌더링
+    loadAndRenderArticle(articleData);
+    
+    // 4. 액션 버튼 초기화 실행
+    if (articleData) {
+        initActionButtons(articleToLoadId);
     }
     
-    // 5. [기존 로직] 좋아요/댓글 버튼 UI 토글 (저장 기능 없음)
-    ['like-btn', 'discuss-btn'].forEach(id => {
-        const btn = document.getElementById(id);
-        // 북마크는 위에서 따로 처리했으므로 제외
-        if (btn) btn.addEventListener('click', () => btn.classList.toggle('active')); 
-    });
-    
-    // 6. [기존 로직] 뒤로가기 버튼 기능
-    const backBtn = document.getElementById("back-button");
-    if (backBtn) {
-         backBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            window.history.back();
+    // 5. 뒤로 가기 버튼 기능 연결
+    const backButton = document.getElementById('back-button');
+    if (backButton) {
+        backButton.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            window.history.back(); 
         });
     }
+    
+    // ⚠️ 참고: 이제 LocalStorage 키 'selected_article'은 사용되지 않습니다.
 });

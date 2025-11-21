@@ -1090,8 +1090,12 @@ body.with-fixed-nav {
 /* 피드 페이지의 기사 카드 (a 태그) */
 .article-card {
     display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
     background-color: #FFFFFF; /* 카드 흰색 배경 */
+    height: 150px; /* 🚨 전체 카드 높이를 강제로 고정 (원하는 크기로 조절) */
     border-radius: 12px;
+    box-sizing: border-box;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 16px;
     text-decoration: none; /* 링크 밑줄 제거 */
@@ -1106,9 +1110,11 @@ body.with-fixed-nav {
 
 /* 카드 좌측 텍스트 영역 */
 .card-text {
-    flex: 1; /* 텍스트 영역이 남는 공간 다 차지 */
+    flex: 1; /* 남은 공간 차지 */
+    margin-right: 15px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 /* 카드 카테고리 태그 (IT/과학, 경제...) */
@@ -1151,16 +1157,25 @@ body.with-fixed-nav {
     margin-top: 5px; /* 카테고리 태그와의 간격 */
 }
 
+/* 🚨 [핵심] 제목 두 줄 제한 및 높이 고정 */
 .card-title {
     font-size: 16px;
-    font-weight: 600;
-    color: #222;
-    margin: 8px 0;
-    line-height: 1.4;
+    font-weight: bold;
+    margin: 5px 0;
+    line-height: 1.4; /* 줄 간격 */
     
-    /* 텍스트가 텍스트 영역을 벗어나지 않도록 */
-    flex-grow: 1; /* 제목이 남은 공간을 채움 */
+    /* --- 말줄임표(...) 처리 공식 --- */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2줄까지만 보여줌 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* ---------------------------- */
+
+    /* 🚨 글자가 1줄이어도 2줄만큼의 공간을 차지하게 해서 박스 크기 고정 */
+    height: 2.8em; /* line-height(1.4) * 2줄 = 2.8em */
 }
+
 
 /* 조회수, 시간 */
 .card-stats {

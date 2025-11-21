@@ -1,117 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>알림 - OVERNEW</title>
-    
-    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림 - OVERNEW</title>
+    
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
 
-    <script src="/overnew_prj/static/js/account.js" defer></script>
+    <script src="/overnew_prj/static/js/account.js" defer></script>
 </head>
 <body class="with-fixed-nav" id="page-notifications"> 
-    <header class="main-header">
-        <a href="#" class="icon-btn menu-btn" id="back-button"> 
-            <span>&lt;</span> 
-        </a>
-        <h1 class="logo header-logo">OVERNEW</h1>
-        <div style="width:40px;"></div>
-    </header>
+    <header class="main-header">
+        <a href="#" class="icon-btn menu-btn" id="back-button"> 
+            <span>&lt;</span> 
+        </a>
+        <h1 class="logo header-logo">OVERNEW</h1>
+        <div style="width:40px;"></div>
+    </header>
 
-    <main class="container">
+    <main class="container">
 
-        <div class="time-group" data-time-group="yesterday">
-            <div class="time-label-wrapper">
-                <h2 class="time-label">어제</h2>
-                <button class="icon-btn delete-group-btn" data-group-id="yesterday">X</button>
+        <div class="time-group">
+            <h2 class="time-label">어제</h2>
+            
+            <div class="notification-item follow" data-notif-id="notif_001_follow" data-time="2025-11-16T21:00:00+09:00">
+                <div class="notif-icon-wrapper">
+                    <div class="notif-icon-bg"></div>
+                </div>
+                <div class="notif-text-wrapper">
+                    <p class="notif-content">
+                        '<span class="username"></span>'님이 당신을 팔로우하기 시작했습니다.
+                    </p>
+                    <span class="notif-timestamp"></span>
+                </div>
             </div>
-            
-            <div class="notification-item follow" data-notif-id="notif_001_follow" data-time="2025-11-16T21:00:00+09:00">
-                <div class="notif-content-wrapper">
-                    <div class="notif-icon-wrapper">
-                        <div class="notif-icon-bg"></div>
-                    </div>
-                    <div class="notif-text-wrapper">
-                        <p class="notif-content">
-                            '<span class="username"></span>'님이 당신을 팔로우하기 시작했습니다.
-                        </p>
-                        <span class="notif-timestamp"></span>
-                    </div>
+        </div>
+
+        <div class="time-group">
+            <h2 class="time-label">3일전</h2>
+
+            <div class="notification-item" data-notif-id="notif_002_discuss" data-time="2025-11-14T10:00:00+09:00">
+                <div class="notif-icon-wrapper">
+                    <span class="notif-icon">✨</span>
                 </div>
-                            </div>
-        </div>
-
-        <div class="time-group" data-time-group="three-days-ago">
-            <div class="time-label-wrapper">
-                <h2 class="time-label">3일전</h2>
-                <button class="icon-btn delete-group-btn" data-group-id="three-days-ago">X</button>
-            </div>
-
-            <div class="notification-item" data-notif-id="notif_002_discuss" data-time="2025-11-14T10:00:00+09:00">
-                <div class="notif-content-wrapper">
-                    <div class="notif-icon-wrapper">
-                        <span class="notif-icon">✨</span>
-                    </div>
-                    <div class="notif-text-wrapper">
-                        <p class="notif-content">
-                            '<span class="username"></span>'님이 '토론하고 싶어요' 버튼을 누른 기사에서 토의가 열렸습니다. 7일간 자유롭게 참여해보세요!
-                        </p>
-                        <span class="notif-timestamp"></span>
-                    </div>
+                <div class="notif-text-wrapper">
+                    <p class="notif-content">
+                        '<span class="username"></span>'님이 '토론하고 싶어요' 버튼을 누른 기사에서 토의가 열렸습니다. 7일간 자유롭게 참여해보세요!
+                    </p>
+                    <span class="notif-timestamp"></span>
                 </div>
-            </div>
-
-            <div class="notification-item" data-notif-id="notif_003_deadline" data-time="2025-11-14T20:00:00+09:00">
-                <div class="notif-content-wrapper">
-                    <div class="notif-icon-wrapper">
-                        <span class="notif-icon">💬</span>
-                    </div>
-                    <div class="notif-text-wrapper">
-                        <p class="notif-content">
-                            '<span class="username"></span>'님이 참여한 토의가 2시간 후 마감됩니다! 마감 전 마지막 의견을 남겨보세요
-                        </p>
-                        <span class="notif-timestamp"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="notification-item" data-notif-id="notif_004_recommend" data-time="2025-11-14T15:00:00+09:00">
-                <div class="notif-content-wrapper">
-                    <div class="notif-icon-wrapper">
-                        <span class="notif-icon">❤️</span>
-                    </div>
-                    <div class="notif-text-wrapper">
-                        <p class="notif-content">
-                            '<span class="username"></span>'님을 위한 추천 기사가 업로드 되었습니다! 지금 바로 확인해보세요!
-                        </p>
-                        <span class="notif-timestamp"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="time-group" data-time-group="seven-days-ago">
-            <div class="time-label-wrapper">
-                <h2 class="time-label">7일전</h2>
-                <button class="icon-btn delete-group-btn" data-group-id="seven-days-ago">X</button>
             </div>
 
-            <div class="notification-item" data-notif-id="notif_005_bookmark" data-time="2025-11-10T11:00:00+09:00">
-                <div class="notif-content-wrapper">
-                    <div class="notif-icon-wrapper">
-                        <span class="notif-icon">📚</span>
-                    </div>
-                    <div class="notif-text-wrapper">
-                        <p class="notif-content">
-                            2명의 이용자가 당신의 기사를 북마크했습니다.
-                        </p>
-                        <span class="notif-timestamp"></span>
-                    </div>
+            <div class="notification-item" data-notif-id="notif_003_deadline" data-time="2025-11-14T20:00:00+09:00">
+                <div class="notif-icon-wrapper">
+                    <span class="notif-icon">💬</span>
                 </div>
-            </div>
-        </div>
+                <div class="notif-text-wrapper">
+                    <p class="notif-content">
+                        '<span class="username"></span>'님이 참여한 토의가 2시간 후 마감됩니다! 마감 전 마지막 의견을 남겨보세요
+                    </p>
+                    <span class="notif-timestamp"></span>
+                </div>
+            </div>
 
-    </main>
+            <div class="notification-item" data-notif-id="notif_004_recommend" data-time="2025-11-14T15:00:00+09:00">
+                <div class="notif-icon-wrapper">
+                    <span class="notif-icon">❤️</span>
+                </div>
+                <div class="notif-text-wrapper">
+                    <p class="notif-content">
+                        '<span class="username"></span>'님을 위한 추천 기사가 업로드 되었습니다! 지금 바로 확인해보세요!
+                    </p>
+                    <span class="notif-timestamp"></span>
+                </div>
+            </div>
+        </div>
 
-    </body>
+        <div class="time-group">
+            <h2 class="time-label">7일전</h2>
+
+            <div class="notification-item" data-notif-id="notif_005_bookmark" data-time="2025-11-10T11:00:00+09:00">
+                <div class="notif-icon-wrapper">
+                    <span class="notif-icon">📚</span>
+                </div>
+                <div class="notif-text-wrapper">
+                    <p class="notif-content">
+                        2명의 이용자가 당신의 기사를 북마크했습니다.
+                    </p>
+                    <span class="notif-timestamp"></span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    
+    </body>
 </html>

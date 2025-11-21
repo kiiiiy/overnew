@@ -26,7 +26,7 @@ function createDiscussionCardHTML(cardData) {
     const discussionLink = `../../../discussion/templates/discussion/discussion-detail.html?id=${cardData.id}`;
 
     return `
-    <div class="discussion-card" data-article-id="${cardData.id}">
+    <div class="discussion-card" data-article-id="${cardData.id}" data-end-time="${cardData.time}">
         <span class="card-category ${categoryClass}">${cardData.category}</span>
         <a href="${articleLink}" class="card-title-link"><h3 class="card-title">${cardData.title}</h3></a>
         <a href="${articleLink}" class="card-image-link"><img src="${cardData.image}" alt="${cardData.title}" class="discussion-card-image"></a>
@@ -49,23 +49,33 @@ function createDiscussionCardHTML(cardData) {
 function renderPinnedDiscussions() {
     const pinnedArea = document.getElementById("pinned-discussions");
     if (pinnedDiscussions.length === 0) {
-        pinnedArea.innerHTML = "";
+        pinnedArea.innerHTML = `<h3 class="pinned-title">
+                                    <img src="../../../static/image/thumbtacks.png" alt="고정핀" style="width: 24px; vertical-align: middle; margin-right: 8px;">
+                                    고정된 토론
+                                </h3>
+                                <p class="no-pinned">현재 고정된 토론이 없습니다.</p>`;
+        pinnedArea.style.minHeight = "100px"; // 고정된 영역의 최소 높이 설정
         return;
     }
 
-    let html = `<h3 class="pinned-title">📌 고정된 토론</h3>`;
-    pinnedDiscussions.forEach(id => {
-        const item = pinnedData[id];
-        if (!item) return;
-        html += `<div class="pinned-item" data-id="${id}">
-                    <span>📌 ${item.title}</span>
-                    <button class="unpin-btn" style="margin-left:8px; cursor:pointer;">❌ 고정 해제</button>
+    let html = `<h3 class="pinned-title">
+                    <img src="../../../static/image/thumbtacks.png" alt="고정핀" style="width: 24px; vertical-align: middle; margin-right: 8px;">
+                    고정된 토론
+                </h3>`;
+    const id = pinnedDiscussions[0];
+    const item = pinnedData[id];
+    if (item) {
+        const discussionType = item.type === 'anonymous' ? 'discussion-anonymous' : 'discussion-realname';
+        html += `<div class="pinned-item" data-id="${id}" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="window.location.href='../../../discussion/templates/discussion/${discussionType}.html?id=${id}'">
+                    <span class="text" style="flex-grow: 1;">${item.title}</span>
+                    <button class="unpin-btn" style="flex-shrink: 0;">고정 삭제</button>
                  </div>`;
-    });
+    }
     pinnedArea.innerHTML = html;
 
     document.querySelectorAll(".unpin-btn").forEach(btn => {
         btn.addEventListener("click", e => {
+            e.stopPropagation(); // Prevent triggering the click on the pinned item
             const parent = e.target.closest(".pinned-item");
             const id = parent.dataset.id;
             pinnedDiscussions = pinnedDiscussions.filter(x => x !== id);
@@ -78,6 +88,30 @@ function renderPinnedDiscussions() {
     });
 }
 
+function pinDiscussion(discussionId, discussionData) {
+    // 기존 고정된 토론방 제거
+    if (pinnedDiscussions.length > 0) {
+        const currentPinnedId = pinnedDiscussions[0];
+        pinnedDiscussions = [];
+        delete pinnedData[currentPinnedId];
+        localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
+        localStorage.setItem("pinned_discussions_data", JSON.stringify(pinnedData));
+    }
+
+    // 새로운 토론방 고정
+    pinnedDiscussions.push(discussionId);
+    pinnedData[discussionId] = {
+        id: discussionId,
+        title: discussionData.title,
+        type: discussionData.type || 'anonymous', // 익명 또는 실명 타입 구별
+        category: discussionData.category,
+        source: discussionData.source
+    };
+    localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
+    localStorage.setItem("pinned_discussions_data", JSON.stringify(pinnedData));
+    renderPinnedDiscussions();
+}
+
 function renderFeed() {
     const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
     const feedContainer = document.getElementById('discussion-list');
@@ -87,6 +121,34 @@ function renderFeed() {
     let html = '';
     articles.forEach(article => html += createDiscussionCardHTML(article));
     feedContainer.innerHTML = html;
+}
+
+function calculateRemainingTime(endTime) {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end - now;
+
+    if (diff <= 0) return '종료됨';
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+        return `${hours}시간 ${minutes}분 남음`;
+    } else {
+        return `${minutes}분 남음`;
+    }
+}
+
+function updateDiscussionTimes() {
+    const cards = document.querySelectorAll('.discussion-card');
+    cards.forEach(card => {
+        const timeElement = card.querySelector('.time-left');
+        const endTime = card.dataset.endTime;
+        if (timeElement && endTime) {
+            timeElement.textContent = `🕒 ${calculateRemainingTime(endTime)}`;
+        }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -121,8 +183,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             localStorage.setItem("bookmarked_articles", JSON.stringify(bookmarkedArticles));
         }
+
+        if (e.target.closest(".discussion-join-btn")) {
+            const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
+            const discussionData = dummyCommunityData[currentTopic]?.find(article => article.id === id);
+            if (discussionData) {
+                pinDiscussion(id, discussionData);
+            }
+        }
     });
+
+    // 주기적으로 시간 업데이트
+    setInterval(updateDiscussionTimes, 60000); // 1분마다 업데이트
 
     renderPinnedDiscussions();
     renderFeed();
+    updateDiscussionTimes(); // 초기 호출
 });

@@ -1,16 +1,24 @@
-#archive/views.py
+# archive/views.py
+
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
-
-from .models import User, Article, NewsCategory, Scrap, Media
-from .utils import fetch_article_metadata
 from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from django.apps import apps # 👈 새로 추가: 모델을 안전하게 가져오기 위해 필요
+
+# -------------------------------------------------------------
+# ❌ 이 줄을 제거합니다. (순환 임포트의 주 원인)
+# from .models import Article, Scrap, ArchiveCategory, ArchiveMedia 
+# -------------------------------------------------------------
+
+from .utils import fetch_article_metadata
+
+User = get_user_model() 
 
 
-
-def get_user_or_404(user_id: int) -> User:
+def get_user_or_404(user_id: int):
     try:
         return User.objects.get(user_id=user_id)
     except User.DoesNotExist:
@@ -33,6 +41,16 @@ def upload_article(request):
 
     if not user_id or not url or not nc_id:
         return JsonResponse({"error": "user_id, url, nc_id는 필수입니다."}, status=400)
+    
+    # 🌟 순환 임포트 해결을 위해 함수 내부에서 모델을 로드합니다.
+    try:
+        ArchiveCategory = apps.get_model('archive', 'ArchiveCategory')
+        ArchiveMedia = apps.get_model('archive', 'ArchiveMedia')
+        Article = apps.get_model('archive', 'Article')
+        Scrap = apps.get_model('archive', 'Scrap')
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
 
     #유저
     try:
@@ -42,19 +60,22 @@ def upload_article(request):
 
     #카테고리
     try:
-        category = NewsCategory.objects.get(nc_id=nc_id)
-    except NewsCategory.DoesNotExist:
+        # 🌟 수정: ArchiveCategory 사용
+        category = ArchiveCategory.objects.get(nc_id=nc_id)
+    except ArchiveCategory.DoesNotExist:
         return JsonResponse({"error": "존재하지 않는 카테고리입니다."}, status=400)
 
     #언론사
     media = None
     if media_id:
         try:
-            media = Media.objects.get(media_id=media_id)
-        except Media.DoesNotExist:
+            # 🌟 수정: ArchiveMedia 사용
+            media = ArchiveMedia.objects.get(media_id=media_id)
+        except ArchiveMedia.DoesNotExist:
             return JsonResponse({"error": "존재하지 않는 언론사입니다."}, status=400)
     elif media_name:
-        media, _ = Media.objects.get_or_create(name=media_name)
+        # 🌟 수정: ArchiveMedia 사용
+        media, _ = ArchiveMedia.objects.get_or_create(name=media_name)
 
     #1) 메타데이터 크롤링
     try:
@@ -98,8 +119,17 @@ def scrap_list(request, user_id: int):
     """
     GET /api/users/<user_id>/scraps/
     """
+    # 🌟 순환 임포트 해결을 위해 함수 내부에서 모델을 로드합니다.
     try:
-        user = User.objects.get(user_id=user_id)
+        Article = apps.get_model('archive', 'Article')
+        Scrap = apps.get_model('archive', 'Scrap')
+        User = get_user_model() # 이미 상단에 정의되어 있지만, 명시적으로 다시 호출
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
+    try:
+        # User = get_user_model() 선언 덕분에 User.objects.get 사용 가능
+        user = User.objects.get(id=user_id) # user_id 필드 대신 id 필드로 검색하는 것이 안전
     except User.DoesNotExist:
         return JsonResponse({"error": "해당 사용자를 찾을 수 없습니다"}, status=404)
 
@@ -140,3 +170,38 @@ def create_scrap(request):
 
 def profile_detail(request):
     return render(request, "archive/profile-detail.html")
+
+@csrf_exempt
+@require_POST
+def fetch_article_preview(request):
+    """
+    URL을 받아 메타데이터(제목, 이미지, 언론사 등)를 추출하여 반환합니다.
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON 형식이 아닙니다."}, status=400)
+
+    url = data.get("url")
+
+    if not url:
+        return JsonResponse({"error": "url은 필수입니다."}, status=400)
+
+    # 1) 메타데이터 크롤링
+    try:
+        meta = fetch_article_metadata(url)
+    except Exception as e:
+        # 크롤링 실패 시 오류 메시지와 함께 빈 객체 반환
+        print(f"Metadata fetch failed for {url}: {e}")
+        return JsonResponse({"error": f"기사 정보를 가져오는 데 실패했습니다: {e}"}, status=500)
+
+    # 2) 응답: 프론트엔드가 미리보기에 사용할 정보만 반환
+    return JsonResponse({
+        "title": meta.get("title", "제목 없음"),
+        "summary": meta.get("summary", ""),
+        "image": meta.get("image", ""),
+        "url": url,
+        # 언론사 이름은 여기서 크롤링 결과에 포함될 수도 있으나, 
+        # 사용자 선택 전에 빈 값으로 두거나 크롤링 결과(meta['media_name'])를 사용할 수 있습니다.
+        "media_name_from_meta": meta.get("media_name", "출처 불명"),
+    })

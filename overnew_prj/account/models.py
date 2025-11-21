@@ -1,9 +1,17 @@
-# account/models.py
+# account/models.py (최종 수정본 - related_name 적용)
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser, PermissionsMixin, BaseUserManager
 )
+import os
+from uuid import uuid4
+from django.utils import timezone
+from django.conf import settings # settings.AUTH_USER_MODEL을 사용하기 위해 필요
 
+def upload_filepath(instance, filename):
+    today_str=timezone.now().strftime("%Y%m%d")
+    file_basename=os.path.basename(filename)
+    return f'{instance._meta.model_name}/{today_str}/{str(uuid4())}_{file_basename}'
 
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -108,8 +116,10 @@ class UserNews(models.Model):
     """
     유저가 선택한 분야 (다대다)
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey(NewsCategory, on_delete=models.CASCADE)
+    # 🌟 related_name 추가: acc_usernews_set
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='acc_usernews_set')
+    # 🌟 related_name 추가: acc_category_set
+    category = models.ForeignKey(NewsCategory, on_delete=models.CASCADE, related_name='acc_category_set')
 
     class Meta:
         db_table = "user_news"
@@ -120,7 +130,8 @@ class UserMedia(models.Model):
     """
     유저가 선택한 언론사 (다대다)
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # 🌟 related_name 추가: acc_usermedia_set
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='acc_usermedia_set')
     media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
     class Meta:

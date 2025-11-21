@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('api/article/preview', views.fetch_article_preview, name='api_article_preview'),
     #HTML
     path("", views.archive_main, name="archive_main"),
     path("article/", views.article_detail, name="article_detail"),

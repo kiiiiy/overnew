@@ -7,4 +7,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("account/", include("account.urls")),
     path("", include("archive.urls")),
+    path('recommend/', include('recommend.urls')),
 ]

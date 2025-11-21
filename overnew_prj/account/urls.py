@@ -1,40 +1,32 @@
-<<<<<<< HEAD
 from django.urls import path
 from .views import *
-app_name='account'
-
-urlpatterns=[
-    path('mypage/', mypage, name="mypage"),
-    path('update/', update, name="update")
-]
-=======
-from django.urls import path
-from . import views
 
 app_name = "account"
 
 urlpatterns = [
-    path("onboarding/", views.splash, name="splash"),
+    path("onboarding/", splash, name="splash"),
 
-    path("api/send-email-code/", views.send_signup_verification_code, name="send_email_code"),
-    path("api/verify-email-code/", views.verify_signup_verification_code, name="verify_email_code"),
+    path("api/send-email-code/", send_signup_verification_code, name="send_email_code"),
+    path("api/verify-email-code/", verify_signup_verification_code, name="verify_email_code"),
 
-    path("signup/step1/", views.info_step1, name="info_step1"),
-    path("signup/step2/", views.info_step2, name="info_step2"),
-    path("signup/step3/", views.info_step3, name="info_step3"),
-    path("signup/step4/", views.info_step4, name="info_step4"),
-    path("signup/step5/", views.info_step5, name="info_step5"),
-    path("signup/complete/", views.signup_complete, name="signup_complete"),
+    path("signup/step1/", info_step1, name="info_step1"),
+    path("signup/step2/", info_step2, name="info_step2"),
+    path("signup/step3/", info_step3, name="info_step3"),
+    path("signup/step4/", info_step4, name="info_step4"),
+    path("signup/step5/", info_step5, name="info_step5"),
+    path("signup/complete/", signup_complete, name="signup_complete"),
     
 
-    path("api/signup/", views.api_signup, name="api_signup"),
+    path("api/signup/", api_signup, name="api_signup"),
 
-    path("login/", views.login_view, name="login"),
-    path("logout/", views.logout_view, name="logout"),
+    path("login/", login_view, name="login"),
+    path("logout/", logout_view, name="logout"),
 
-    path("settings/", views.settings_view, name="settings"),
-    path("profile/edit/", views.profile_edit_view, name="profile_edit"),
+    path("settings/", settings_view, name="settings"),
+    path("profile/edit/", profile_edit_view, name="profile_edit"),
 
-    path("notifications/", views.notifications_view, name="notifications"),
+    path("notifications/", notifications_view, name="notifications"),
+
+    path('mypage/', mypage, name="mypage"),
+    path('update/', update, name="update"),
 ]
->>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

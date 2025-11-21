@@ -1,8 +1,17 @@
-<<<<<<< HEAD
 from django.shortcuts import render, redirect
 from users.models import *
 from archive.models import *
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+import json
+from django.core.mail import send_mail
+from django.conf import settings
+import random
+
 
 # Create your views here.
 
@@ -68,7 +77,6 @@ def update(request):
         'news_categories': news_categories,
         'selected_news': selected_news,
     })
-=======
 # account/views.py
 
 from django.shortcuts import render, redirect
@@ -85,11 +93,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 
-
-
-# ================================
-# 1. 화면 렌더링 (HTML)
-# ================================
 
 def splash(request):
     return render(request, "account/index.html")
@@ -394,4 +397,3 @@ def verify_signup_verification_code(request):
 
     
 
->>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

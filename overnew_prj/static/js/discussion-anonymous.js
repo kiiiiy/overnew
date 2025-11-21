@@ -1,15 +1,15 @@
 // ----- 1. 더미 데이터 -----
 let dummyComments = [
     { 
-        id: 'c1', userId: 'user1', date: '2021-08-19', 
+        id: 'c1', userId: 'user1', date: 'Aug 19, 2021', 
         text: 'AI가 수입식품 검사에 도입되면 정말 위험한 제품들을 더 빨리 걸러낼 수 있을까?', 
         likes: 5, replies: [
-            { id: 'c3', userId: 'user2', date: '2021-08-19', text: '맞아요, 기사에서 읽었는데 심사 기간이 줄어들긴 했다던데...', likes: 0, replies: [] },
-            { id: 'c4', userId: 'user1', date: '2021-08-19', text: 'AI 버전으로 문제가 생기는 시나리오가 더 있을까요?', likes: 1, replies: [] }
+            { id: 'c3', userId: 'user2', date: 'Aug 19, 2021', text: '맞아요, 기사에서 읽었는데 심사 기간이 줄어들긴 했다던데...', likes: 0, replies: [] },
+            { id: 'c4', userId: 'user1', date: 'Aug 19, 2021', text: 'AI 버전으로 문제가 생기는 시나리오가 더 있을까요?', likes: 1, replies: [] }
         ] 
     },
     { 
-        id: 'c2', userId: 'user2', date: '2021-08-18', 
+        id: 'c2', userId: 'user2', date: 'Aug 18, 2021', 
         text: '이거 정말 필요한 기능이라고 생각합니다. 식품 안전이 중요하죠.', 
         likes: 12, replies: [] 
     }
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'c' + Date.now() + Math.floor(Math.random()*1000),
             userId: userInfo.id,
             avatar: null,
-            date: new Date().toLocaleDateString('ko-KR'),
+            ate: new Date().toISOString().split('T')[0], // (임시) 오늘 날짜
             text: text,
             likes: 0,
             replies: []

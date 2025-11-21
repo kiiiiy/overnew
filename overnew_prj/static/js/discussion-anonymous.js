@@ -3,7 +3,7 @@
 // =========================================================================
 
 // ----- 1-1. 더미 데이터 -----
-let dummyComments = [
+let dummyComments = JSON.parse(localStorage.getItem('comments')) || [
     { 
         id: 'c1', userId: 'user1', date: 'Aug 19, 2021', 
         text: 'AI가 수입식품 검사에 도입되면 정말 위험한 제품들을 더 빨리 걸러낼 수 있을까?', 
@@ -77,12 +77,14 @@ function renderComments() {
         console.error("ID가 'comment-list'인 요소를 찾을 수 없습니다.");
         return;
     }
-    
+
+    console.log("Rendering comments:", dummyComments);
+
     dummyComments.sort((a,b) => {
         const dateA = new Date(a.date), dateB = new Date(b.date);
         return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
     });
-    
+
     container.innerHTML = dummyComments.map(c => createCommentHTML(c)).join('');
 }
 
@@ -120,83 +122,177 @@ function findCommentById(list, id) {
 // ******** 2. DOMContentLoaded 이벤트 리스너 (기존 코드 대체) *********
 // =========================================================================
 
+let submitBtn, commentInput;
+
 document.addEventListener('DOMContentLoaded', () => {
-    // --- (A) 핀 고정 기능 관련 기존 코드 ---
-    const pinBtn = document.getElementById('pin-btn');
-    const pinnedBox = document.getElementById('pinned-discussion-box');
+    console.log("DOMContentLoaded event fired.");
 
-    const storageKey = 'pinned_discussions';
-    const storageDataKey = 'pinned_discussions_data';
-    let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
-    let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
+    submitBtn = document.getElementById('submit-comment-btn');
+    commentInput = document.getElementById('comment-input');
 
-    const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
-    
-    // [수정] document.querySelector('.article-title') 등이 null일 경우를 대비해 기본값 설정
-    const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
-    const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
-    const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
-
-    if (pinBtn && pinnedDiscussions.includes(discussionId)) {
-        pinBtn.classList.add('active');
-        pinBtn.textContent = '📌 고정';
+    if (!submitBtn) {
+        console.error("ID가 'submit-comment-btn'인 요소를 찾을 수 없습니다.");
     }
 
-    function renderPinnedBox() {
-        if (pinnedBox) {
-            if (pinnedDiscussions.includes(discussionId)) {
-                pinnedBox.innerHTML = `<div class="pinned-item" style="cursor: pointer;" onclick="location.href='/discussion/detail?id=${discussionId}'">
-                    📌 ${discussionTitle} 
-                    <button class="unpin-btn" style="margin-left:8px;cursor:pointer;">❌ 고정 해제</button>
-                </div>`;
-                const unpinBtn = pinnedBox.querySelector('.unpin-btn');
-                if (unpinBtn) {
-                    unpinBtn.addEventListener('click', (event) => {
-                        event.stopPropagation(); // Prevent triggering the click on the pinned item
-                        pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
-                        delete pinnedData[discussionId];
-                        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
-                        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
-                        if (pinBtn) {
-                            pinBtn.classList.remove('active');
-                            pinBtn.textContent = '📌 고정됨';
-                        }
-                        renderPinnedBox();
-                        alert('고정이 해제되었습니다.');
-                    });
+    if (!commentInput) {
+        console.error("ID가 'comment-input'인 요소를 찾을 수 없습니다.");
+    }
+
+    renderComments();
+
+    if (submitBtn && commentInput) {
+        submitBtn.addEventListener('click', () => {
+            const text = commentInput.value.trim();
+            if (!text) {
+                console.warn("댓글 입력이 비어 있습니다.");
+                return;
+            }
+
+            const now = new Date();
+            const newComment = {
+                id: 'c' + Date.now() + Math.floor(Math.random()*1000),
+                userId: userInfo.id,
+                date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).replace(/,\s*/g, ', '),
+                text: text,
+                likes: 0,
+                replies: []
+            };
+
+            if (replyTarget) {
+                const parent = findCommentById(dummyComments, replyTarget.id);
+                if (parent) {
+                    parent.replies.push(newComment);
+                    console.log("Reply added to comment:", parent);
                 }
+                replyTarget = null;
             } else {
-                pinnedBox.innerHTML = '';
+                dummyComments.push(newComment);
+                console.log("New comment added:", newComment);
             }
-        }
-    }
 
-    renderPinnedBox();
+            localStorage.setItem('comments', JSON.stringify(dummyComments));
+            console.log("Updated comments saved to localStorage:", dummyComments);
 
-    if (pinBtn) {
-        pinBtn.addEventListener('click', () => {
-            if (pinnedDiscussions.includes(discussionId)) {
-                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
-                delete pinnedData[discussionId];
-                pinBtn.classList.remove('active');
-                pinBtn.textContent = '📌 고정';
-            } else {
-                pinnedDiscussions.push(discussionId);
-                pinnedData[discussionId] = {
-                    id: discussionId,
-                    title: discussionTitle,
-                    category: discussionCategory,
-                    source: discussionSource
-                };
-                pinBtn.classList.add('active');
-                pinBtn.textContent = '📌 고정됨';
-            }
-            localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
-            localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
-            renderPinnedBox();
-            alert('커뮤니티 상단에 고정되었습니다.');
+            commentInput.value = '';
+            updateCommentInputMode();
+            renderComments();
         });
     }
+
+    // --- (A) 핀 고정 기능 수정된 전체 코드 ---
+const pinBtn = document.getElementById('pin-btn');
+const pinnedBox = document.getElementById('pinned-discussion-box');
+
+const storageKey = 'pinned_discussions';
+const storageDataKey = 'pinned_discussions_data';
+let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
+let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
+
+const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
+
+// 제목, 카테고리, 출처가 null일 경우 대비
+const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
+const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
+const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
+
+// 🔥 초기 렌더링 시 텍스트 오류 수정 (고정됨/고정 반대로 표시되던 문제 해결)
+if (pinBtn) {
+    if (pinnedDiscussions.includes(discussionId)) {
+        pinBtn.classList.add('active');
+        pinBtn.textContent = '📌 고정됨';   // 이미 고정 상태 → "고정됨"
+    } else {
+        pinBtn.classList.remove('active');
+        pinBtn.textContent = '📌 고정';     // 비고정 상태 → "고정"
+    }
+}
+
+// ------ 핀 박스 렌더 ------
+function renderPinnedBox() {
+    if (!pinnedBox) return;
+
+    if (pinnedDiscussions.includes(discussionId)) {
+        pinnedBox.innerHTML = `
+            <div class="pinned-item" style="cursor: pointer;" 
+                 onclick="location.href='/discussion/detail?id=${discussionId}'">
+                📌 ${discussionTitle} 
+                <button class="unpin-btn" style="margin-left:8px;cursor:pointer;">❌ 고정 해제</button>
+            </div>
+        `;
+
+        console.log("렌더링된 고정된 토론방:", pinnedData[discussionId]);
+
+        // 고정 해제 버튼 이벤트
+        const unpinBtn = pinnedBox.querySelector('.unpin-btn');
+        if (unpinBtn) {
+            unpinBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+
+                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                delete pinnedData[discussionId];
+
+                localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+                localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+
+                if (pinBtn) {
+                    pinBtn.classList.remove('active');
+                    pinBtn.textContent = '📌 고정';
+                }
+
+                renderPinnedBox();
+                alert('고정이 해제되었습니다.');
+            });
+        }
+    } else {
+        pinnedBox.innerHTML = '';
+    }
+}
+
+renderPinnedBox();
+
+
+// ---------- 핀 버튼 클릭 ----------
+if (pinBtn) {
+    pinBtn.addEventListener('click', () => {
+        // 🔥 고정 가능한 토론방 ID 제한
+        const ALLOWED_DISCUSSION_IDS = ['anonymous', 'realname'];
+
+        if (!ALLOWED_DISCUSSION_IDS.some(id => discussionId.startsWith(id))) {
+            alert('이 토론방의 기사는 고정할 수 없습니다.');
+            return;
+        }
+
+        if (pinnedDiscussions.includes(discussionId)) {
+            // 고정 해제
+            pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+            delete pinnedData[discussionId];
+
+            pinBtn.classList.remove('active');
+            pinBtn.textContent = '📌 고정';
+
+            console.log("고정 해제됨:", discussionId);
+        } else {
+            // 고정 설정
+            pinnedDiscussions.push(discussionId);
+            pinnedData[discussionId] = {
+                id: discussionId,
+                title: discussionTitle,
+                category: discussionCategory,
+                source: discussionSource
+            };
+
+            pinBtn.classList.add('active');
+            pinBtn.textContent = '📌 고정됨';
+
+            console.log("고정 설정됨:", pinnedData[discussionId]);
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+        renderPinnedBox();
+
+        alert('커뮤니티 상단에 고정 상태가 변경되었습니다.');
+    });
+}
 
     // 뒤로가기 버튼
     const backButton = document.getElementById("back-button");
@@ -208,9 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- (B) 댓글 기능 관련 수정된 코드 ---
     const myAvatar = document.getElementById('my-avatar');
-    const commentInput = document.getElementById('comment-input');
     const commentList = document.getElementById('comment-list');
-    const submitBtn = document.getElementById('submit-comment-btn');
     const sortBtn = document.getElementById('sort-btn');
     const cancelReplyBtn = document.getElementById('cancel-reply-btn');
 
@@ -301,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dummyComments.push(newComment);
             }
 
+            localStorage.setItem('comments', JSON.stringify(dummyComments));
             commentInput.value = '';
             updateCommentInputMode();
             renderComments();

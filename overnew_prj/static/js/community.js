@@ -103,7 +103,7 @@ function pinDiscussion(discussionId, discussionData) {
     pinnedData[discussionId] = {
         id: discussionId,
         title: discussionData.title,
-        type: discussionData.type || 'anonymous', // 익명 또는 실명 타입 구별
+        type: discussionData.type || 'anonymous',
         category: discussionData.category,
         source: discussionData.source
     };
@@ -188,7 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
             const discussionData = dummyCommunityData[currentTopic]?.find(article => article.id === id);
             if (discussionData) {
-                pinDiscussion(id, discussionData);
+                // 고정 상태를 설정하기 전에 기존 상태 확인
+                if (!pinnedDiscussions.includes(id)) {
+                    pinDiscussion(id, discussionData);
+                }
             }
         }
     });

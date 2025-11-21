@@ -7,8 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이메일 인증 - OVERNEW</title>
     <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
-    <script src="/overnew_prj/static/js/account.js" defer></script>
+    <link rel="stylesheet" href="/overnew_prj/static/css/email_verify.css">
 
+    <script src="/overnew_prj/static/js/account.js" defer></script>
 </head>
 
 <body id="page-email-verify">
@@ -18,7 +19,7 @@
         <h1 class="logo">OVERNEW</h1>
 
         <div class="progress-bar">
-            <div class="progress-value" style="width: 20%;"></div>
+            <div class="progress-value" style="width: 30%;"></div>
         </div>
 
         <h2 class="title">이메일 인증</h2>
@@ -26,9 +27,13 @@
 
         <form class="info-form">
 
-            <div class="form-group">
+            <div class="form-group email-row">
                 <label for="signup-email">이메일</label>
-                <input id="signup-email" type="email" placeholder="example@domain.com">
+
+                <div class="email-input-wrap">
+                    <input id="signup-email" type="email" placeholder="example@domain.com">
+                    <button type="button" id="send-code-btn" class="mini-btn">전송</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -38,7 +43,6 @@
 
         </form>
 
-        <button type="button" class="next-button" id="send-code-btn">인증번호 전송</button>
         <button type="button" class="next-button" id="verify-code-btn">인증번호 확인</button>
 
         <p class="subtitle-comment">

@@ -11,7 +11,7 @@ from .gemini_service import check_for_hate_speech
 
 
 def main(request):
-    return render(request, 'discussion/main.html')
+    return render(request, 'discussion/community.html')
 
 def discussion_list(request, nc_id=1):
     categories = NewsCategory.objects.all().order_by('nc_id')
@@ -36,7 +36,7 @@ def discussion_list(request, nc_id=1):
         'selected_category': selected_category,
         'rooms': rooms,
     }
-    return render(request, 'discussion/discussion_list.html', context)
+    return render(request, 'discussion/discussion-realname.html', context)
 
 
 def anonymous_list(request, nc_id=1):
@@ -62,7 +62,7 @@ def anonymous_list(request, nc_id=1):
         'selected_category': selected_category,
         'rooms': rooms,
     }
-    return render(request, 'discussion/anonymous_list.html', context)
+    return render(request, 'discussion/discussion-anonymous.html', context)
 
 def discussion_detail(request, room_id):
     room = get_object_or_404(
@@ -93,7 +93,7 @@ def anonymous_detail(request, room_id):
     context = {
         'room': room,
     }
-    return render(request, 'discussion/anonymous_detail.html', context)
+    return render(request, 'discussion/discussion-article-detail.html', context)
 
 @login_required
 def create_comment(request, room_id):
@@ -154,3 +154,4 @@ def delete_comment(request, room_id, comment_id):
     comment.delete()
     
     return redirect('discussion:discussion_detail', room_id=room_id)
+

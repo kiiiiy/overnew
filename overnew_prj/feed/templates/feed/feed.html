@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>피드 - OVERNEW</title>
+    <link rel="stylesheet" href="../../../static/css/style.css">
+</head>
+
+<body class="with-fixed-nav">
+    <header class="main-header">
+        <!-- 햄버거 버튼 -->
+        <button type="button" class="icon-btn menu-btn" id="settings-menu-btn">
+            <img src="../../../static/image/hamburger.png" alt="메뉴" class="header-icon">
+        </button>
+        <h1 class="logo header-logo">OVERNEW</h1>
+        <!-- 알람 버튼 -->
+        <button type="button" class="icon-btn bell-btn" id="notifications-btn">
+            <img src="../../../static/image/bell.png" alt="알림" style="width: 26px; height: 26px; vertical-align: middle;">
+        </button>
+    </header>
+
+    <main class="container">
+
+        <div class="view-toggle" style="margin-bottom: 20px;">
+            <input type="radio" id="view-hot" name="view-type" value="hot" checked>
+            <label for="view-hot">HOT</label>
+            
+            <input type="radio" id="view-following" name="view-type" value="following">
+            <label for="view-following">FOLLOWING</label>
+        </div>
+        
+        <div class="keyword-list" id="keyword-list-container">
+            <span class="keyword-tag active" data-topic="politics">정치</span>
+            <span class="keyword-tag" data-topic="economy">경제</span>
+            <span class="keyword-tag" data-topic="society">사회</span>
+            <span class="keyword-tag" data-topic="culture">생활/문화</span>
+            <span class="keyword-tag" data-topic="it">IT/과학</span>
+            <span class="keyword-tag" data-topic="world">세계</span>
+            <span class="keyword-tag" data-topic="enter">연예</span>
+            <span class="keyword-tag" data-topic="sport">스포츠</span>
+        </div>
+
+        <div class="article-list" id="feed-hot"></div>
+        <div class="article-list" id="feed-following" style="display: none;"></div>
+
+    </main>
+     <!-- nav는 JS에서 자동 생성 -->
+    <nav class="bottom-nav"></nav>
+
+    <!-- JS 파일 불러오기 -->
+    <script src="../../../static/js/nav.js"></script>
+
+    <script src="../../../static/js/feed.js"></script>
+</body>
+</html>

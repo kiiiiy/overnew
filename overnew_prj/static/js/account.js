@@ -12,7 +12,7 @@ function formatTimeAgo(timestamp) {
     if (diffSeconds < HOUR) return `${Math.floor(diffSeconds / MINUTE)}분 전`;
     if (diffSeconds < DAY) return `${Math.floor(diffSeconds / HOUR)}시간 전`;
     if (diffSeconds < MONTH) return `${Math.floor(diffSeconds / DAY)}일 전`;
-    
+
     const year = String(past.getFullYear()).slice(-2);
     const month = String(past.getMonth() + 1).padStart(2, '0');
     const day = String(past.getDate()).padStart(2, '0');
@@ -23,9 +23,9 @@ function initializeNotifications() {
     let readStates = JSON.parse(localStorage.getItem('read_notifications')) || {};
     document.querySelectorAll('.notification-item').forEach(item => {
         const notifId = item.dataset.notifId;
-        const notifTime = item.dataset.time; 
+        const notifTime = item.dataset.time;
         const timestampElement = item.querySelector('.notif-timestamp');
-        
+
         if (notifTime && timestampElement) {
             timestampElement.textContent = formatTimeAgo(notifTime);
         }
@@ -34,7 +34,7 @@ function initializeNotifications() {
         }
         item.addEventListener('click', () => {
             if (!notifId) return;
-            item.classList.add('read'); 
+            item.classList.add('read');
             readStates[notifId] = true;
             localStorage.setItem('read_notifications', JSON.stringify(readStates));
         });
@@ -52,7 +52,7 @@ function initSplashPage() {
     setTimeout(() => {
         // 절대 경로로 수정 (로그인 페이지의 경로를 기준으로 추정)
         window.location.href = '/overnew_prj/feed/templates/feed/feed.html';
-    }, 2000); 
+    }, 2000);
 }
 
 // [Step 1] info-step1.html
@@ -60,14 +60,14 @@ function initInfoStep1Page() {
     document.getElementById('next-btn-step1').addEventListener('click', () => {
         const name = document.getElementById('user-name').value;
         const age = document.getElementById('user-age').value;
-        const gender = document.querySelector('input[name="gender"]:checked')?.value; 
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
         if (!name || !age || !gender) {
             alert('모든 정보를 입력해주세요.');
-            return; 
+            return;
         }
         const userInfo = { name, age, gender };
         localStorage.setItem('user-info', JSON.stringify(userInfo));
-        window.location.href = 'info-step2.html';
+        window.location.href = '/account/signup/step2/';
     });
 }
 
@@ -78,7 +78,7 @@ function initInfoStep2Page() {
     if (userInfo && userInfo.name) {
         greetingElement.textContent = `${userInfo.name}님`;
     } else {
-        greetingElement.textContent = "방문자님"; 
+        greetingElement.textContent = "방문자님";
     }
 
     document.getElementById('next-btn-step2').addEventListener('click', () => {
@@ -86,7 +86,7 @@ function initInfoStep2Page() {
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
         const newInfo = { ...oldInfo, stance: selectedStance };
         localStorage.setItem('user-info', JSON.stringify(newInfo));
-        window.location.href = 'info-step3.html';
+        window.location.href = '/account/signup/step3/';
     });
 }
 
@@ -97,7 +97,7 @@ function initInfoStep3Page() {
     if (userInfo && userInfo.name) {
         greetingElement.textContent = `${userInfo.name}님`;
     } else {
-        greetingElement.textContent = "방문자님"; 
+        greetingElement.textContent = "방문자님";
     }
 
     document.getElementById('next-btn-step3').addEventListener('click', () => {
@@ -110,7 +110,7 @@ function initInfoStep3Page() {
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
         const newInfo = { ...oldInfo, topics: selectedTopics };
         localStorage.setItem('user-info', JSON.stringify(newInfo));
-        window.location.href = 'info-step4.html';
+        window.location.href = '/account/signup/step4/';
     });
 }
 
@@ -121,7 +121,7 @@ function initInfoStep4Page() {
     if (userInfo && userInfo.name) {
         greetingElement.textContent = `${userInfo.name}님`;
     } else {
-        greetingElement.textContent = "방문자님"; 
+        greetingElement.textContent = "방문자님";
     }
 
     document.getElementById('next-btn-step4').addEventListener('click', () => {
@@ -134,7 +134,7 @@ function initInfoStep4Page() {
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
         const newInfo = { ...oldInfo, media: selectedMedia };
         localStorage.setItem('user-info', JSON.stringify(newInfo));
-        window.location.href = 'info-step5.html'; 
+        window.location.href = '/account/signup/step5/';
     });
 }
 
@@ -145,7 +145,7 @@ function initInfoStep5Page() {
         const userId = document.getElementById('user-id').value;
         const password = document.getElementById('user-password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
-        
+
         if (!nickname || !userId || !password || !confirmPassword) {
             alert('모든 항목을 입력해주세요.');
             return;
@@ -155,22 +155,22 @@ function initInfoStep5Page() {
             return;
         }
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
-        const finalUserInfo = { 
-            ...oldInfo, 
+        const finalUserInfo = {
+            ...oldInfo,
             nickname: nickname,
             userId: userId,
             password: password
         };
         localStorage.setItem('user-info', JSON.stringify(finalUserInfo));
-        window.location.href = 'signup-complete.html'; 
+        window.location.href = '/account/signup/complete/';
     });
 }
 
 // [Signup Complete] signup-complete.html
 function initSignupCompletePage() {
     setTimeout(() => {
-        window.location.href = '/overnew_prj/feed/templates/feed/feed.html'; 
-    }, 3000); 
+        window.location.href = '/overnew_prj/feed/templates/feed/feed.html';
+    }, 3000);
 }
 
 // [Login] login.html
@@ -190,7 +190,7 @@ function initLoginPage() {
 
     if (loginForm && userIdInput && passwordInput) {
         loginForm.addEventListener('submit', (event) => {
-            event.preventDefault(); 
+            event.preventDefault();
             const id = userIdInput.value.trim();
             const password = passwordInput.value.trim();
 
@@ -201,9 +201,9 @@ function initLoginPage() {
             const savedInfo = JSON.parse(localStorage.getItem('user-info'));
             if (savedInfo && savedInfo.userId === id && savedInfo.password === password) {
                 const sessionData = { ...savedInfo };
-                delete sessionData.password; 
+                delete sessionData.password;
                 localStorage.setItem('current-session', JSON.stringify(sessionData));
-                alert(`'${savedInfo.nickname}'님, 환영합니다!`); 
+                alert(`'${savedInfo.nickname}'님, 환영합니다!`);
                 window.location.href = '../../../feed/templates/feed/feed.html';
             } else {
                 alert('ID 또는 비밀번호가 일치하지 않습니다.');
@@ -217,22 +217,22 @@ function initNotificationPage() {
     const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            window.history.back(); 
+            e.preventDefault();
+            window.history.back();
         });
     }
-    
+
     // 🚨 [수정!] 'current-session' 사용
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     if (!userInfo || !userInfo.nickname) {
         alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html'; 
-        return; 
+        window.location.href = 'login.html';
+        return;
     }
     document.querySelectorAll('.username').forEach(element => {
-        element.textContent = userInfo.nickname; 
+        element.textContent = userInfo.nickname;
     });
-    initializeNotifications(); 
+    initializeNotifications();
 }
 
 // [Settings - Logged In] settings-logged-in.html
@@ -240,9 +240,9 @@ function initSettingsLoggedInPage() {
     const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             const feedUrl = '../../../feed/templates/feed/feed.html';
-            
+
             window.location.href = feedUrl;
         });
     }
@@ -251,8 +251,8 @@ function initSettingsLoggedInPage() {
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     if (!userInfo) {
         alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'settings-logged-out.html'; 
-        return; 
+        window.location.href = 'settings-logged-out.html';
+        return;
     }
 
     const nicknameEl = document.getElementById('user-nickname');
@@ -267,20 +267,20 @@ function initSettingsLoggedInPage() {
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
         logoutButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             if (confirm('정말 로그아웃 하시겠습니까?')) {
                 localStorage.removeItem('current-session');
                 alert('로그아웃되었습니다.');
-                window.location.href = 'login.html'; 
+                window.location.href = 'login.html';
             }
         });
     }
-    
+
     const profileEditBtn = document.getElementById('profile-edit-btn');
     if (profileEditBtn) {
         profileEditBtn.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            window.location.href = 'profile-edit.html'; 
+            e.preventDefault();
+            window.location.href = 'profile-edit.html';
         });
     }
     const notificationsBtn = document.getElementById('notifications-btn');
@@ -298,7 +298,7 @@ function initSettingsLoggedInPage() {
                 localStorage.removeItem('user-info');
                 localStorage.removeItem('current-session');
                 alert('계정이 성공적으로 삭제되었습니다.');
-                window.location.href = 'login.html'; 
+                window.location.href = 'login.html';
             }
         });
     }
@@ -309,8 +309,8 @@ function initSettingsLoggedOutPage() {
     const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            window.history.back(); 
+            e.preventDefault();
+            window.history.back();
         });
     }
 }
@@ -354,18 +354,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayUserInfo() {
         // 로컬 스토리지에서 최신 정보 로드
         const userInfo = JSON.parse(localStorage.getItem('user-info') || 'null');
-        
+
         // 설정 페이지 HTML 요소 ID (settings-logged-in.html에 있어야 함)
         const nicknameEl = document.getElementById('user-nickname');
         const tagsEl = document.getElementById('user-tags');
-        
+
         if (userInfo) {
             // A. 닉네임 업데이트
             if (nicknameEl) {
                 // 저장된 닉네임이 있으면 표시, 없으면 기본값 표시
                 nicknameEl.textContent = userInfo.nickname || 'OVERNEW 사용자';
             }
-            
+
             // B. 관심 분야 태그 업데이트
             if (tagsEl && userInfo.topics && Array.isArray(userInfo.topics)) {
                 // ['정치', '경제'] -> '#정치 #경제' 문자열로 변환하여 표시
@@ -374,14 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 tagsEl.textContent = '관심 분야 미설정';
             }
         }
-        
+
         // 🚨 (옵션) 로그인 정보가 없을 경우 처리 (이 페이지는 로그인 상태여야 함)
         if (!userInfo) {
-             // 닉네임 영역 등에 "로그인 필요" 등의 메시지를 표시하거나
-             // window.location.href = 'login.html'; 로 리다이렉션할 수 있습니다.
+            // 닉네임 영역 등에 "로그인 필요" 등의 메시지를 표시하거나
+            // window.location.href = 'login.html'; 로 리다이렉션할 수 있습니다.
         }
     }
-    
+
     // 2. 페이지 로드 시 정보 표시 함수를 실행
     // settings-logged-in.html이 로드될 때마다 이 함수가 실행되어 최신 정보를 표시합니다.
     displayUserInfo();
@@ -392,26 +392,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
         logoutButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             if (confirm('정말 로그아웃 하시겠습니까?')) {
                 // 🚨 수정: 등록 정보(user-info)는 보존하고 세션만 삭제합니다.
                 localStorage.removeItem('current-session');
                 alert('로그아웃되었습니다.');
                 // 🚨 수정: settings-logged-out.html로 이동합니다. (login.html은 settings-logged-out에서 다시 연결될 수 있음)
-                window.location.href = 'settings-logged-out.html'; 
+                window.location.href = 'settings-logged-out.html';
             }
         });
     }
-    
+
     // ----------------------------------------------------
     // 4. 프로필 수정 버튼 이벤트 리스너 (settings -> profile-edit으로 이동)
     // ----------------------------------------------------
     const profileEditBtn = document.getElementById('profile-edit-btn');
     if (profileEditBtn) {
-        profileEditBtn.addEventListener('click', function(e) {
-            e.preventDefault(); 
+        profileEditBtn.addEventListener('click', function (e) {
+            e.preventDefault();
             // 🚨 경로 수정: profile-edit.html로 이동
-            window.location.href = 'profile-edit.html'; 
+            window.location.href = 'profile-edit.html';
         });
     }
 });

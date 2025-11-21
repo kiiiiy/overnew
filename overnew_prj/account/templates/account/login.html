@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - OVERNEW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="{% static 'js/account.js' %}" defer></script>
+</head>
+
+<body id="page-login">
+
+    <main class="container">
+
+        <h1 class="logo" style="margin-top: 50px; margin-bottom: 50px;">OVERNEW</h1>
+
+        <form class="login-form" id="login-form">
+
+            <div class="form-group">
+                <input type="text" id="user-id" placeholder="Enter your ID">
+            </div>
+
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <input type="password" id="user-password" placeholder="Enter your password">
+                    <img src="{% static 'image/view.png' %}" alt="Show password" class="input-icon" />
+                </div>
+            </div>
+
+            <button type="submit" class="next-button">Login</button>
+
+        </form>
+
+        <div class="divider">Or Login with</div>
+
+        <div class="social-logins">
+            <button type="button" class="social-button">
+            </button>
+            <button type="button" class="social-button">
+            </button>
+            <button type="button" class="social-button">
+            </button>
+        </div>
+
+        <p class="bottom-link">
+            Don't have an account?
+            <a href="info-step1.html">Register Now</a>
+        </p>
+
+    </main>
+
+</body>
+
+</html>

@@ -62,6 +62,7 @@ class Article(models.Model):
     url = models.URLField(unique=True)
     summary = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    like=models.ManyToManyField(User, through='Like', related_name="like_articles")
 
     def __str__(self):
         return self.title

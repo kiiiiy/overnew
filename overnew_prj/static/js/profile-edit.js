@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 1. DOM 요소 가져오기
     // ----------------------------------------------------
-    const backButton = document.getElementById('back-to-settings');
+    const backButton = document.getElementById('back-button');
     const saveButton = document.getElementById('save-profile-btn');
     
     // 프로필 필드

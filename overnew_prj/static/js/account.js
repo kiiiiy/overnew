@@ -101,7 +101,7 @@ function initInfoStep3Page() {
     }
 
     document.getElementById('next-btn-step3').addEventListener('click', () => {
-        const checkedTopics = document.querySelectorAll('input[name="topic"]:checked');
+        const checkedTopics = document.querySelectorAll('input[name="topics"]:checked');
         if (checkedTopics.length === 0) {
             alert('관심 분야를 한 개 이상 선택해주세요.');
             return;

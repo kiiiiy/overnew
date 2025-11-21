@@ -1,56 +1,63 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>익명 토론방 - OVERNEW</title>
     <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
 </head>
-<body class="with-fixed-comment-bar"> 
 
-<header class="main-header">
-    <!-- 뒤로가기 버튼 -->
-    <button type="button" class="icon-btn menu-btn" id="back-button">
-        <span>&lt;</span>
-    </button>
+<body class="with-fixed-comment-bar">
 
-    <h1 class="logo header-logo">OVERNEW</h1>
+    <header class="main-header">
+        <button type="button" class="icon-btn menu-btn" id="back-button">
+            <span>&lt;</span>
+        </button>
 
-    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
-    <div style="width:40px;"></div>
-</header>
+        <h1 class="logo header-logo">OVERNEW</h1>
+        <div style="width:40px;"></div>
+    </header>
 
-<main class="container">
-    <div style="height:40px;"></div>
-    <div class="discussion-article-header">
-        <div class="article-category-source">
-            <span class="card-category topic-it">IT/과학</span>
-            <span class="card-source">뉴스웍스</span>
-        </div>
-        <h2 class="article-title">국민 건강 위협하는 '수입식품'...AI가 자동으로 걸러낸다</h2>
-        
-        <div class="discussion-meta">
-            <div class="meta-left">
-                <span class="time-left">🕒 12 hours left</span>
-                <span class="participant-count">💬 130명이 토론에 참여중입니다.</span>
+    <main class="container">
+        <div style="height:40px;"></div>
+
+        <div class="discussion-article-header">
+            <div class="article-category-source">
+                <span class="card-category topic-it">IT/과학</span>
+                <span class="card-source">뉴스웍스</span>
             </div>
-            <button type="button" class="sort-toggle-btn" id="sort-btn">
-                    <span>⇅</span> 최신순
-                </button>
+            <h2 class="article-title">국민 건강 위협하는 '수입식품'...AI가 자동으로 걸러낸다</h2>
+
+            <div class="discussion-meta">
+                <div class="meta-left">
+                    <span class="time-left">🕒 12 hours left</span>
+                    <span class="participant-count">💬 130명이 토론에 참여중입니다.</span>
+                </div>
+                <div class="meta-right">
+                    <button type="button" class="pin-btn" id="pin-btn" title="커뮤니티 상단에 고정">
+                        📌 고정
+                    </button>
+                    <button type="button" class="sort-toggle-btn" id="sort-btn">
+                        <span>⇅</span> 최신순
+                    </button>
+                </div>
+            </div>
         </div>
+
+        <div class="comment-list" id="comment-list"></div>
+    </main>
+
+    <div class="comment-input-bar">
+        <img src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤" alt="내 프로필" id="my-avatar" class="card-avatar-small">
+        <input type="text" id="comment-input" placeholder="Add a comment">
+        <button type="button" class="comment-submit-btn" id="submit-comment-btn" style="border: none; background: none; padding: 0; cursor: pointer; margin-left: 8px;">
+            <img src="/path/to/upload-icon.png" alt="업로드" style="width: 32px; height: 32px;">
+        </button>
     </div>
 
-    <div class="comment-list" id="comment-list"></div>
-</main>
-
-<div class="comment-input-bar">
-    <img src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤" alt="내 프로필" id="my-avatar" class="card-avatar-small">
-    <input type="text" id="comment-input" placeholder="Add a comment">
-    <button type="button" class="comment-submit-btn" id="submit-comment-btn" style="border: none; background: none; padding: 0; cursor: pointer; margin-left: 8px;">
-        <img src="/path/to/upload-icon.png" alt="업로드" style="width: 32px; height: 32px;">
-    </button>
-</div>
-
     <script src="../../../static/js/discussion-anonymous.js"></script>
+
 </body>
+
 </html>

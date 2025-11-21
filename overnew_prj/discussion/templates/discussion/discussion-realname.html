@@ -5,7 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>실명 토론방 - OVERNEW</title>
     <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+    <link rel="stylesheet" href="../../../static/css/discussionstyle.css">
 
+    <style>
+        .pinned-btn {
+            background-color: #6a0dad; /* 기존 고정 삭제 버튼 색상 */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        .pinned-btn:hover {
+            background-color: #5a0cad; /* 약간 더 어두운 보라색 */
+        }
+
+        .pinned-btn.pinned {
+            background-color: #d8bfd8; /* 연한 보라색 */
+        }
+    </style>
 </head>
 <body class="with-fixed-comment-bar"> 
 
@@ -35,14 +54,19 @@
                     <span class="time-left">🕒 12 hours left</span>
                     <span class="participant-count">💬 130명이 토론에 참여중입니다.</span>
                 </div>
-                <button type="button" class="sort-toggle-btn" id="sort-btn">
-                    <span>⇅</span> 최신순
-                </button>
+                
+                <div class="meta-right">
+                    <button type="button" class="pin-btn" id="pin-btn" title="커뮤니티 상단에 고정">
+                        📌 고정
+                    </button>
+                    <button type="button" class="sort-toggle-btn" id="sort-btn">
+                        <span>⇅</span> 최신순
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="comment-list" id="comment-list">
-            </div>
+        <div class="comment-list" id="comment-list"></div>
 
     </main>
 
@@ -53,5 +77,10 @@
     </div>
 
     <script src="../../../static/js/discussion-realname.js"></script>
+    <script>
+        function togglePin(button) {
+            button.classList.toggle('pinned');
+        }
+    </script>
 </body>
 </html>

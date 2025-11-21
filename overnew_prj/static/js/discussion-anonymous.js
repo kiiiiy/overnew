@@ -182,26 +182,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (pinBtn && pinnedDiscussions.includes(discussionId)) {
         pinBtn.classList.add('active');
-        pinBtn.textContent = '📌 고정됨';
+        pinBtn.textContent = '📌 고정';
     }
 
     function renderPinnedBox() {
         if (pinnedBox) {
             if (pinnedDiscussions.includes(discussionId)) {
-                pinnedBox.innerHTML = `<div class="pinned-item">
+                pinnedBox.innerHTML = `<div class="pinned-item" style="cursor: pointer;" onclick="location.href='/discussion/detail?id=${discussionId}'">
                     📌 ${discussionTitle} 
                     <button class="unpin-btn" style="margin-left:8px;cursor:pointer;">❌ 고정 해제</button>
                 </div>`;
                 const unpinBtn = pinnedBox.querySelector('.unpin-btn');
                 if (unpinBtn) {
-                     unpinBtn.addEventListener('click', () => {
+                    unpinBtn.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Prevent triggering the click on the pinned item
                         pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
                         delete pinnedData[discussionId];
                         localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
                         localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
                         if (pinBtn) {
-                           pinBtn.classList.remove('active');
-                           pinBtn.textContent = '📌 고정';
+                            pinBtn.classList.remove('active');
+                            pinBtn.textContent = '📌 고정됨';
                         }
                         renderPinnedBox();
                         alert('고정이 해제되었습니다.');

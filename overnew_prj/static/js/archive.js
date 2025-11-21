@@ -1,37 +1,19 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 // archive.js
+=======
+>>>>>>> c806ec63978aeb6380e0794e4ad3040f940e7ba7
 // ============================================================
-// 1. 데이터 영역 (feed.js와 동일하게 맞춤)
+// 1. 데이터 영역
 // ============================================================
 
-// [내 데이터] - 아카이브 메인 '스크랩/북마크' 탭용
-// [내 데이터] - 아카이브 메인 '스크랩/북마크' 탭용 더미 데이터
+// [내 데이터] - 아카이브 메인 '스크랩/북마크' 탭용 (더미 데이터 삭제됨)
 const dummyMyData = {
-    scrap: {
-        politics: [
-            // { id: 'my-s-1', category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'https://via.placeholder.com/100x60' },
-            // { id: 'my-s-2', category: '정치', source: 'YTN', title: "국회 본회의, 주요 법안 통과 여부 주목", views: '15k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        economy: [
-            // { id: 'my-s-3', category: '경제', source: 'SBS', title: 'APEC 효과?... 경제 심리 상승세', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
-        ],
-        society: [], it: [], culture: [], world: [], enter: [], sport: []
-    },
-    bookmark: {
-        politics: [
-            // { id: 'my-b-1', category: '정치', source: '뉴스웍스', title: "여야, 내년도 예산안 심사 돌입... 치열한 공방 예고", views: '31.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' }
-        ],
-        economy: [
-            // { id: 'my-b-2', category: '경제', source: '매일경제', title: "2025년 부동산 시장, 전문가들의 전망은?", views: '50k', time: '2일 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        it: [
-            // { id: 'my-b-3', category: 'IT/과학', source: '블로터', title: "갤럭시 S25 유출 정보 총정리", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        society: [], culture: [], world: [], enter: [], sport: []
-    }
+    scrap: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] },
+    bookmark: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] }
 };
 
-// [다른 유저 데이터] - feed.js와 100% 동일한 구조 + 태그 정보 포함
+// [다른 유저 데이터] - (유지)
 const dummyUserDatabase = {
     'kwon': {
         id: 'kwon', nickname: '권또또', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권', tags: ['정치', '사회'],
@@ -39,69 +21,50 @@ const dummyUserDatabase = {
             { id: 'kwon-1', topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
             { id: 'kwon-2', topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'kwon-bk-1', topic: 'economy', category: '경제', source: '매일경제', title: "2025년 부동산 시장 전망 보고서", views: '5k', time: '1일 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'kwon-bk-2', topic: 'it', category: 'IT/과학', source: '블로터', title: "생성형 AI가 바꾸는 일자리 지도", views: '10k', time: '3일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'leftgabi': {
         id: 'leftgabi', nickname: '왼가비', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼', tags: ['경제'],
         scrap: [
             { id: 'left-1', topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기... 개미들 '패닉'", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기...", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'left-bk-1', topic: 'politics', category: '정치', source: '경향신문', title: "국회 예산안 심사 돌입, 여야 공방 예상", views: '3k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'kimlinky': {
         id: 'kimlinky', nickname: '김링키', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김', tags: ['경제'],
         scrap: [
             { id: 'kim-1', topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'kim-bk-1', topic: 'culture', category: '생활/문화', source: '보그 코리아', title: "올겨울 패션 트렌드 키워드 5", views: '20k', time: '2일 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'kim-bk-2', topic: 'sport', category: '스포츠', source: '네이버스포츠', title: "프로야구 FA 시장 개장, 대어급 이동하나", views: '40k', time: '1주 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'ByeWind': {
         id: 'ByeWind', nickname: 'ByeWind', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=B', tags: ['IT/과학', '문화'],
         scrap: [
-            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박, 시장 반응은?", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'bye-2', topic: 'culture', category: '생활/문화', source: '씨네21', title: "이번 주말에 볼만한 넷플릭스 신작 추천", views: '5k', time: '3시간 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'bye-bk-1', topic: 'world', category: '세계', source: 'BBC', title: "기후 변화로 인한 해수면 상승, 심각 단계", views: '8k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'Natali': {
         id: 'Natali', nickname: 'Natali Craig', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['경제', 'it'],
         scrap: [
-            { id: 'nat-1', topic: 'economy', category: '경제', source: '매일경제', title: "비트코인 1억 돌파하나... 전문가들의 엇갈린 전망", views: '80k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'nat-2', topic: 'it', category: 'IT/과학', source: 'TechCrunch', title: "AI 스타트업 투자 열풍, 버블인가 기회인가", views: '45k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
+            { id: 'nat-1', topic: 'economy', category: '경제', source: '매일경제', title: "비트코인 1억 돌파하나...", views: '80k', time: '10분 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'nat-bk-1', topic: 'society', category: '사회', source: '한국일보', title: "MZ세대 직장인들이 퇴사를 결심하는 이유", views: '60k', time: '3일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'Drew': {
         id: 'Drew', nickname: 'Drew Cano', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=D', tags: ['문화'],
         scrap: [
             { id: 'drew-1', topic: 'culture', category: '생활/문화', source: 'Vogue', title: "2025 SS 패션 트렌드 총정리", views: '12k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'drew-bk-1', topic: 'enter', category: '연예', source: '디스패치', title: "유명 아이돌 그룹 컴백 소식", views: '90k', time: '10시간 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'drew-bk-2', topic: 'world', category: '세계', source: 'CNN', title: "유럽 여행하기 좋은 도시 Best 10", views: '30k', time: '1주 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'Orlando': {
         id: 'Orlando', nickname: 'Orlando Diggs', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=O', tags: ['경제'],
         scrap: [
             { id: 'orl-1', topic: 'economy', category: '경제', source: 'WSJ', title: "미 연준, 금리 인하 시기 조율 중", views: '60k', time: '4시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'orl-bk-1', topic: 'politics', category: '정치', source: '워싱턴포스트', title: "미국 대선, 주요 쟁점 분석", views: '40k', time: '2일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'Andi': {
         id: 'Andi', nickname: 'Andi Lane', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', tags: ['it', '스포츠', '경제'],
@@ -109,9 +72,7 @@ const dummyUserDatabase = {
             { id: 'andi-1', topic: 'sport', category: '스포츠', source: '스포츠조선', title: "손흥민, 리그 10호골 폭발... 평점 9점", views: '200k', time: '방금 전', image: 'https://via.placeholder.com/100x60' },
             { id: 'andi-2', topic: 'it', category: 'IT/과학', source: '블로터', title: "갤럭시 S25 예상 렌더링 유출", views: '30k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'andi-bk-1', topic: 'enter', category: '연예', source: 'OSEN', title: "인기 드라마 시즌2 제작 확정", views: '70k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     },
     'NonFollow': {
         id: 'NonFollow', nickname: 'Non Follow User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['사회'],
@@ -125,15 +86,13 @@ const dummyUserDatabase = {
         scrap: [
             { id: 'another-1', topic: 'politics', category: '정치', source: '경향신문', title: "국회의원 선거구 획정안 논란", views: '8k', time: '3시간 전', image: 'https://via.placeholder.com/100x60' }
         ],
-        bookmark: [
-            { id: 'another-bk-1', topic: 'society', category: '사회', source: '동아일보', title: "고령화 사회 진입, 노인 복지 정책 점검", views: '2k', time: '2일 전', image: 'https://via.placeholder.com/100x60' }
-        ]
+        bookmark: []
     }
 };
 
 
 // ============================================================
-// 2. HTML 생성 함수
+// 2. HTML 생성 함수 (유지)
 // ============================================================
 
 function createArticleCardHTML(cardData) {
@@ -144,10 +103,12 @@ function createArticleCardHTML(cardData) {
 
     const categoryClass = topicClassMap[cardData.category] || 'topic-default';
     const cardTitle = cardData.title || "제목 정보 없음";
-    const detailLink = `article-detail.html?id=${cardData.id || 'dummy'}`;
+    
+    // 🚨 [수정] data-article-json에 데이터를 심고, href를 #으로 바꿉니다.
+    const jsonString = JSON.stringify(cardData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
 
     return `
-        <a href="${detailLink}" class="article-card">
+        <a href="#" class="article-card" data-article-json='${jsonString}'>
             <div class="card-text">
                 <span class="card-category ${categoryClass}">${cardData.category}</span>
                 <span class="card-source">${cardData.source}</span>
@@ -193,56 +154,38 @@ function renderFeed() {
 
     const currentTab = tabInput.value; // 'scrap' or 'bookmark'
     const currentTopicEl = document.querySelector('#scrap-bookmark-content .keyword-tag.active');
-    const currentTopic = currentTopicEl ? currentTopicEl.dataset.topic : 'politics'; // topic ID (e.g., 'politics')
+    const currentTopic = currentTopicEl ? currentTopicEl.dataset.topic : 'politics'; // topic ID
 
     const feedContainer = document.getElementById(`feed-${currentTab}`);
     if (!feedContainer) return;
 
     feedContainer.innerHTML = '';
+
     let articles = [];
-    
-    // ------------------------------------------------------------------
-    // A. 스크랩 탭 로직 (localStorage + dummyMyData 합치기)
-    // ------------------------------------------------------------------
     if (currentTab === 'scrap') {
         const savedScrapObject = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
         const savedTopicArticles = savedScrapObject[currentTopic] || [];
-        const defaultArticles = dummyMyData.scrap[currentTopic] || [];
-        articles = savedTopicArticles.concat(defaultArticles);
-    } 
-    
-// ------------------------------------------------------------------
-    // B. 북마크 탭 로직 (🚨 [수정] 토픽/카테고리 복합 매칭)
-    // ------------------------------------------------------------------
-    else if (currentTab === 'bookmark') {
+        articles = savedTopicArticles;
+    } else if (currentTab === 'bookmark') {
         const allBookmarks = JSON.parse(localStorage.getItem('bookmarked_articles') || '[]');
         
-        // 현재 선택된 토픽의 한글 이름 (e.g., '정치' 또는 '경제')
         const currentTopicText = currentTopicEl ? currentTopicEl.textContent.trim() : '';
 
         const savedTopicBookmarks = allBookmarks.filter(article => {
-            // 1. topic ID (영어)가 일치하는 경우 (가장 정확한 방법)
             const matchesTopicId = article.topic && article.topic === currentTopic;
-            
-            // 2. category 이름 (한글)이 일치하는 경우 (fallback)
             const matchesCategoryKo = article.category && article.category === currentTopicText;
             
-            // 둘 중 하나라도 일치하면 보여줌
             return matchesTopicId || matchesCategoryKo;
         });
         
-        articles = savedTopicBookmarks; // 더미 데이터 제거됨
+        articles = savedTopicBookmarks;
     }
 
-    // ------------------------------------------------------------------
-    // C. 화면 렌더링
-    // ------------------------------------------------------------------
     if (articles.length === 0) {
         feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 주제의 기사가 없습니다.</p>';
         return;
     }
     articles.forEach(article => {
-        // 경로 문제가 없도록, createArticleCardHTML에 데이터 전체를 넘깁니다.
         feedContainer.innerHTML += createArticleCardHTML(article); 
     });
 }
@@ -371,34 +314,31 @@ function renderFollowingList(searchTerm = "") {
     if (!listContainer) return; 
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     // 1. 로컬 스토리지 동기화
+=======
+>>>>>>> c806ec63978aeb6380e0794e4ad3040f940e7ba7
     let realFollowingList = JSON.parse(localStorage.getItem('following_list')) || [];
-    
-    // 객체(dummyUserDatabase)를 배열로 변환해서 사용
     const allUsersArray = Object.values(dummyUserDatabase);
 
     allUsersArray.forEach(user => {
         user.isFollowing = realFollowingList.includes(user.id);
     });
 
-    // 2. 필터링 (닉네임 검색)
     const normalizedSearch = searchTerm.toLowerCase();
     let usersToShow = allUsersArray.filter(user => {
         if (searchTerm) {
             return user.nickname.toLowerCase().includes(normalizedSearch);
         } else {
-            // 검색어 없으면 팔로잉 중인 사람만
             return user.isFollowing;
         }
     });
 
-    // 3. 정렬
     usersToShow.sort((a, b) => {
         if (a.isFollowing === b.isFollowing) return 0;
         return a.isFollowing ? -1 : 1;
     });
 
-    // 4. 화면 그리기
     listContainer.innerHTML = ''; 
 
     if (usersToShow.length === 0) {
@@ -411,7 +351,6 @@ function renderFollowingList(searchTerm = "") {
         listContainer.innerHTML += createUserListItemHTML(user);
     });
 
-    // 5. 버튼 이벤트 연결
     document.querySelectorAll('.follow-toggle-btn').forEach(button => {
         button.addEventListener('click', () => {
             const userId = button.dataset.userId;
@@ -513,7 +452,6 @@ function initProfileDetailPage() {
         listContainer.innerHTML = '';
         
         // 해당 유저의 스크랩/북마크 데이터 가져오기 (topic 필터링)
-        // targetUser.scrap 또는 targetUser.bookmark 배열 사용
         let articles = (targetUser[currentTab] || []).filter(item => item.topic === currentTopic);
         
         if (articles.length === 0) {
@@ -827,7 +765,78 @@ document.addEventListener('DOMContentLoaded', () => {
             window.history.back();
         });
     }
-});
+    
+    // 🚨 [문제의 중복 블록] - 이 블록 전체가 중복을 일으키고 있습니다.
+    const scrapBookmarkContent = document.getElementById('scrap-bookmark-content');
+
+    function handleArchiveArticleClick(e) {
+        // 1. 북마크 버튼 클릭 시 (이동 X, 저장 O)
+        const bookmarkBtn = e.target.closest('.bookmark-btn');
+        if (bookmarkBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const articleData = JSON.parse(bookmarkBtn.dataset.articleJson);
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
+            const existingIndex = bookmarks.findIndex(item => item.id === articleData.id);
+
+            if (existingIndex !== -1) {
+                bookmarks.splice(existingIndex, 1);
+                bookmarkBtn.classList.remove('active');
+                alert('북마크가 취소되었습니다.');
+            } else {
+                bookmarks.push(articleData);
+                bookmarkBtn.classList.add('active');
+                alert('기사가 북마크되었습니다!');
+            }
+            localStorage.setItem('bookmarked_articles', JSON.stringify(bookmarks));
+            return;
+        }
+
+        // 2. 기사 카드 클릭 시 (이동 O, 선택 데이터 저장 O)
+        const card = e.target.closest('.article-card');
+        if (card) {
+            e.preventDefault();
+            
+            let articleData = {};
+            
+            // HTML에 심어둔 JSON 데이터가 있으면 그걸 씀 (Following 탭 / Hot 탭 공통)
+            if (card.dataset.articleJson) {
+                const rawData = JSON.parse(card.dataset.articleJson);
+                const articleTitle = rawData.title || "제목 없음";
+                
+                // 💡 [수정 내용] 본문에 ID와 제목을 넣어 데이터가 바뀌었음을 눈으로 확인
+                articleData = {
+                    ...rawData,
+                    body: [
+                        `✅ 현재 로드된 기사 제목: "${articleTitle}" (ID: ${rawData.id})`, // <-- 이 부분이 고유 ID를 보여줍니다.
+                        "---",
+                        "본문 내용이 여기에 들어갑니다. (더미 텍스트)",
+                        `출처: ${rawData.source}, 이 기사는 ${rawData.category} 주제에 속합니다.`
+                    ],
+                    author: rawData.source || "OVERNEW 기자",
+                    date: rawData.time || "2025.11.21",
+                    mainImage: rawData.image || 'https://via.placeholder.com/400x300'
+                };
+            } 
+            // 3. localStorage에 '선택된 기사' 저장
+            localStorage.setItem('selected_article', JSON.stringify(articleData));
+
+            // 4. 상세 페이지로 이동
+            window.location.href = 'article-detail.html'; // 🚨 상대 경로로 이동
+        }
+    }
+
+    // --- 이벤트 리스너 등록 ---
+    const feedScrap = document.getElementById('feed-scrap');
+    const feedBookmark = document.getElementById('feed-bookmark');
+
+    if (feedScrap) feedScrap.addEventListener('click', handleArchiveArticleClick);
+    if (feedBookmark) feedBookmark.addEventListener('click', handleArchiveArticleClick);
+    
+}); // 🚨 [문제의 중복 블록] - 이 닫는 괄호는 기존의 archive.js의 메인 DOMContentLoaded의 닫는 괄호입니다.
+
+// 🚨 [여기에 또 다른 DOMContentLoaded 블록이 시작됨 - 이것 때문에 충돌!]
 document.addEventListener('DOMContentLoaded', () => {
     const buttons = ['like-btn', 'discuss-btn', 'bookmark-btn'];
 
@@ -843,6 +852,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("back-button").addEventListener("click", function () {
         history.back();
     });
+<<<<<<< HEAD
 });
 =======
 
@@ -862,3 +872,6 @@ if (backButton) {
 
 
 >>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
+=======
+});
+>>>>>>> c806ec63978aeb6380e0794e4ad3040f940e7ba7

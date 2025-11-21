@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("back-button").addEventListener("click", function () {
         history.back();
     });
-
+    
     // 첫 렌더링
 =======
                     if(parentReply) parentReply.replies.push(newComment); // (3 depth 이상)
@@ -322,4 +322,118 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. 페이지 첫 로드
 >>>>>>> e7a7492e338da910a913fc80f1ff1026401d8d16
     renderComments();
+});
+
+// ----- (A) 핀 고정 기능 관련 기존 코드 -----
+document.addEventListener('DOMContentLoaded', () => {
+    const pinBtn = document.getElementById('pin-btn');
+    const pinnedBox = document.getElementById('pinned-discussion-box');
+    const storageKey = 'pinned_discussions';
+    const storageDataKey = 'pinned_discussions_data';
+    let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
+    let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
+
+    const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
+    const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
+    const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
+    const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
+
+    if (pinBtn && pinnedDiscussions.includes(discussionId)) {
+        pinBtn.classList.add('active');
+        pinBtn.textContent = '📌 고정됨';
+    }
+
+    function renderPinnedBox() {
+        if (pinnedBox) {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedBox.innerHTML = `<div class="pinned-item" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${discussionId}'">
+                    📌 ${discussionTitle}
+                    <button class="unpin-btn" style="background-color: #6A1B9A; color: white; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 14px;">고정 삭제</button>
+                </div>`;
+                const unpinBtn = pinnedBox.querySelector('.unpin-btn');
+                if (unpinBtn) {
+                    unpinBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                        delete pinnedData[discussionId];
+                        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+                        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+                        if (pinBtn) {
+                            pinBtn.classList.remove('active');
+                            pinBtn.textContent = '📌 고정';
+                        }
+                        renderPinnedBox();
+                        alert('고정이 해제되었습니다.');
+                    });
+                }
+            } else {
+                pinnedBox.innerHTML = '';
+            }
+        }
+    }
+
+    renderPinnedBox();
+
+    if (pinBtn) {
+        pinBtn.addEventListener('click', () => {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                delete pinnedData[discussionId];
+                pinBtn.classList.remove('active');
+                pinBtn.textContent = '📌 고정';
+            } else {
+                pinnedDiscussions.push(discussionId);
+                pinnedData[discussionId] = {
+                    id: discussionId,
+                    title: discussionTitle,
+                    category: discussionCategory,
+                    source: discussionSource
+                };
+                pinBtn.classList.add('active');
+                pinBtn.textContent = '📌 고정됨';
+            }
+            localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+            localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+            renderPinnedBox();
+            alert('커뮤니티 상단에 고정되었습니다.');
+        });
+    }
+});
+
+// ----- 2-2. 남은 시간 동적 업데이트 기능 -----
+function calculateRemainingTime(endTime) {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end - now;
+
+    if (diff <= 0) return '종료됨';
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+        return `${hours}시간 ${minutes}분 남음`;
+    } else {
+        return `${minutes}분 남음`;
+    }
+}
+
+function updateDiscussionTimes() {
+    const cards = document.querySelectorAll('.discussion-card');
+    cards.forEach(card => {
+        const timeElement = card.querySelector('.time-left');
+        const endTime = card.dataset.endTime;
+        if (timeElement && endTime) {
+            timeElement.textContent = `🕒 ${calculateRemainingTime(endTime)}`;
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // 주기적으로 시간 업데이트
+    setInterval(updateDiscussionTimes, 60000); // 1분마다 업데이트
+
+    renderPinnedBox();
+    renderComments();
+    updateDiscussionTimes(); // 초기 호출
 });

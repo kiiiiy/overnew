@@ -2401,3 +2401,8 @@ h1.splash-logo {
     margin-right: 4px;
     margin-top: -2px; /* 미세 조정 */
 }
+
+.keyword-tag.active {
+    background-color: #6a0dad !important;
+    color: white !important;
+}

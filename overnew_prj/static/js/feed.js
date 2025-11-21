@@ -1,43 +1,46 @@
-// feed.js
 // ====================
-// 1. 데이터 영역
-// ====================
-
-// [HOT 탭용 데이터]
-// ====================
-// 2. 카드 생성 함수 (데이터 심기)
+// 1. 카드 생성 함수 (데이터 심기)
 // ====================
 
+// HOT 탭 카드
 function createHotCardHTML(cardData) {
-    const viewIconPath = '../../../static/image/view.png'; 
-    // 🚨 [핵심] 데이터 전체를 JSON 문자열로 변환해 HTML에 숨김
-    const jsonString = JSON.stringify(cardData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    const viewIconPath = '../../../static/image/view.png';
+    const jsonString = JSON.stringify(cardData)
+        .replace(/'/g, "&#39;")
+        .replace(/"/g, "&quot;");
 
     return `
         <a href="#" class="article-card" data-article-json='${jsonString}'>
             <div class="card-text">
-                <span class="card-category">${cardData.category}</span>
-                <span class="card-source">${cardData.source}</span>
-                <h3 class="card-title">${cardData.title}</h3>
+                <span class="card-category">${cardData.category || ''}</span>
+                <span class="card-source">${cardData.source || ''}</span>
+                <h3 class="card-title">${cardData.title || ''}</h3>
                 <div class="card-stats">
-                    <span><img src="${viewIconPath}" alt="조회수" class="stat-icon"> ${cardData.views}</span> <span>${cardData.time}</span>
+                    <span>
+                        <img src="${viewIconPath}" alt="조회수" class="stat-icon">
+                        ${cardData.views ?? 0}
+                    </span>
+                    <span>${cardData.time || ''}</span>
                 </div>
             </div>
-            <img src="${cardData.image}" class="card-thumbnail">
+            <img src="${cardData.image || 'https://via.placeholder.com/100x60'}" class="card-thumbnail">
         </a>
     `;
 }
 
+// FOLLOWING 탭 카드
 function createFollowingCardHTML(userData, articleData) {
-    const viewIconPath = '../../../static/image/view.png'; 
-    const profilePath = '../../../archive/templates/archive/profile-detail.html';
+    const viewIconPath = '../../../static/image/view.png';
+    const profilePath = '/account/profile/'; // 필요에 따라 수정
     const profileLink = `${profilePath}?user_id=${userData.id}`;
 
     const bookmarkedList = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
     const isBookmarked = bookmarkedList.some(item => item.id === articleData.id);
     const activeClass = isBookmarked ? 'active' : '';
 
-    const jsonString = JSON.stringify(articleData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    const jsonString = JSON.stringify(articleData)
+        .replace(/'/g, "&#39;")
+        .replace(/"/g, "&quot;");
 
     return `
         <div class="following-card-group">
@@ -51,14 +54,18 @@ function createFollowingCardHTML(userData, articleData) {
             <div class="article-card-wrapper" style="position: relative;">
                 <a href="#" class="article-card" data-article-json='${jsonString}'>
                     <div class="card-text">
-                        <span class="card-category">${articleData.category}</span>
-                        <span class="card-source">${articleData.source}</span>
-                        <h3 class="card-title">${articleData.title}</h3>
+                        <span class="card-category">${articleData.category || ''}</span>
+                        <span class="card-source">${articleData.source || ''}</span>
+                        <h3 class="card-title">${articleData.title || ''}</h3>
                         <div class="card-stats">
-                            <span><img src="${viewIconPath}" alt="조회수" class="stat-icon"> ${articleData.views}</span> <span>${articleData.time}</span>
+                            <span>
+                                <img src="${viewIconPath}" alt="조회수" class="stat-icon">
+                                ${articleData.views ?? 0}
+                            </span>
+                            <span>${articleData.time || ''}</span>
                         </div>
                     </div>
-                    <img src="${articleData.image}" class="card-thumbnail">
+                    <img src="${articleData.image || 'https://via.placeholder.com/100x60'}" class="card-thumbnail">
                 </a>
                 
                 <button class="icon-btn bookmark-btn ${activeClass}" 
@@ -72,7 +79,7 @@ function createFollowingCardHTML(userData, articleData) {
 }
 
 // ====================
-// 3. 피드 렌더링 함수
+// 2. 피드 렌더링 함수 (HOT/FOLLOWING 둘 다 카테고리 필터)
 // ====================
 async function renderFeedPage(view, topic) {
     const feedHot = document.getElementById('feed-hot');
@@ -85,14 +92,13 @@ async function renderFeedPage(view, topic) {
     let html = '';
 
     try {
-        // 쿼리스트링 만들기 (?topic=politics 이런 거)
         const params = new URLSearchParams();
         if (topic) {
-            params.append('topic', topic);   // politics / economy / sport ...
+            params.append('topic', topic); // politics / economy / sport ...
         }
 
         if (view === 'hot') {
-            // 🔥 HOT 탭: /feed/api/hot/?topic=it 같은 형태로 호출
+            // 🔥 HOT 탭
             const response = await fetch(`/feed/api/hot/?${params.toString()}`);
             if (!response.ok) {
                 throw new Error('HOT API 호출 실패');
@@ -109,13 +115,11 @@ async function renderFeedPage(view, topic) {
                 html = '<p style="text-align:center; color:#888; margin-top:40px;">핫한 기사가 없습니다.</p>';
             }
         } else {
-            // 👥 FOLLOWING 탭: /feed/api/following/?topic=politics
+            // 👥 FOLLOWING 탭
             const response = await fetch(`/feed/api/following/?${params.toString()}`);
             if (!response.ok) {
-                // 로그인 안 된 상태에서 @login_required 걸려 있으면 리다이렉트 될 수 있음
                 if (response.status === 302 || response.redirected) {
-                    // 실제 로그인 URL에 맞게 수정해서 쓰면 됨
-                    window.location.href = '/account/login/';
+                    window.location.href = '/account/login/'; // 실제 로그인 URL에 맞게 바꿔도 됨
                     return;
                 }
                 throw new Error('FOLLOWING API 호출 실패');
@@ -140,10 +144,10 @@ async function renderFeedPage(view, topic) {
     container.innerHTML = html;
 }
 
+// ====================
+// 3. 메인 로직 (이벤트 리스너)
+// ====================
 
-// ====================
-// 4. 메인 로직 (이벤트 리스너)
-// ====================
 document.addEventListener('DOMContentLoaded', () => {
     const keywordList = document.getElementById('keyword-list-container');
     const viewHot = document.getElementById('view-hot');
@@ -152,21 +156,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsBtn = document.getElementById('settings-menu-btn');
     const notifBtn = document.getElementById('notifications-btn');
 
+    // 템플릿 파일용 경로 (지금 기존 코드랑 맞춰둠)
     const accountPath = '../../../account/templates/account/';
     const loginPath = accountPath + 'login.html';
 
-    let currentView = viewHot.checked ? 'hot' : 'following';
-    let currentTopic = currentView === 'hot' ? null : 'politics';
+    // 현재 뷰 / 현재 카테고리
+    let currentView = viewHot && viewHot.checked ? 'hot' : 'following';
+    let currentTopic = null; // 처음에는 전체 (필터 없음)
 
+    // localStorage에 저장된 로그인 정보 (프론트 임시 세션)
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     const isLoggedIn = !!(userInfo && userInfo.nickname);
 
-    // --- 로그인 체크 함수 ---
+    // --- 로그인 필요 기능 차단용 공통 함수 ---
     function requireLogin(e) {
-        e.preventDefault(); 
-        e.stopPropagation(); 
-        if(viewHot) viewHot.checked = true; 
-        
+        e.preventDefault();
+        e.stopPropagation();
+        if (viewHot) viewHot.checked = true;
+        currentView = 'hot';
+        currentTopic = null;
+        renderFeedPage(currentView, currentTopic);
+
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'OVERNEW',
@@ -202,57 +212,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (feedHot) feedHot.style.display = currentView === 'hot' ? 'flex' : 'none';
     if (feedFollowing) feedFollowing.style.display = currentView === 'following' ? 'flex' : 'none';
-    if (keywordList) keywordList.style.display = 'flex';   
+    if (keywordList) keywordList.style.display = 'flex'; // 🔥 HOT/FOLLOWING 둘 다에서 카테고리 노출
+
+    // 처음엔 모든 카테고리 (topic = null) 기준으로 HOT 렌더
+    currentView = 'hot';
+    currentTopic = null;
+    if (viewHot) viewHot.checked = true;
+    if (viewFollowing) viewFollowing.checked = false;
 
     renderFeedPage(currentView, currentTopic);
 
     // --- 탭 전환 ---
-    viewHot.addEventListener('change', () => {
-        currentView = 'hot';
-        currentTopic = null;
-        feedHot.style.display = 'flex';
-        feedFollowing.style.display = 'none';
-        keywordList.style.display = 'none';
-        renderFeedPage(currentView, currentTopic);
-    });
+    if (viewHot) {
+        viewHot.addEventListener('change', () => {
+            if (!viewHot.checked) return;
+            currentView = 'hot';
+            // currentTopic은 그대로 두고, 선택된 카테고리 기준으로 HOT 필터링
+            feedHot.style.display = 'flex';
+            if (feedFollowing) feedFollowing.style.display = 'none';
+            renderFeedPage(currentView, currentTopic);
+        });
+    }
 
-    viewFollowing.addEventListener('change', () => {
-        currentView = 'following';
-        currentTopic = 'politics';
-        feedHot.style.display = 'none';
-        feedFollowing.style.display = 'flex';
-        keywordList.style.display = 'flex';
-        renderFeedPage(currentView, currentTopic);
-    });
+    if (viewFollowing) {
+        viewFollowing.addEventListener('change', () => {
+            if (!viewFollowing.checked) return;
+            if (!isLoggedIn) {
+                requireLogin(event);
+                return;
+            }
+            currentView = 'following';
 
-    // --- 키워드 태그 클릭 ---
+            feedHot.style.display = 'none';
+            if (feedFollowing) feedFollowing.style.display = 'flex';
+
+            // FOLLOWING 탭 처음 들어갈 때, 선택된 태그가 없으면 '정치'로 기본 세팅
+            if (!currentTopic) {
+                const firstTag = document.querySelector('.keyword-tag');
+                if (firstTag) {
+                    currentTopic = firstTag.dataset.topic;
+                    document.querySelectorAll('.keyword-tag').forEach(t => t.classList.remove('active'));
+                    firstTag.classList.add('active');
+                }
+            }
+            renderFeedPage(currentView, currentTopic);
+        });
+    }
+
+    // --- 카테고리 태그 클릭 ---
     document.querySelectorAll('.keyword-tag').forEach(tag => {
         tag.addEventListener('click', () => {
-            currentTopic = tag.dataset.topic;
+            currentTopic = tag.dataset.topic; // politics / economy ...
             document.querySelectorAll('.keyword-tag').forEach(t => t.classList.remove('active'));
             tag.classList.add('active');
             renderFeedPage(currentView, currentTopic);
         });
     });
 
-    // --- 햄버거 버튼 ---
+    // --- 햄버거 버튼: 마이페이지로 이동 ---
     if (settingsBtn) {
         settingsBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (isLoggedIn) window.location.href = accountPath + 'settings-logged-in.html';
-            else window.location.href = accountPath + 'settings-logged-out.html';
+            window.location.href = '/account/mypage/'; 
         });
     }
 
     // ============================================================
-    // 5. [핵심] 기사 클릭 및 북마크 이벤트 (통합 처리)
+    // 4. 기사 클릭 및 북마크 이벤트 (통합 처리)
     // ============================================================
-    
-    // 공통 처리 함수: 기사 클릭 시 상세페이지 이동
-// 공통 처리 함수: 기사 클릭 시 상세페이지 이동 (★ 이 함수만 교체하세요)
-    // 공통 처리 함수: 기사 클릭 시 상세페이지 이동 (★ 이 함수만 교체하세요)
     function handleArticleClick(e) {
-        // 1. 북마크 버튼 클릭 시 (이동 X, 저장 O)
+        // 1. 북마크 버튼 클릭
         const bookmarkBtn = e.target.closest('.bookmark-btn');
         if (bookmarkBtn) {
             e.preventDefault();
@@ -275,23 +304,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 2. 기사 카드 클릭 시 (이동 O, 선택 데이터 저장 O)
+        // 2. 기사 카드 클릭
         const card = e.target.closest('.article-card');
         if (card) {
             e.preventDefault();
-            
+
             let articleData = {};
-            
-            // HTML에 심어둔 JSON 데이터가 있으면 그걸 씀 (Following 탭 / Hot 탭 공통)
+
             if (card.dataset.articleJson) {
                 const rawData = JSON.parse(card.dataset.articleJson);
                 const articleTitle = rawData.title || "제목 없음";
-                
-                // 💡 [수정 내용] 본문에 ID와 제목을 넣어 데이터가 바뀌었음을 눈으로 확인
+
                 articleData = {
                     ...rawData,
                     body: [
-                        `✅ 현재 로드된 기사 제목: "${articleTitle}" (ID: ${rawData.id})`, // <-- 이 부분이 고유 ID를 보여줍니다.
+                        `✅ 현재 로드된 기사 제목: "${articleTitle}" (ID: ${rawData.id})`,
                         "---",
                         "본문 내용이 여기에 들어갑니다. (더미 텍스트)",
                         `출처: ${rawData.source}, 이 기사는 ${rawData.category} 주제에 속합니다.`
@@ -300,17 +327,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     date: rawData.time || "2025.11.21",
                     mainImage: rawData.image || 'https://via.placeholder.com/400x300'
                 };
-            } 
-            // 3. localStorage에 '선택된 기사' 저장
-            localStorage.setItem('selected_article', JSON.stringify(articleData));
+            }
 
-            // 4. 상세 페이지로 이동
+            localStorage.setItem('selected_article', JSON.stringify(articleData));
             window.location.href = '../../../archive/templates/archive/article-detail.html';
         }
     }
 
-    // 리스너 등록 (Hot, Following 둘 다 적용)
     if (feedHot) feedHot.addEventListener('click', handleArticleClick);
     if (feedFollowing) feedFollowing.addEventListener('click', handleArticleClick);
-
 });

@@ -1,0 +1,51 @@
+<h2>프로필 수정</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h3>기본 정보</h3>
+
+    <label>닉네임:</label><br>
+    <input type="text" name="nickname" value="{{ user.nickname }}"><br><br>
+
+    <label>성별:</label><br>
+    <select name="gender">
+        <option value="M" {% if user.gender == 'M' %}selected{% endif %}>남성</option>
+        <option value="F" {% if user.gender == 'F' %}selected{% endif %}>여성</option>
+    </select><br><br>
+
+    <label>나이:</label><br>
+    <input type="number" name="age" value="{{ user.age }}"><br><br>
+
+    <label>프로필 이미지:</label><br>
+    {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" width="100"><br>
+    {% endif %}
+    <input type="file" name="profile_image"><br><br>
+
+
+    <hr>
+
+    <h3>좋아하는 방송사</h3>
+    {% for m in medias %}
+        <label>
+            <input type="checkbox" name="media" value="{{ m.media_id }}"
+                {% if m.media_id in selected_medias %}checked{% endif %}>
+            {{ m.media_name }}
+        </label><br>
+    {% endfor %}
+
+    <hr>
+
+    <h3>좋아하는 뉴스 카테고리</h3>
+    {% for nc in news_categories %}
+        <label>
+            <input type="checkbox" name="news_category" value="{{ nc.nc_id }}"
+                {% if nc.nc_id in selected_news %}checked{% endif %}>
+            {{ nc.news_category }}
+        </label><br>
+    {% endfor %}
+
+    <br>
+    <button type="submit">저장하기</button>
+</form>

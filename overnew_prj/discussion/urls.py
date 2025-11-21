@@ -1,14 +1,21 @@
 from django.urls import path
+
 from .views import *
 
 app_name="discussion"
 
-urlpatterns=[
+from django.urls import path
+from .views import *
+
+app_name = "discussion"
+
+urlpatterns = [
     path('main/', main, name='main'),
-    path('list/<int:nc_id>/', discussion_list, name='discussion_list'), 
-    path('anonymous/<int:nc_id>/', anonymous_list, name='anonymous_list'),
+    path('list/<int:nc_id>/', discussion_list, name='discussion_list'),
+    path('anonymous/list/<int:nc_id>/', anonymous_list, name='anonymous_list'),
     path('room/<int:room_id>/', discussion_detail, name='discussion_detail'),
     path('anonymous/room/<int:room_id>/', anonymous_detail, name='anonymous_detail'),
-    path('<int:room_id>/comment-create/', create_comment, name='create_comment'),
-    path('<int:room_id>/comment-delete/<int:comment_id>/', delete_comment, name='delete_comment'),
+    path('room/<int:room_id>/comment/create/', create_comment, name='create_comment'),
+    path('room/<int:room_id>/comment/<int:comment_id>/delete/', delete_comment, name='delete_comment'),
 ]
+

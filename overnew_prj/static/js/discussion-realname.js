@@ -34,13 +34,23 @@ function createCommentHTML(commentData) {
     // 2. 부모 댓글 HTML 생성
     return `
     <div class="comment-item ${commentData.replies.length > 0 ? 'has-replies' : ''}" data-comment-id="${commentData.id}">
-        <img src="${commentData.avatar}" alt="${commentData.user}" class="comment-avatar">
+        
+        <!-- (핵심 추가) 프로필 클릭 가능 -->
+        <img src="${commentData.avatar}" 
+             alt="${commentData.user}" 
+             class="comment-avatar comment-profile" 
+             data-username="${commentData.user}">
+
         <div class="comment-content">
             <div class="comment-header">
-                <span class="comment-user">${commentData.user}</span>
+                <!-- (핵심 추가) 이름도 클릭 가능 -->
+                <span class="comment-user comment-profile" data-username="${commentData.user}">
+                    ${commentData.user}
+                </span>
                 <span class="comment-date">${commentData.date}</span>
             </div>
             <p class="comment-text">${commentData.text}</p>
+
             <div class="comment-actions">
                 <button class="action-btn like-btn ${isLiked ? 'active' : ''}">
                     <span>👍</span> <span class="count">${commentData.likes}</span>
@@ -90,116 +100,118 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentInput = document.getElementById('comment-input');
     const submitBtn = document.getElementById('submit-comment-btn');
 
-    // 1. 로그인 확인 및 내 정보 표시
+    // 1. 로그인 확인
     const userInfo = JSON.parse(localStorage.getItem('user-info'));
     if (!userInfo) {
         alert('로그인이 필요한 페이지입니다.');
         window.location.href = 'login.html';
         return;
     }
-    // (핵심) 하단 입력창에 내 프로필 표시
-    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나'; // (user-info에 avatar가 있다고 가정)
-    
-    // 2. 정렬 버튼 클릭
+
+    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나';
+
+    // 2. 정렬 버튼
     sortBtn.addEventListener('click', () => {
         currentSortOrder = (currentSortOrder === 'oldest') ? 'newest' : 'oldest';
         sortBtn.innerHTML = `<span>⇅</span> ${currentSortOrder === 'oldest' ? '오래된순' : '최신순'}`;
-        renderComments(); // 정렬 후 다시 그리기
+        renderComments();
     });
 
-    // 3. (핵심) 댓글 목록에서 '좋아요' 또는 '답글' 버튼 클릭 (이벤트 위임)
+    // 3. 댓글 목록에서 클릭 이벤트 위임
     commentList.addEventListener('click', (e) => {
         const targetCommentElement = e.target.closest('.comment-item');
-        if (!targetCommentElement) return;
-        
-        const clickedCommentId = targetCommentElement.dataset.commentId;
+        const clickedCommentId = targetCommentElement?.dataset.commentId;
 
-        // 3-1. '좋아요' 버튼 클릭
+        // ----- (NEW) 프로필 클릭 → 상세 프로필 페이지 이동 -----
+        const profileEl = e.target.closest('.comment-profile');
+        if (profileEl) {
+            const username = profileEl.dataset.username;
+            window.location.href = `../../../archive/templates/archive/profile-detail.html?user=${username}`;
+            return;
+        }
+
+        // ----- 좋아요 처리 -----
         if (e.target.closest('.like-btn')) {
             const likeButton = e.target.closest('.like-btn');
-            
-            // 댓글 데이터 찾기 (메인 댓글 또는 답글에서)
+
             let targetComment = dummyComments.find(c => c.id === clickedCommentId);
             if (!targetComment) {
-                // 답글에서 찾기
                 for (let comment of dummyComments) {
                     targetComment = comment.replies.find(r => r.id === clickedCommentId);
                     if (targetComment) break;
                 }
             }
-            
+
             if (targetComment) {
                 const isCurrentlyLiked = likedComments.includes(clickedCommentId);
-                
+
                 if (isCurrentlyLiked) {
-                    // 좋아요 취소
                     likeButton.classList.remove('active');
                     likedComments = likedComments.filter(id => id !== clickedCommentId);
                     targetComment.likes = Math.max(0, targetComment.likes - 1);
                 } else {
-                    // 좋아요 추가
                     likeButton.classList.add('active');
                     likedComments.push(clickedCommentId);
                     targetComment.likes += 1;
                 }
-                
-                // 숫자 업데이트
-                const countSpan = likeButton.querySelector('.count');
-                if (countSpan) {
-                    countSpan.textContent = targetComment.likes;
-                }
-                
+
+                likeButton.querySelector('.count').textContent = targetComment.likes;
+
                 localStorage.setItem('comment_likes', JSON.stringify(likedComments));
             }
         }
 
-        // 3-2. '답글' 버튼 클릭
+        // ----- 답글 클릭 -----
         if (e.target.closest('.reply-btn')) {
-            // (핵심) 답글 달 대상(부모 댓글)을 저장
-            const parentComment = dummyComments.find(c => c.id === clickedCommentId) || dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
+            const parentComment = 
+                dummyComments.find(c => c.id === clickedCommentId) ||
+                dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
+
             replyTarget = { id: clickedCommentId, user: parentComment.user };
-            updateCommentInputMode(); // 입력창 placeholder 변경
+            updateCommentInputMode();
         }
     });
 
-    // 4. (핵심) '업로드' 버튼 클릭 (새 댓글 또는 답글 등록)
+    // 4. 댓글 제출
     submitBtn.addEventListener('click', () => {
         const commentText = commentInput.value.trim();
         if (commentText === '') return;
 
         const newComment = {
-            id: 'c' + (Math.random() * 1000), // 임시 ID
-            user: userInfo.nickname || '나', // (핵심) 내 실명
-            avatar: userInfo.avatar || 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=나',
-            date: new Date().toISOString().split('T')[0], // (임시) 오늘 날짜
+            id: 'c' + (Math.random() * 10000).toFixed(0),
+            user: userInfo.nickname || '나',
+            avatar: userInfo.avatar,
+            date: new Date().toISOString().split('T')[0],
             text: commentText,
             likes: 0,
             replies: []
         };
 
         if (replyTarget) {
-            // [답글 등록]
-            // 1. 부모 댓글 찾기 (1~2 depth)
             let parent = dummyComments.find(c => c.id === replyTarget.id);
             if (parent) {
                 parent.replies.push(newComment);
             } else {
                 dummyComments.forEach(c => {
                     let parentReply = c.replies.find(r => r.id === replyTarget.id);
-                    if(parentReply) parentReply.replies.push(newComment); // (3 depth 이상)
+                    if (parentReply) parentReply.replies.push(newComment);
                 });
             }
-            replyTarget = null; // 답글 모드 해제
+            replyTarget = null;
         } else {
-            // [새 댓글 등록]
             dummyComments.push(newComment);
         }
 
-        commentInput.value = ''; // 입력창 비우기
-        updateCommentInputMode(); // placeholder 원복
-        renderComments(); // 새 댓글 포함해서 다시 그리기
+        commentInput.value = '';
+        updateCommentInputMode();
+        renderComments();
     });
 
-    // 5. 페이지 첫 로드
+    // 뒤로가기 버튼
+    document.getElementById("back-button").addEventListener("click", function () {
+        history.back();
+    });
+
+    // 첫 렌더링
     renderComments();
 });

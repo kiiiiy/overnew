@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>토론방 입장 - OVERNEW</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../../static/css/style.css">
 </head>
-<body class="with-fixed-nav"> <header class="main-header">
-        <a href="settings-logged-in.html" class="icon-btn menu-btn"><span>☰</span></a>
-        <h1 class="logo header-logo">OVERNEW</h1>
-        <a href="notifications.html" class="icon-btn bell-btn"><span>🔔</span></a>
+<body class="with-fixed-nav"> 
+    <header class="main-header">
+        <!-- 뒤로가기 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+    <div style="width:40px;"></div>
+    <h1 class="logo header-logo">OVERNEW</h1>
     </header>
 
     <main class="container" style="padding-top: 30px;">
@@ -31,33 +39,11 @@
         </div>
 
     </main>
+    <nav class="bottom-nav"></nav>
 
-    <nav class="bottom-nav">
-        <a href="feed.html" class="nav-item"> 
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">◆</span>
-            </div>
-            <span class="nav-label">피드</span>
-        </a>
-        <a href="archive.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">●</span>
-            </div>
-            <span class="nav-label">아카이브</span>
-        </a>
-        <a href="main.html" class="nav-item">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">▲</span>
-            </div>
-            <span class="nav-label">추천</span>
-        </a>
-        <a href="community.html" class="nav-item active">
-            <div class="nav-icon-wrapper">
-                <span class="nav-icon">◐</span>
-            </div>
-            <span class="nav-label">커뮤니티</span>
-        </a>
-    </nav>
+    <!-- JS 파일 불러오기 -->
+    <script src="../../../static/js/nav.js"></script>
+   
 
     </body>
 </html>

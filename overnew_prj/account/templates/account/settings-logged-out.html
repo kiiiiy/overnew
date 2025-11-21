@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설정 - OVERNEW</title>
+    
+    <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
+
+    <script src="/overnew_prj/static/js/account.js" defer></script>
+</head>
+<body id="page-settings-logged-out">
+
+    <header class="main-header">
+    <!-- 뒤로가기 버튼 -->
+    <button type="button" class="icon-btn menu-btn" id="back-button">
+        <span>&lt;</span>
+    </button>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+    <div style="width:40px;"></div>
+    </header>
+
+    <main class="container" style="padding-top: 100px;">
+
+        <a href="login.html" class="login-prompt-card">
+            <div class="profile-placeholder"></div>
+            <span>로그인이 필요해요</span>
+            <span class="arrow">&gt;</span>
+        </a>
+
+        <div class="settings-menu">
+            <a href="login.html" class="menu-item">
+                <img src="../../../static/image/edit.png" alt="프로필 수정" class="icon">
+                <span>프로필 수정</span>
+                <span class="arrow">&gt;</span>
+            </a>
+            <a href="login.html" class="menu-item">
+                <img src="../../../static/image/logout.png" alt="로그아웃" class="icon">
+                <span>로그아웃</span>
+                <span class="arrow">&gt;</span>
+            </a>
+            <!-- <a href="login.html" class="menu-item">
+                <span class="icon">🔔</span>
+                <span>알림 설정</span>
+                <span class="arrow">&gt;</span>
+            </a> -->
+            <a href="login.html" class="menu-item">
+                <img src="../../../static/image/bin.png" alt="탈퇴하기" class="icon">
+                <span>탈퇴하기</span>
+                <span class="arrow">&gt;</span>
+            </a>
+        </div>
+
+    </main>
+    
+    </body>
+</html>

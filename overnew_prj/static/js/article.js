@@ -52,6 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('bookmarked_articles', JSON.stringify(currentBookmarks));
         });
     }
+    function resizeIframe() {
+    if (window.frameElement) {
+        window.frameElement.style.height = document.body.scrollHeight + 'px';
+    }
+}
+
+window.addEventListener('load', resizeIframe);
+window.addEventListener('resize', resizeIframe);
+
 
 
     // 4. 데이터 화면에 뿌리기

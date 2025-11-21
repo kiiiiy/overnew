@@ -1,3 +1,4 @@
+// feed.js
 // ====================
 // 1. 데이터 영역
 // ====================
@@ -280,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 공통 처리 함수: 기사 클릭 시 상세페이지 이동
 // 공통 처리 함수: 기사 클릭 시 상세페이지 이동 (★ 이 함수만 교체하세요)
+    // 공통 처리 함수: 기사 클릭 시 상세페이지 이동 (★ 이 함수만 교체하세요)
     function handleArticleClick(e) {
         // 1. 북마크 버튼 클릭 시 (이동 X, 저장 O)
         const bookmarkBtn = e.target.closest('.bookmark-btn');
@@ -311,28 +313,25 @@ document.addEventListener('DOMContentLoaded', () => {
             
             let articleData = {};
             
-            // 🚨 [핵심 수정] rawData의 제목을 가져와서 body에 삽입
+            // HTML에 심어둔 JSON 데이터가 있으면 그걸 씀 (Following 탭 / Hot 탭 공통)
             if (card.dataset.articleJson) {
                 const rawData = JSON.parse(card.dataset.articleJson);
-                
-                // 💡 [수정 내용] 본문에 제목을 넣어 데이터가 바뀌었음을 확인
                 const articleTitle = rawData.title || "제목 없음";
-
+                
+                // 💡 [수정 내용] 본문에 ID와 제목을 넣어 데이터가 바뀌었음을 눈으로 확인
                 articleData = {
                     ...rawData,
-                    // 상세 페이지에 필요한 가짜 데이터 추가 (body 등)
                     body: [
-                        `✅ 현재 상세 페이지에 로드된 기사 제목: "${articleTitle}"`, // <-- 확인용
+                        `✅ 현재 로드된 기사 제목: "${articleTitle}" (ID: ${rawData.id})`, // <-- 이 부분이 고유 ID를 보여줍니다.
                         "---",
                         "본문 내용이 여기에 들어갑니다. (더미 텍스트)",
-                        `이 기사는 ${rawData.category} 주제에 속하며, ${rawData.source} 출처입니다.`
+                        `출처: ${rawData.source}, 이 기사는 ${rawData.category} 주제에 속합니다.`
                     ],
                     author: rawData.source || "OVERNEW 기자",
                     date: rawData.time || "2025.11.21",
                     mainImage: rawData.image || 'https://via.placeholder.com/400x300'
                 };
             } 
-            
             // 3. localStorage에 '선택된 기사' 저장
             localStorage.setItem('selected_article', JSON.stringify(articleData));
 

@@ -191,43 +191,58 @@ function renderFeed() {
     if (!tabInput) return; 
 
     const currentTab = tabInput.value; // 'scrap' or 'bookmark'
-    const currentTopic = document.querySelector('#scrap-bookmark-content .keyword-tag.active').dataset.topic;
+    const currentTopicEl = document.querySelector('#scrap-bookmark-content .keyword-tag.active');
+    const currentTopic = currentTopicEl ? currentTopicEl.dataset.topic : 'politics'; // topic ID (e.g., 'politics')
 
     const feedContainer = document.getElementById(`feed-${currentTab}`);
     if (!feedContainer) return;
 
     feedContainer.innerHTML = '';
-
     let articles = [];
+    
+    // ------------------------------------------------------------------
+    // A. 스크랩 탭 로직 (localStorage + dummyMyData 합치기)
+    // ------------------------------------------------------------------
     if (currentTab === 'scrap') {
-        // 로컬 스토리지 + 더미 데이터 병합
-        const savedArticles = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
-        const savedTopicArticles = savedArticles[currentTopic] || [];
+        const savedScrapObject = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
+        const savedTopicArticles = savedScrapObject[currentTopic] || [];
         const defaultArticles = dummyMyData.scrap[currentTopic] || [];
         articles = savedTopicArticles.concat(defaultArticles);
-    } else if (currentTab === 'bookmark') {
-        // 로컬 스토리지 + 더미 데이터 병합
-        // (북마크는 원래 배열 형태지만, topic 필터링을 위해 로직 필요)
+    } 
+    
+// ------------------------------------------------------------------
+    // B. 북마크 탭 로직 (🚨 [수정] 토픽/카테고리 복합 매칭)
+    // ------------------------------------------------------------------
+    else if (currentTab === 'bookmark') {
         const allBookmarks = JSON.parse(localStorage.getItem('bookmarked_articles') || '[]');
-        const savedTopicBookmarks = allBookmarks.filter(b => {
-            // 북마크 저장 시 topic 정보가 없으면 category로 매핑 필요 (여기선 단순화)
-            // 실제로는 저장할 때 topic도 같이 저장하는 게 좋음
-            // 여기선 대충 텍스트 비교로 필터링 (임시)
-            const topicMap = { '정치': 'politics', '경제': 'economy', '사회': 'society', '생활/문화': 'culture', 'IT/과학': 'it', '세계': 'world', '연예': 'enter', '스포츠': 'sport' };
-            const bookmarkTopic = Object.keys(topicMap).find(key => topicMap[key] === currentTopic); // 역으로 찾기 힘듦.. 
-            // 간단하게 category 문자열에 포함되는지로 확인
-            return b.category.includes(document.querySelector(`#scrap-bookmark-content .keyword-tag[data-topic="${currentTopic}"]`).textContent);
+        
+        // 현재 선택된 토픽의 한글 이름 (e.g., '정치' 또는 '경제')
+        const currentTopicText = currentTopicEl ? currentTopicEl.textContent.trim() : '';
+
+        const savedTopicBookmarks = allBookmarks.filter(article => {
+            // 1. topic ID (영어)가 일치하는 경우 (가장 정확한 방법)
+            const matchesTopicId = article.topic && article.topic === currentTopic;
+            
+            // 2. category 이름 (한글)이 일치하는 경우 (fallback)
+            const matchesCategoryKo = article.category && article.category === currentTopicText;
+            
+            // 둘 중 하나라도 일치하면 보여줌
+            return matchesTopicId || matchesCategoryKo;
         });
-        const defaultBookmarks = dummyMyData.bookmark[currentTopic] || [];
-        articles = savedTopicBookmarks.concat(defaultBookmarks);
+        
+        articles = savedTopicBookmarks; // 더미 데이터 제거됨
     }
 
+    // ------------------------------------------------------------------
+    // C. 화면 렌더링
+    // ------------------------------------------------------------------
     if (articles.length === 0) {
         feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 주제의 기사가 없습니다.</p>';
         return;
     }
     articles.forEach(article => {
-        feedContainer.innerHTML += createArticleCardHTML(article);
+        // 경로 문제가 없도록, createArticleCardHTML에 데이터 전체를 넘깁니다.
+        feedContainer.innerHTML += createArticleCardHTML(article); 
     });
 }
 

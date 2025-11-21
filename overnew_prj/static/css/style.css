@@ -187,6 +187,7 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
 }
+<<<<<<< HEAD
 /*이메일*/
 /* 이메일 입력창 + 전송 버튼 가로 배치 */
 .email-row .email-input-wrap {
@@ -216,6 +217,8 @@ body {
     background: #3d59e0;
 }
 
+=======
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 
 /* ----- 5. (추가) 정보기입2 페이지 스타일 ----- */
 
@@ -693,7 +696,10 @@ body.with-fixed-nav {
     z-index: 100; /* 다른 요소들 위에 오도록 */
 }
 .icon-btn {
+<<<<<<< HEAD
     display: flex;
+=======
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
     background: none;
     border: none;
     font-size: 24px;
@@ -705,9 +711,14 @@ body.with-fixed-nav {
 }
 .header-logo {
     /* 기존 .logo 스타일을 상속받되, 헤더에 맞게 크기/여백 조절 */
+<<<<<<< HEAD
     margin: 0; 
     font-size: 26px; 
     text-align: center;
+=======
+    font-size: 28px !important;
+    margin-bottom: 0 !important;
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 }
 
 /* 2. 하단 내비게이션 바 */
@@ -836,6 +847,7 @@ body.with-fixed-nav {
     color: #888888;
     margin-top: 8px;
 }
+<<<<<<< HEAD
 /* ==========================================================================
    [추가] 팔로우 목록 레이아웃 및 색상
    ========================================================================== */
@@ -914,6 +926,9 @@ body.with-fixed-nav {
 .profile-follow-btn.not-followed {
     background-color: #A08CD5; 
 }
+=======
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 /* ----- 13. (수정) 추천 탭 (main.html) 스타일 ----- */
 /* (기존 .feed-card 스타일을 .user-feed-group 내부로 이동) */
 
@@ -1041,6 +1056,7 @@ body.with-fixed-nav {
     justify-content: center;
     transition: all 0.2s ease;
 }
+<<<<<<< HEAD
 /* ⭐ 활성화 상태 (클릭 시) ⭐ */
 .action-btn.active {
     background-color: #a999e5; /* ⭐ 보라색 계열로 변경 */
@@ -1048,6 +1064,16 @@ body.with-fixed-nav {
 }
 
 
+=======
+/* 버튼 클릭 시 (활성화) 스타일 */
+.action-btn:active,
+.action-btn.active {
+    background-color: #620B95; /* 포인트 보라색 */
+    color: #FFFFFF; /* 아이콘 흰색 */
+    transform: scale(1.1); /* 살짝 커지는 효과 */
+}
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 /* 2. 기사 콘텐츠 영역 */
 
 /* (중요) 기사 본문이 플로팅 바에 가려지지 않도록 
@@ -1119,12 +1145,17 @@ body.with-fixed-nav {
 /* 피드 페이지의 기사 카드 (a 태그) */
 .article-card {
     display: flex;
+<<<<<<< HEAD
     justify-content: space-between;
     border-bottom: 1px solid #eee;
     background-color: #FFFFFF; /* 카드 흰색 배경 */
     height: 150px; /* 🚨 전체 카드 높이를 강제로 고정 (원하는 크기로 조절) */
     border-radius: 12px;
     box-sizing: border-box;
+=======
+    background-color: #FFFFFF; /* 카드 흰색 배경 */
+    border-radius: 12px;
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 16px;
     text-decoration: none; /* 링크 밑줄 제거 */
@@ -1139,11 +1170,17 @@ body.with-fixed-nav {
 
 /* 카드 좌측 텍스트 영역 */
 .card-text {
+<<<<<<< HEAD
     flex: 1; /* 남은 공간 차지 */
     margin-right: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+=======
+    flex: 1; /* 텍스트 영역이 남는 공간 다 차지 */
+    display: flex;
+    flex-direction: column;
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 }
 
 /* 카드 카테고리 태그 (IT/과학, 경제...) */
@@ -1157,6 +1194,7 @@ body.with-fixed-nav {
     color: #FFFFFF;
     align-self: flex-start; /* 태그 크기만큼만 자리 차지 */
 }
+<<<<<<< HEAD
 /* 토픽별 색상 */
 .topic-it { background-color: #0D47A1; } /* IT/과학 (파랑) */
 .topic-economy { background-color: #1B5E20; } /* 경제 (초록) */
@@ -1179,6 +1217,12 @@ body.with-fixed-nav {
 /* 기본값 (매칭되지 않을 경우) */
 .topic-default { background-color: #757575; }
 
+=======
+/* 토픽별 색상 (임시) */
+.topic-it { background-color: #0D47A1; } /* IT/과학 (파랑) */
+.topic-economy { background-color: #1B5E20; } /* 경제 (초록) */
+.topic-society { background-color: #E65100; } /* 사회 (주황) */
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 
 .card-source {
     font-size: 12px;
@@ -1186,6 +1230,7 @@ body.with-fixed-nav {
     margin-top: 5px; /* 카테고리 태그와의 간격 */
 }
 
+<<<<<<< HEAD
 /* 🚨 [핵심] 제목 두 줄 제한 및 높이 고정 */
 .card-title {
     font-size: 16px;
@@ -1206,6 +1251,19 @@ body.with-fixed-nav {
 }
 
 
+=======
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin: 8px 0;
+    line-height: 1.4;
+    
+    /* 텍스트가 텍스트 영역을 벗어나지 않도록 */
+    flex-grow: 1; /* 제목이 남은 공간을 채움 */
+}
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 /* 조회수, 시간 */
 .card-stats {
     display: flex;
@@ -1260,8 +1318,13 @@ body.with-fixed-nav {
    재사용하므로, 추가 스타일이 거의 필요 없습니다. */
 
 /* (수정) topic-politics 색상 추가 */
+<<<<<<< HEAD
 /* .topic-politics { background-color: #4A148C; } /* 정치 (진한 보라) */
 /* .topic-default { background-color: #555; } 기본 (회색) */ 
+=======
+.topic-politics { background-color: #4A148C; } /* 정치 (진한 보라) */
+.topic-default { background-color: #555; } /* 기본 (회색) */
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 
 /* ----- 17. (추가) 아카이브 페이지 스타일 ----- */
 
@@ -1877,7 +1940,11 @@ body.with-fixed-comment-bar {
 /* 5. (핵심) 하단 고정 댓글 입력창 */
 .comment-input-bar {
     position: fixed;
+<<<<<<< HEAD
     bottom: 0px; /* (중요) 하단 네비(70px) 바로 위에 위치 */
+=======
+    bottom: 70px; /* (중요) 하단 네비(70px) 바로 위에 위치 */
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
     left: 0;
     width: 100%;
     
@@ -2259,9 +2326,14 @@ h1.splash-logo {
 
 /* 프로필 수정 페이지의 메인 컨테이너 패딩 조정 (상단 헤더와 겹치지 않게) */
 #page-profile-edit-form main.container {
+<<<<<<< HEAD
     margin-top: 120px !important; 
     padding-top: 80px; /* 헤더 아래 콘텐츠 시작 */
     padding-bottom: 120px; /* 저장 버튼과 겹치지 않도록 */
+=======
+    padding-top: 20px; /* 헤더 아래 콘텐츠 시작 */
+    padding-bottom: 100px; /* 저장 버튼과 겹치지 않도록 */
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 }
 
 /* 폼 그룹 내 라벨 스타일 (기존 .form-group label 활용) */
@@ -2295,6 +2367,7 @@ h1.splash-logo {
     width: 24px;       /* 버튼 크기(50px)보다 작게 설정 (예: 24px) */
     height: 24px;      /* 가로와 동일한 크기로 설정 */
     object-fit: contain; /* 이미지가 찌그러지지 않도록 비율 유지 */
+<<<<<<< HEAD
 }
 
 /* --- 약관 동의 페이지 스타일 --- */
@@ -2400,4 +2473,6 @@ h1.splash-logo {
     vertical-align: middle; /* 텍스트와 수직 정렬 */
     margin-right: 4px;
     margin-top: -2px; /* 미세 조정 */
+=======
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 }

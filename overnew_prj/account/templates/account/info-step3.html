@@ -1,18 +1,37 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ko">
+=======
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>정보 기입 3 - OVERNEW</title>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
 
+<<<<<<< HEAD
     <link rel="stylesheet" href="/overnew_prj/static/css/style.css">
 
     <script src="/overnew_prj/static/js/account.js" defer></script>
 </head>
+=======
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="{% static 'js/account.js' %}" defer></script>
+</head>
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 <body id="page-info-step3">
 
     <main class="container">
@@ -20,7 +39,11 @@
         <h1 class="logo">OVERNEW</h1>
 
         <div class="progress-bar">
+<<<<<<< HEAD
             <div class="progress-value" style="width: 80%;"></div>
+=======
+            <div class="progress-value" style="width: 60%;"></div>
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
         </div>
 
         <h2 class="title" id="user-greeting">...님</h2>
@@ -33,6 +56,7 @@
             <div class="form-group">
                 <div class="topics-toggle">
                     <div class="topic-row">
+<<<<<<< HEAD
                         <input type="checkbox" id="topic-politics" name="topics" value="politics">
                         <label for="topic-politics">정치</label>
                         
@@ -56,6 +80,31 @@
                         <label for="topic-enter">연예</label>
 
                         <input type="checkbox" id="topic-sports" name="topics" value="sports">
+=======
+                        <input type="checkbox" id="topic-politics" name="topic" value="politics">
+                        <label for="topic-politics">정치</label>
+
+                        <input type="checkbox" id="topic-economy" name="topic" value="economy">
+                        <label for="topic-economy">경제</label>
+
+                        <input type="checkbox" id="topic-society" name="topic" value="society">
+                        <label for="topic-society">사회</label>
+
+                        <input type="checkbox" id="topic-culture" name="topic" value="culture">
+                        <label for="topic-culture">생활/문화</label>
+                    </div>
+                    <div class="topic-row">
+                        <input type="checkbox" id="topic-it" name="topic" value="it">
+                        <label for="topic-it">IT/과학</label>
+
+                        <input type="checkbox" id="topic-world" name="topic" value="world">
+                        <label for="topic-world">세계</label>
+
+                        <input type="checkbox" id="topic-enter" name="topic" value="entertainment">
+                        <label for="topic-enter">연예</label>
+
+                        <input type="checkbox" id="topic-sports" name="topic" value="sports">
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
                         <label for="topic-sports">스포츠</label>
                     </div>
                 </div>
@@ -67,5 +116,10 @@
 
     <button type="button" class="next-button" id="next-btn-step3">NEXT</button>
 
+<<<<<<< HEAD
     </body>
+=======
+</body>
+
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 </html>

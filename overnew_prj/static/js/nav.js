@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navContainer = document.querySelector('.bottom-nav');
     if (!navContainer) return;
 
+<<<<<<< HEAD
     // 실제 프로젝트에 존재하는 main 페이지들
     const mainPages = [
     '/overnew_prj/feed/templates/feed/feed.html',
@@ -18,6 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const currentPath = window.location.pathname;
     const isMainPage = mainPages.some(page => currentPath.endsWith(page));
+=======
+    // nav가 보여질 메인 페이지 경로
+    const mainPages = [
+        '/feed.html',
+        '/archive.html',
+        '/main.html',
+        '/community.html'
+    ];
+
+    const currentPath = window.location.pathname;
+    const isMainPage = mainPages.some(page => currentPath.includes(page));
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 
     if (!isMainPage) {
         navContainer.style.display = 'none';
@@ -32,7 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     navContainer.innerHTML = navItems.map(item => `
+<<<<<<< HEAD
         <a href="${item.href}" class="nav-item ${currentPath.endsWith(item.href) ? 'active' : ''}">
+=======
+        <a href="${item.href}" class="nav-item ${currentPath.includes(item.href) ? 'active' : ''}">
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
             <div class="nav-icon-wrapper"><span class="nav-icon">${item.icon}</span></div>
             <span class="nav-label">${item.label}</span>
         </a>
@@ -53,7 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = "/overnew_prj/account/templates/account/notifications.html";
         });
     }
+<<<<<<< HEAD
     document.getElementById("back-button").addEventListener("click", function () {
     history.back();
 });
+=======
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 });

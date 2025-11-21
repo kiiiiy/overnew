@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 annotated-types==0.7.0
 asgiref==3.10.0
 cachetools==6.2.2
@@ -34,3 +35,9 @@ typing_extensions==4.15.0
 tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.5.0
+=======
+Django==4.2.0
+Pillow
+requests
+beautifulsoup4
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

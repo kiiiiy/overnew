@@ -4,6 +4,10 @@ from archive.models import *
 from .models import * 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.decorators.http import require_http_methods
+from django.conf import settings # settings.py에서 설정한 변수를 가져오기 위해 필요
+import google.generativeai as genai
+from .gemini_service import check_for_hate_speech 
 
 
 def main(request):
@@ -112,13 +116,31 @@ def create_comment(request, room_id):
             parent = get_object_or_404(Comment, pk=parent_id, room=room)
 
         if content:
-            Comment.objects.create(
+            # 1. 댓글을 먼저 저장합니다. (사용자가 등록 성공을 바로 확인하도록)
+            new_comment = Comment.objects.create(
                 room=room,
                 user=request.user,
                 comment_content=content,
                 parent=parent,
-                is_anonymous=is_anonymous, 
             )
+
+            # 2. ⭐️ [핵심] Gemini API를 사용하여 비하적 의도 필터링을 수행합니다.
+            needs_filtering = check_for_hate_speech(content)
+            
+            if needs_filtering:
+                # 3. 비하적 의도가 감지된 경우, 댓글 내용을 필터링 메시지로 업데이트하고 저장합니다.
+                filter_message = "AI가 비하적 의도를 감지해 필터링했어요."
+                new_comment.comment_content = filter_message
+                new_comment.save(update_fields=['comment_content'])
+                
+                # 경고 메시지를 사용자에게 표시
+                messages.warning(
+                    request, 
+                    f"댓글 내용에 비하적 의도가 포함되어, 내용이 '{filter_message}'로 대체되었습니다."
+                )
+            else:
+                # 필터링을 통과한 경우, 성공 메시지 표시
+                messages.success(request, "댓글이 성공적으로 등록되었습니다.")
 
         return redirect('discussion:discussion_detail', room_id=room_id)
 

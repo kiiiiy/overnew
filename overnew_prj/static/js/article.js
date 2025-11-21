@@ -19,7 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookmarkBtn = document.getElementById('bookmark-btn'); // 🚨 북마크 버튼 요소 가져오기
     
     // 3. 북마크 초기 상태 로드 및 클릭 이벤트 등록
+    // null, undefined, id 없는 객체 자동 제거
     let bookmarkedList = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
+    bookmarkedList = bookmarkedList.filter(item => item && item.id);
     const isBookmarked = bookmarkedList.some(item => item.id === articleData.id);
 
     if (bookmarkBtn) {

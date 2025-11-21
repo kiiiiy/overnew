@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기사 iframe 보기 - OVERNEW</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        iframe {
+            width: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>기사 상세 (iframe)</h2>
+
+<iframe 
+    src="article-detail.html" 
+    id="article-iframe" 
+    scrolling="no">
+</iframe>
+
+<!-- iframe 높이 자동 조절 -->
+<script>
+    const iframe = document.getElementById('article-iframe');
+
+    function adjustIframeHeight() {
+        if (iframe && iframe.contentWindow.document.body) {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+        }
+    }
+
+    iframe.addEventListener('load', adjustIframeHeight);
+    window.addEventListener('resize', adjustIframeHeight);
+</script>
+
+</body>
+</html>

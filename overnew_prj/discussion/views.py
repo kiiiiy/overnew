@@ -19,7 +19,7 @@ def discussion_list(request, nc_id=1):
         DiscussionRoom.objects
         .filter(
             article__nc=selected_category,
-            is_anoymous=False,
+            is_anonymous=False,
             start_time__lte=now,   # 시작은 됐고
             finish_time__gte=now,  # 아직 안 끝난 방만
         )
@@ -45,7 +45,7 @@ def anonymous_list(request, nc_id=1):
         DiscussionRoom.objects
         .filter(
             article__nc=selected_category,
-            is_anoymous=True,
+            is_anonymous=True,
             start_time__lte=now,
             finish_time__gte=now,
         )
@@ -67,7 +67,7 @@ def discussion_detail(request, room_id):
             'article__nc'
         ),
         pk=room_id,
-        is_anoymous=False,
+        is_anonymous=False,
     )
 
     context = {
@@ -83,7 +83,7 @@ def anonymous_detail(request, room_id):
             'article__nc'
         ),
         pk=room_id,
-        is_anoymous=True,
+        is_anonymous=True,
     )
 
     context = {

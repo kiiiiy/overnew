@@ -8,23 +8,23 @@
 const dummyMyData = {
     scrap: {
         politics: [
-            { id: 'my-s-1', category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'https://via.placeholder.com/100x60' },
-            { id: 'my-s-2', category: '정치', source: 'YTN', title: "국회 본회의, 주요 법안 통과 여부 주목", views: '15k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
+            // { id: 'my-s-1', category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'https://via.placeholder.com/100x60' },
+            // { id: 'my-s-2', category: '정치', source: 'YTN', title: "국회 본회의, 주요 법안 통과 여부 주목", views: '15k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }
         ],
         economy: [
-            { id: 'my-s-3', category: '경제', source: 'SBS', title: 'APEC 효과?... 경제 심리 상승세', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
+            // { id: 'my-s-3', category: '경제', source: 'SBS', title: 'APEC 효과?... 경제 심리 상승세', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
         ],
         society: [], it: [], culture: [], world: [], enter: [], sport: []
     },
     bookmark: {
         politics: [
-            { id: 'my-b-1', category: '정치', source: '뉴스웍스', title: "여야, 내년도 예산안 심사 돌입... 치열한 공방 예고", views: '31.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' }
+            // { id: 'my-b-1', category: '정치', source: '뉴스웍스', title: "여야, 내년도 예산안 심사 돌입... 치열한 공방 예고", views: '31.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' }
         ],
         economy: [
-            { id: 'my-b-2', category: '경제', source: '매일경제', title: "2025년 부동산 시장, 전문가들의 전망은?", views: '50k', time: '2일 전', image: 'https://via.placeholder.com/100x60' }
+            // { id: 'my-b-2', category: '경제', source: '매일경제', title: "2025년 부동산 시장, 전문가들의 전망은?", views: '50k', time: '2일 전', image: 'https://via.placeholder.com/100x60' }
         ],
         it: [
-            { id: 'my-b-3', category: 'IT/과학', source: '블로터', title: "갤럭시 S25 유출 정보 총정리", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
+            // { id: 'my-b-3', category: 'IT/과학', source: '블로터', title: "갤럭시 S25 유출 정보 총정리", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
         ],
         society: [], culture: [], world: [], enter: [], sport: []
     }

@@ -4,11 +4,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 
-from archive.models import Article, Like, NewsCategory, UserNews
-from users.models import Following
+from archive.models import *
+from users.models import *
+
+from django.http import JsonResponse
 
 
-# 기본 피드: 일단 HOT 이랑 비슷하게 전체 기사 보여주게
 def feed(request):
     articles = (
         Article.objects
@@ -21,58 +22,94 @@ def feed(request):
     })
 
 
-# 🔥 HOT 탭: 좋아요 50개 이상
-def hot_feed(request):
-    # 옵션: ?category=1 같이 들어오면 분야별 필터
-    category_id = request.GET.get('category')
+TOPIC_TO_CATEGORY_NAME = {
+    'politics': '정치',
+    'economy': '경제',
+    'society': '사회',
+    'culture': '생활/문화',
+    'it': 'IT/과학',
+    'world': '세계',
+    'enter': '연예',
+    'sport': '스포츠',
+}
 
-    articles = (
+def hot_feed_api(request):
+    topic = request.GET.get('topic')  # 'politics', 'economy' 같은 값
+
+    qs = (
         Article.objects
+        .select_related('media', 'nc')
         .annotate(like_count=Count('likes'))
         .order_by('-like_count', '-created_at')
     )
 
-    if category_id:
-        articles = articles.filter(nc_id=category_id)
+    # topic으로 필터 (선택)
+    if topic and topic in TOPIC_TO_CATEGORY_NAME:
+        qs = qs.filter(nc__news_category=TOPIC_TO_CATEGORY_NAME[topic])
 
-    # 상단 카테고리 칩 (전체 분야)
-    categories = NewsCategory.objects.all()
+    qs = qs[:20]  # 상위 20개만
 
-    return render(request, 'feed/feed.html', {
-        'mode': 'hot',
-        'articles': articles.filter(like_count__gte=50),
-        'categories': categories,
-        'selected_category_id': int(category_id) if category_id else None,
-    })
+    def format_time(article):
+        # 일단 간단하게 날짜 문자열로
+        return article.created_at.strftime('%Y-%m-%d %H:%M')
+
+    articles = []
+    for a in qs:
+        articles.append({
+            "id": a.article_id,
+            "category": a.nc.news_category if a.nc else "",
+            "source": a.media.media_name if a.media else "",
+            "title": a.title,
+            "views": a.view_count,     # 프론트에서 '42.9k'로 포맷하고 싶으면 JS에서 처리
+            "time": format_time(a),
+            "image": a.image or "https://via.placeholder.com/100x60",
+        })
+
+    return JsonResponse({"articles": articles})
 
 
 @login_required
-def following_feed(request):
-    category_id = request.GET.get('category')
+def following_feed_api(request):
+    topic = request.GET.get('topic')  # 'politics' 등
 
-    # 내가 팔로우한 사람 목록 (user2가 팔로잉 대상)
+    category_name = TOPIC_TO_CATEGORY_NAME.get(topic)
+
+    # 내가 팔로우한 사람들 ID
     following_ids = Following.objects.filter(
         user=request.user
-    ).values_list('user2', flat=True)
+    ).values_list('user2_id', flat=True)
 
-    # 팔로우한 사람들이 '작성한' 기사만 가져오기
-    articles = (
-        Article.objects
-        .filter(author_id__in=following_ids)
-        .annotate(like_count=Count('likes'))
+    scraps = (
+        Scrap.objects
+        .select_related('user', 'news', 'news__media', 'news__nc')
+        .filter(user_id__in=following_ids)
         .order_by('-created_at')
     )
 
-    # 카테고리 필터 적용
-    if category_id:
-        articles = articles.filter(nc_id=category_id)
+    if category_name:
+        scraps = scraps.filter(news__nc__news_category=category_name)
 
-    # 카테고리 칩
-    categories = NewsCategory.objects.all()
+    results = []
 
-    return render(request, 'feed/feed.html', {
-        'mode': 'following',
-        'articles': articles,
-        'categories': categories,
-        'selected_category_id': int(category_id) if category_id else None,
-    })
+    for s in scraps:
+        u = s.user
+        a = s.news
+
+        results.append({
+            "user": {
+                "id": u.id,
+                "nickname": u.nickname or u.username,
+                "profile_image": u.profile_image.url if u.profile_image else "",
+            },
+            "article": {
+                "id": a.article_id,
+                "category": a.nc.news_category if a.nc else "",
+                "source": a.media.media_name if a.media else "",
+                "title": a.title,
+                "views": a.view_count,
+                "time": a.created_at.strftime('%Y-%m-%d %H:%M'),
+                "image": a.image or "https://via.placeholder.com/100x60",
+            }
+        })
+
+    return JsonResponse({"results": results})

@@ -4,54 +4,6 @@
 // ====================
 
 // [HOT 탭용 데이터]
-const dummyData = {
-    hot: {
-        politics: [
-            { id: 'hot-pol-1', category: 'IT/과학', source: '빅데이터뉴스', title: "삼성SDS, IT서비스 상장기업 브랜드 평판 11월 빅데이터 분석 1위", views: '42.9k', time: '5 hours ago', image: 'https://via.placeholder.com/100x60' },
-            { id: 'hot-pol-2', category: '경제', source: 'SBS', title: 'APEC 효과?...한은 "경제 심리 4년 3개월만에 최고"', views: '32.6k', time: '4 hours ago', image: 'https://via.placeholder.com/100x60' }
-        ],
-        economy: [
-            { id: 'hot-eco-1', category: '경제', source: 'SBS', title: '경제 심리 최고', views: '31.5k', time: '3 hours ago', image: 'https://via.placeholder.com/100x60' }
-        ]
-    }
-};
-
-// [FOLLOWING 탭용 데이터]
-const dummyUserDatabase = {
-    'kwon': {
-        name: '권또또', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권',
-        scrap: [
-            { id: 'kwon-1', topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'kwon-2', topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
-        ]
-    },
-    'leftgabi': {
-        name: '왼가비', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼',
-        scrap: [
-            { id: 'left-1', topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기... 개미들 '패닉'", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
-        ]
-    },
-    'kimlinky': {
-        name: '김링키', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김',
-        scrap: [
-            { id: 'kim-1', topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
-        ]
-    },
-    'ByeWind': {
-        name: 'ByeWind', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=B',
-        scrap: [
-            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
-        ]
-    },
-    'Natali': { name: 'Natali Craig', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', scrap: [{ id: 'nat-1', topic: 'economy', category: '경제', source: '매일경제', title: "비트코인 1억 돌파하나...", views: '80k', time: '10분 전', image: 'https://via.placeholder.com/100x60' }] },
-    'Drew': { name: 'Drew Cano', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=D', scrap: [{ id: 'drew-1', topic: 'culture', category: '생활/문화', source: 'Vogue', title: "2025 SS 패션 트렌드", views: '12k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }] },
-    'Orlando': { name: 'Orlando Diggs', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=O', scrap: [{ id: 'orl-1', topic: 'economy', category: '경제', source: 'WSJ', title: "미 연준, 금리 인하", views: '60k', time: '4시간 전', image: 'https://via.placeholder.com/100x60' }] },
-    'Andi': { name: 'Andi Lane', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', scrap: [{ id: 'andi-1', topic: 'sport', category: '스포츠', source: '스포츠조선', title: "손흥민 리그 10호골", views: '200k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }] },
-    'NonFollow': { name: 'Non Follow User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', scrap: [{ id: 'non-1', topic: 'society', category: '사회', source: '한겨레', title: "저출산 문제 해결책", views: '5k', time: '1일 전', image: 'https://via.placeholder.com/100x60' }] },
-    'AnotherUser': { name: 'Another User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', scrap: [{ id: 'another-1', topic: 'politics', category: '정치', source: '경향신문', title: "선거구 획정안 논란", views: '8k', time: '3시간 전', image: 'https://via.placeholder.com/100x60' }] }
-};
-
 // ====================
 // 2. 카드 생성 함수 (데이터 심기)
 // ====================
@@ -76,25 +28,23 @@ function createHotCardHTML(cardData) {
     `;
 }
 
-function createFollowingCardHTML(userId, userData, articleData) {
+function createFollowingCardHTML(userData, articleData) {
     const viewIconPath = '../../../static/image/view.png'; 
     const profilePath = '../../../archive/templates/archive/profile-detail.html';
-    const profileLink = `${profilePath}?user_id=${userId}`;
+    const profileLink = `${profilePath}?user_id=${userData.id}`;
 
-    // 북마크 여부 확인
     const bookmarkedList = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
     const isBookmarked = bookmarkedList.some(item => item.id === articleData.id);
     const activeClass = isBookmarked ? 'active' : '';
 
-    // 🚨 [핵심] 데이터 전체를 JSON 문자열로 변환
     const jsonString = JSON.stringify(articleData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
 
     return `
         <div class="following-card-group">
             <div class="follower-header">
                 <a href="${profileLink}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
-                    <img src="${userData.avatar}" class="card-avatar-small">
-                    <strong>${userData.name}</strong>님이 스크랩한 기사
+                    <img src="${userData.profile_image || 'https://via.placeholder.com/36x36'}" class="card-avatar-small">
+                    <strong>${userData.nickname}</strong>님이 스크랩한 기사
                 </a>
             </div>
             
@@ -124,7 +74,7 @@ function createFollowingCardHTML(userId, userData, articleData) {
 // ====================
 // 3. 피드 렌더링 함수
 // ====================
-function renderFeedPage(view, topic) {
+async function renderFeedPage(view, topic) {
     const feedHot = document.getElementById('feed-hot');
     const feedFollowing = document.getElementById('feed-following');
     const container = view === 'hot' ? feedHot : feedFollowing;
@@ -134,44 +84,59 @@ function renderFeedPage(view, topic) {
     container.innerHTML = '';
     let html = '';
 
-    if (view === 'hot') {
-        let articles = [];
-        if (dummyData.hot) {
-            Object.values(dummyData.hot).forEach(arr => { articles = articles.concat(arr); });
-            articles = articles.slice(0, 10);
-        }
-        if (articles.length > 0) {
-            articles.forEach(a => html += createHotCardHTML(a));
-        } else {
-            html = '<p style="text-align:center; color:#888; margin-top:40px;">핫한 기사가 없습니다.</p>';
-        }
-    } else {
-        const followingList = JSON.parse(localStorage.getItem('following_list')) || [];
-        let hasContent = false;
+    try {
+        if (view === 'hot') {
+            // /feed/api/hot/?topic=politics 이런 식으로 호출
+            const params = new URLSearchParams();
+            if (topic) params.append('topic', topic);
 
-        if (followingList.length === 0) {
-            html = '<p style="text-align:center; color:#888; margin-top:60px;">아직 팔로우한 유저가 없습니다.<br>추천 탭에서 친구를 찾아보세요!</p>';
-            container.innerHTML = html;
-            return;
-        }
+            const response = await fetch(`/feed/api/hot/?${params.toString()}`);
+            if (!response.ok) throw new Error('HOT API 오류');
 
-        followingList.forEach(userId => {
-            const user = dummyUserDatabase[userId];
-            if (user && user.scrap) {
-                const matchedArticles = user.scrap.filter(act => act.topic === topic);
-                matchedArticles.forEach(article => {
-                    html += createFollowingCardHTML(userId, user, article);
-                    hasContent = true;
+            const data = await response.json();
+            const articles = data.articles || [];
+
+            if (articles.length > 0) {
+                articles.forEach(a => {
+                    html += createHotCardHTML(a);
                 });
+            } else {
+                html = '<p style="text-align:center; color:#888; margin-top:40px;">핫한 기사가 없습니다.</p>';
             }
-        });
+        } else {
+            // FOLLOWING
+            const params = new URLSearchParams();
+            if (topic) params.append('topic', topic);
 
-        if (!hasContent) {
-            html = '<p style="text-align:center; color:#888; margin-top:60px;">팔로우한 유저들이<br>이 주제의 기사를 스크랩하지 않았어요.</p>';
+            const response = await fetch(`/feed/api/following/?${params.toString()}`);
+            if (!response.ok) {
+                if (response.status === 302 || response.redirected) {
+                    // 로그인 안 한 경우 로그인 페이지로 가게 할 수도 있음
+                    window.location.href = '/account/login/'; // 실제 로그인 url 맞게 수정
+                    return;
+                }
+                throw new Error('FOLLOWING API 오류');
+            }
+
+            const data = await response.json();
+            const results = data.results || [];
+
+            if (results.length > 0) {
+                results.forEach(item => {
+                    html += createFollowingCardHTML(item.user, item.article);
+                });
+            } else {
+                html = '<p style="text-align:center; color:#888; margin-top:60px;">팔로우한 유저들이<br>이 주제의 기사를 스크랩하지 않았어요.</p>';
+            }
         }
+    } catch (err) {
+        console.error(err);
+        html = '<p style="text-align:center; color:#e74c3c; margin-top:40px;">피드를 불러오는 중 오류가 발생했습니다.</p>';
     }
+
     container.innerHTML = html;
 }
+
 
 // ====================
 // 4. 메인 로직 (이벤트 리스너)

@@ -71,105 +71,15 @@ function createCommentHTML(commentData) {
 function renderComments() {
     const commentContainer = document.getElementById('comment-list');
     
-// =========================================================================
-// ******** 2. DOMContentLoaded 이벤트 리스너 (기존 코드 대체) *********
-// =========================================================================
+    // 1. 정렬
+    dummyComments.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
+    });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // --- (A) 핀 고정 기능 관련 기존 코드 ---
-    const pinBtn = document.getElementById('pin-btn');
-    const pinnedBox = document.getElementById('pinned-discussion-box');
-
-    const storageKey = 'pinned_discussions';
-    const storageDataKey = 'pinned_discussions_data';
-    let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
-    let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
-
-    const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
-    
-    // [수정] document.querySelector('.article-title') 등이 null일 경우를 대비해 기본값 설정
-    const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
-    const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
-    const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
-
-    if (pinBtn && pinnedDiscussions.includes(discussionId)) {
-        pinBtn.classList.add('active');
-        pinBtn.textContent = '📌 고정됨';
-    }
-
-    function renderPinnedBox() {
-        if (pinnedBox) {
-            if (pinnedDiscussions.includes(discussionId)) {
-                pinnedBox.innerHTML = `<div class="pinned-item">
-                    📌 ${discussionTitle} 
-                    <button class="unpin-btn" style="margin-left:8px;cursor:pointer;">❌ 고정 해제</button>
-                </div>`;
-                const unpinBtn = pinnedBox.querySelector('.unpin-btn');
-                if (unpinBtn) {
-                     unpinBtn.addEventListener('click', () => {
-                        pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
-                        delete pinnedData[discussionId];
-                        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
-                        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
-                        if (pinBtn) {
-                           pinBtn.classList.remove('active');
-                           pinBtn.textContent = '📌 고정';
-                        }
-                        renderPinnedBox();
-                        alert('고정이 해제되었습니다.');
-                    });
-                }
-            } else {
-                pinnedBox.innerHTML = '';
-            }
-        }
-    }
-
-    renderPinnedBox();
-
-    if (pinBtn) {
-        pinBtn.addEventListener('click', () => {
-            if (pinnedDiscussions.includes(discussionId)) {
-                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
-                delete pinnedData[discussionId];
-                pinBtn.classList.remove('active');
-                pinBtn.textContent = '📌 고정';
-            } else {
-                pinnedDiscussions.push(discussionId);
-                pinnedData[discussionId] = {
-                    id: discussionId,
-                    title: discussionTitle,
-                    category: discussionCategory,
-                    source: discussionSource
-                };
-                pinBtn.classList.add('active');
-                pinBtn.textContent = '📌 고정됨';
-            }
-            localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
-            localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
-            renderPinnedBox();
-            alert('커뮤니티 상단에 고정되었습니다.');
-        });
-    }
-
-    // 뒤로가기 버튼
-    const backButton = document.getElementById("back-button");
-    if (backButton) {
-        backButton.addEventListener("click", function () {
-            history.back();
-        });
-    }
-});
-
-// 1. 정렬
-dummyComments.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
-});
-
-// 2. 렌더링
-commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
+    // 2. 렌더링
+    commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
 }
 
 // (NEW) 댓글 입력창 상태 업데이트
@@ -233,150 +143,189 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (targetComment) {
-                const isLiked = likedComments.includes(targetComment.id);
-                if (isLiked) {
-                    likedComments = likedComments.filter(id => id !== targetComment.id);
-                    targetComment.likes--;
+                const isCurrentlyLiked = likedComments.includes(clickedCommentId);
+
+                if (isCurrentlyLiked) {
+                    likeButton.classList.remove('active');
+                    likedComments = likedComments.filter(id => id !== clickedCommentId);
+                    targetComment.likes = Math.max(0, targetComment.likes - 1);
                 } else {
-                    likedComments.push(targetComment.id);
-                    targetComment.likes++;
+                    likeButton.classList.add('active');
+                    likedComments.push(clickedCommentId);
+                    targetComment.likes += 1;
                 }
+
+                likeButton.querySelector('.count').textContent = targetComment.likes;
+
                 localStorage.setItem('comment_likes', JSON.stringify(likedComments));
-                renderComments();
             }
-            return;
         }
 
-        // ----- 답글 버튼 클릭 -----
+        // ----- 답글 클릭 -----
         if (e.target.closest('.reply-btn')) {
-            const replyButton = e.target.closest('.reply-btn');
-            const commentItem = replyButton.closest('.comment-item');
-            const commentId = commentItem.dataset.commentId;
+            const parentComment = 
+                dummyComments.find(c => c.id === clickedCommentId) ||
+                dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
 
-            // 대댓글 입력란이 열려있으면 닫기
-            const openReplyInput = commentItem.querySelector('.reply-input');
-            if (openReplyInput) {
-                openReplyInput.remove();
-                return;
-            }
-
-            // 새로 대댓글 입력란 생성
-            const replyInputHTML = `
-            <div class="reply-input" style="display:none; margin-top:8px;">
-                <img src="${userInfo.avatar}" alt="내 프로필" class="comment-avatar" style="width:32px;height:32px;">
-                <textarea class="reply-textarea" placeholder="답글을 입력하세요..." rows="1"></textarea>
-                <div class="reply-actions" style="margin-top:4px;">
-                    <button class="action-btn submit-reply-btn">답글 달기</button>
-                    <button class="action-btn cancel-reply-btn">취소</button>
-                </div>
-            </div>
-            `;
-            commentItem.insertAdjacentHTML('beforeend', replyInputHTML);
-
-            const replyInput = commentItem.querySelector('.reply-input');
-            const textarea = replyInput.querySelector('.reply-textarea');
-            const cancelReplyBtn = replyInput.querySelector('.cancel-reply-btn');
-
-            // (NEW) 대댓글 입력란 토글 기능
-            replyButton.classList.toggle('active');
-            if (replyButton.classList.contains('active')) {
-                replyButton.innerHTML = '답글 취소';
-                replyInput.style.display = 'block';
-                textarea.focus();
-            } else {
-                replyButton.innerHTML = '답글 달기';
-                replyInput.style.display = 'none';
-                textarea.value = '';
-            }
-
-            // (NEW) 대댓글 입력란에서 Enter 키로 전송
-            textarea.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    const text = textarea.value.trim();
-                    if (text) {
-                        // 대댓글 데이터 생성
-                        const newReply = {
-                            id: `c${Date.now()}`,
-                            user: userInfo.name,
-                            avatar: userInfo.avatar,
-                            date: new Date().toISOString().slice(0, 10),
-                            text: text,
-                            likes: 0,
-                            replies: []
-                        };
-
-                        // 부모 댓글 찾기
-                        let parentComment = dummyComments.find(c => c.id === commentId);
-                        if (!parentComment) {
-                            for (let comment of dummyComments) {
-                                parentComment = comment.replies.find(r => r.id === commentId);
-                                if (parentComment) break;
-                            }
-                        }
-
-                        if (parentComment) {
-                            parentComment.replies.push(newReply);
-                            localStorage.setItem('dummy_comments', JSON.stringify(dummyComments));
-                            renderComments();
-                        }
-                    }
-                }
-            });
-
-            // (NEW) 대댓글 입력란에서 취소 버튼 클릭 시 동작
-            cancelReplyBtn.addEventListener('click', () => {
-                replyButton.classList.remove('active');
-                replyButton.innerHTML = '답글 달기';
-                replyInput.remove();
-            });
-
-            return;
+            replyTarget = { id: clickedCommentId, user: parentComment.user };
+            updateCommentInputMode();
         }
     });
 
-    const submitComment = (text) => {
+    // 4. 댓글 제출
+    submitBtn.addEventListener('click', () => {
+        const commentText = commentInput.value.trim();
+        if (commentText === '') return;
+
         const newComment = {
-            id: `c${Date.now()}`,
-            user: userInfo.name,
+            id: 'c' + (Math.random() * 10000).toFixed(0),
+            user: userInfo.nickname || '나',
             avatar: userInfo.avatar,
-            date: new Date().toISOString().slice(0, 10),
-            text: text,
+            date: new Date().toISOString().split('T')[0],
+            text: commentText,
             likes: 0,
             replies: []
         };
 
-        dummyComments.push(newComment);
-        localStorage.setItem('dummy_comments', JSON.stringify(dummyComments));
-        renderComments();
-    };
-
-    // 4. 댓글 입력 후 엔터 키 또는 버튼 클릭 시 댓글 등록
-    commentInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            const text = commentInput.value.trim();
-            if (text) {
-                submitComment(text);
-                commentInput.value = '';
+        if (replyTarget) {
+            let parent = dummyComments.find(c => c.id === replyTarget.id);
+            if (parent) {
+                parent.replies.push(newComment);
+            } else {
+                dummyComments.forEach(c => {
+                    let parentReply = c.replies.find(r => r.id === replyTarget.id);
+                    if (parentReply) parentReply.replies.push(newComment);
+                });
             }
+            replyTarget = null;
+        } else {
+            dummyComments.push(newComment);
         }
+
+        commentInput.value = '';
+        updateCommentInputMode();
+        renderComments();
     });
 
-    submitBtn.addEventListener('click', () => {
-        const text = commentInput.value.trim();
-        if (text) {
-            submitComment(text);
-            commentInput.value = '';
-        }
+    // 뒤로가기 버튼
+    document.getElementById("back-button").addEventListener("click", function () {
+        history.back();
     });
+    
+    // 첫 렌더링
+    renderComments();
 });
 
-// (NEW) 페이지 로드 시 더미 데이터로 댓글 초기화
+// ----- (A) 핀 고정 기능 관련 기존 코드 -----
 document.addEventListener('DOMContentLoaded', () => {
-    const storedComments = JSON.parse(localStorage.getItem('dummy_comments'));
-    if (storedComments && storedComments.length > 0) {
-        dummyComments = storedComments;
+    const pinBtn = document.getElementById('pin-btn');
+    const pinnedBox = document.getElementById('pinned-discussion-box');
+    const storageKey = 'pinned_discussions';
+    const storageDataKey = 'pinned_discussions_data';
+    let pinnedDiscussions = JSON.parse(localStorage.getItem(storageKey)) || [];
+    let pinnedData = JSON.parse(localStorage.getItem(storageDataKey)) || {};
+
+    const discussionId = new URLSearchParams(window.location.search).get('id') || 'discussion-1';
+    const discussionTitle = document.querySelector('.article-title')?.textContent || '제목 없음';
+    const discussionCategory = document.querySelector('.card-category')?.textContent || '카테고리 없음';
+    const discussionSource = document.querySelector('.card-source')?.textContent || '출처 없음';
+
+    if (pinBtn && pinnedDiscussions.includes(discussionId)) {
+        pinBtn.classList.add('active');
+        pinBtn.textContent = '📌 고정됨';
     }
+
+    function renderPinnedBox() {
+        if (pinnedBox) {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedBox.innerHTML = `<div class="pinned-item" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${discussionId}'">
+                    📌 ${discussionTitle}
+                    <button class="unpin-btn" style="background-color: #6A1B9A; color: white; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 14px;">고정 삭제</button>
+                </div>`;
+                const unpinBtn = pinnedBox.querySelector('.unpin-btn');
+                if (unpinBtn) {
+                    unpinBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                        delete pinnedData[discussionId];
+                        localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+                        localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+                        if (pinBtn) {
+                            pinBtn.classList.remove('active');
+                            pinBtn.textContent = '📌 고정';
+                        }
+                        renderPinnedBox();
+                        alert('고정이 해제되었습니다.');
+                    });
+                }
+            } else {
+                pinnedBox.innerHTML = '';
+            }
+        }
+    }
+
+    renderPinnedBox();
+
+    if (pinBtn) {
+        pinBtn.addEventListener('click', () => {
+            if (pinnedDiscussions.includes(discussionId)) {
+                pinnedDiscussions = pinnedDiscussions.filter(id => id !== discussionId);
+                delete pinnedData[discussionId];
+                pinBtn.classList.remove('active');
+                pinBtn.textContent = '📌 고정';
+            } else {
+                pinnedDiscussions.push(discussionId);
+                pinnedData[discussionId] = {
+                    id: discussionId,
+                    title: discussionTitle,
+                    category: discussionCategory,
+                    source: discussionSource
+                };
+                pinBtn.classList.add('active');
+                pinBtn.textContent = '📌 고정됨';
+            }
+            localStorage.setItem(storageKey, JSON.stringify(pinnedDiscussions));
+            localStorage.setItem(storageDataKey, JSON.stringify(pinnedData));
+            renderPinnedBox();
+            alert('커뮤니티 상단에 고정되었습니다.');
+        });
+    }
+});
+
+// ----- 2-2. 남은 시간 동적 업데이트 기능 -----
+function calculateRemainingTime(endTime) {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end - now;
+
+    if (diff <= 0) return '종료됨';
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+        return `${hours}시간 ${minutes}분 남음`;
+    } else {
+        return `${minutes}분 남음`;
+    }
+}
+
+function updateDiscussionTimes() {
+    const cards = document.querySelectorAll('.discussion-card');
+    cards.forEach(card => {
+        const timeElement = card.querySelector('.time-left');
+        const endTime = card.dataset.endTime;
+        if (timeElement && endTime) {
+            timeElement.textContent = `🕒 ${calculateRemainingTime(endTime)}`;
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // 주기적으로 시간 업데이트
+    setInterval(updateDiscussionTimes, 60000); // 1분마다 업데이트
+
+    renderPinnedBox();
     renderComments();
+    updateDiscussionTimes(); // 초기 호출
 });

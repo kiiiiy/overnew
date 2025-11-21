@@ -1,0 +1,85 @@
+/* 고정된 채팅방 스타일 */
+.pinned-discussion-box {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pinned-discussion-box .pinned-item {
+    display: flex;
+    align-items: center; /* 버튼과 텍스트를 수평으로 정렬 */
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.pinned-discussion-box .pinned-item .icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.pinned-discussion-box .pinned-item .text {
+    flex-grow: 1;
+    text-align: left;
+    white-space: nowrap; /* 제목 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 제목이 너무 길 경우 생략 표시 */
+}
+
+.pinned-discussion-box .pinned-item .unpin-btn {
+    flex-shrink: 0;
+    background-color: #6a0dad; /* 기존 고정 삭제 버튼 색상 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.pinned-discussion-box .pinned-item .unpin-btn:hover {
+    background-color: #5a0cad; /* 약간 더 어두운 보라색 */
+}
+
+.pinned-discussion-box .pinned-item.pinned {
+    background-color: #d8bfd8; /* 연한 보라색 */
+}
+
+.pinned-discussion-box .pinned-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.pinned-discussion-box .pinned-title img {
+    width: 24px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.pinned-discussion-box .pinned-title {
+    position: relative;
+    top: -10px; /* 최신순과 겹치지 않도록 약간 올림 */
+}
+
+.pinned-btn {
+    background-color: #6a0dad; /* 기존 고정 삭제 버튼 색상 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.pinned-btn:hover {
+    background-color: #5a0cad; /* 약간 더 어두운 보라색 */
+}
+
+.pinned-btn.pinned {
+    background-color: #d8bfd8; /* 연한 보라색 */
+}

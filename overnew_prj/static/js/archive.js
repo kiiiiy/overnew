@@ -586,4 +586,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+    // 뒤로가기 버튼
+    document.getElementById("back-button").addEventListener("click", function () {
+        history.back();
+    });
 });

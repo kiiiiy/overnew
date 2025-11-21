@@ -67,7 +67,7 @@ function initInfoStep1Page() {
         }
         const userInfo = { name, age, gender };
         localStorage.setItem('user-info', JSON.stringify(userInfo));
-        window.location.href = 'email_verify.html';
+        window.location.href = 'info-step2.html';
     });
 }/* ========================================================================== 
    이메일 인증
@@ -110,7 +110,7 @@ function initEmailVerificationPage() {
                 localStorage.removeItem('email-verification-code');
                 localStorage.removeItem('email-to-verify');
 
-                window.location.href = 'info-step5.html';
+                window.location.href = 'info-step1.html';
             } else {
                 alert('인증번호가 올바르지 않습니다.');
             }
@@ -183,7 +183,7 @@ function initInfoStep4Page() {
         const oldInfo = JSON.parse(localStorage.getItem('user-info')) || {};
         const newInfo = { ...oldInfo, media: selectedMedia };
         localStorage.setItem('user-info', JSON.stringify(newInfo));
-        window.location.href = 'signup-complete.html'; 
+        window.location.href = 'info-step5.html'; 
     });
 }
 
@@ -211,7 +211,7 @@ function initInfoStep5Page() {
             password: password
         };
         localStorage.setItem('user-info', JSON.stringify(finalUserInfo));
-        window.location.href = 'info-step2.html'; 
+        window.location.href = 'signup-complete.html'; 
     });
 }
 
@@ -562,7 +562,7 @@ function initTermsAgreementPage() {
             const isRequiredChecked = Array.from(requiredTerms).every(cb => cb.checked);
             if (isRequiredChecked) {
                 // 모든 필수 약관에 동의했으면 다음 단계로 이동
-                window.location.href = 'info-step1.html'; 
+                window.location.href = 'email_verify.html'; 
             } else {
                 // 필수 약관 미동의 시 경고
                 alert('필수 약관에 모두 동의해야 다음 단계로 진행할 수 있습니다.');

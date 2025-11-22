@@ -1,10 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>피드 - OVERNEW</title>
-    <link rel="stylesheet" href="../../../static/css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body class="with-fixed-nav">
@@ -49,8 +50,7 @@
     <nav class="bottom-nav"></nav>
 
     <!-- JS 파일 불러오기 -->
-    <script src="../../../static/js/nav.js"></script>
-
-    <script src="../../../static/js/feed.js"></script>
+    <script src="{% static 'js/nav.js' %}"></script>
+    <script src="{% static 'js/feed.js' %}"></script>
 </body>
 </html>

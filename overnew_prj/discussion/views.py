@@ -194,17 +194,18 @@ def build_comment_tree(comments_qs, user=None):
             display_name = "알 수 없음"
 
         by_id[pk] = {
-            "id": pk,                           # JS에서 문자열로 써도 되지만 여기선 숫자
+            "id": pk,
             "userId": user_pk,
             "display_name": display_name,
             "date": c.created_at.strftime("%b %d, %Y"),
             "text": c.comment_content,
-            "likes": c.likes.count(),           # ✅ 실제 좋아요 수
-            "is_liked": (pk in liked_ids),      # ✅ 현재 로그인 유저가 누른 상태
+            "likes": c.likes.count(),
+            "is_liked": (pk in liked_ids),
             "replies": [],
-            "parent_id": getattr(c, "parent_id", None),
+            "parent_id": getattr(c, "parent_id", None),  # 🔥 여기서 parent_id 기록
             "created_at": c.created_at.isoformat(),
         }
+
 
     roots = []
 
@@ -237,7 +238,7 @@ def build_comment_tree(comments_qs, user=None):
 def anonymous_detail(request, room_id):
     room = get_object_or_404(
         DiscussionRoom.objects.select_related(
-            'article__media__mc',
+            'article__media',   # 🔧 여기 수정
             'article__nc'
         ),
         pk=room_id,
@@ -254,7 +255,6 @@ def anonymous_detail(request, room_id):
     else:
         is_bookmarked = False
 
-    # ✅ 여기!
     comments_tree = build_comment_tree(comments_qs, request.user)
     comments_json = json.dumps(comments_tree, cls=DjangoJSONEncoder, ensure_ascii=False)
 
@@ -270,10 +270,11 @@ def anonymous_detail(request, room_id):
 
 
 
+
 def discussion_detail(request, room_id):
     room = get_object_or_404(
         DiscussionRoom.objects.select_related(
-            'article__media__mc',
+            'article__media',   # 🔧 여기 수정
             'article__nc'
         ),
         pk=room_id,
@@ -310,14 +311,6 @@ def discussion_detail(request, room_id):
 def create_comment(request, room_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
 
-    # 🔐 로그인 체크
-    if not request.user.is_authenticated:
-        messages.error(request, "댓글을 작성하려면 로그인이 필요합니다.")
-        if room.is_anonymous:
-            return redirect('discussion:anonymous_detail', room_id=room_id)
-        else:
-            return redirect('discussion:discussion_detail', room_id=room_id)
-
     # 토론 기간 체크
     now = timezone.now()
     if not (room.start_time <= now <= room.finish_time):
@@ -329,23 +322,23 @@ def create_comment(request, room_id):
 
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
-        parent_id = request.POST.get('parent_id')
+        parent_id = request.POST.get('parent_id')  # 🔥 여기서 받음
         parent = None
 
         if parent_id:
-            # parent_id는 숫자 문자열('3') 또는 'c3' 같이 올 수 있으므로 숫자만 추출
             try:
+                # 'c3' 같은 값도 올 수 있어서 숫자만 추출
                 pure_id = int(str(parent_id).lstrip('c'))
                 parent = get_object_or_404(Comment, pk=pure_id, room=room)
-            except ValueError:
+            except (ValueError, Comment.DoesNotExist):
                 parent = None
 
         if content:
             new_comment = Comment.objects.create(
                 room=room,
-                user=request.user,
+                user=request.user if request.user.is_authenticated else None,
                 comment_content=content,
-                parent=parent,
+                parent=parent,   # 🔥 여기!
             )
 
             needs_filtering = check_for_hate_speech(content)

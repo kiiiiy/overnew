@@ -94,7 +94,30 @@
         </div>
 
         <!-- 댓글 리스트 -->
-        <div class="comment-list" id="comment-list"></div>
+        <div id="comment-list"></div>
+
+<!-- 댓글 입력 폼 -->
+<form method="post" action="{% url 'discussion:create_comment' room.room_id %}">
+    {% csrf_token %}
+    <!-- 🔥 답글용 부모 댓글 ID -->
+    <input type="hidden" name="parent_id" id="parent-id-input">
+
+    <div class="comment-input-bar">
+        <img id="my-avatar" class="my-avatar" src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤" alt="me">
+        <!-- 🔥 content 이름 중요 -->
+        <input id="comment-input" name="content" type="text" placeholder="Add a comment">
+        <button type="submit" id="submit-comment-btn">게시</button>
+        <button type="button" id="cancel-reply-btn" style="display:none;">취소</button>
+    </div>
+</form>
+
+<!-- 🔥 서버에서 내려준 댓글 트리 주입 -->
+<script>
+    window.INITIAL_COMMENTS = JSON.parse(`{{ comments_json|escapejs }}`);
+</script>
+
+<!-- 실명 JS -->
+<script src="{% static 'js/discussion-realname.js' %}?v=2"></script>
     </main>
 
     <!-- 하단 고정 댓글 입력 바 (폼 → create_comment로 POST) -->

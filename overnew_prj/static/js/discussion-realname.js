@@ -1,52 +1,68 @@
-// ----- 1. 가짜 데이터 (Dummy Data) -----
-// (NEW) 대댓글(replies) 구조 포함
-let dummyComments = [
-    { 
-        id: 'c1', user: '박춘봉', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=박', date: 'Aug 19, 2021', 
-        text: 'AI가 수입식품 검사에 도입되면 정말 위험한 제품들을 더 빨리 걸러낼 수 있을까? 아직도 뭔가 불안한데 ...난 잘 모르겠다..', 
-        likes: 5, replies: [
-            { id: 'c3', user: '김철수', avatar: 'https://via.placeholder.com/30x30/CCCCCC/FFFFFF?text=김', date: 'Aug 19, 2021', text: '맞아요, 기사에서 읽었는데 심사 기간이 엄청 줄어들긴 했다던데, 혹시 놓치는 부분이 있지 않을지 걱정돼요.', likes: 0, replies: [] },
-            { id: 'c4', user: '박춘봉', avatar: 'https://via.placeholder.com/30x30/CCCCCC/FFFFFF?text=박', date: 'Aug 19, 2021', text: 'AI 버전으로 문제가 생기는 시나리오가 더 있을까요?', likes: 1, replies: [] }
-        ] 
-    },
-    { 
-        id: 'c2', user: '김철수', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김', date: 'Aug 18, 2021', 
-        text: '이거 정말 필요한 기능이라고 생각합니다. 식품 안전이 중요하죠.', 
-        likes: 12, replies: [] 
+// static/js/discussion-realname.js
+
+// ====================================================================
+// 0. CSRF 쿠키 헬퍼
+// ====================================================================
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-];
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie("csrftoken");
 
-// (NEW) 댓글 좋아요/답글 상태 관리
-let likedComments = JSON.parse(localStorage.getItem('comment_likes')) || [];
-let currentSortOrder = 'oldest'; // 'oldest' or 'newest'
-let replyTarget = null; // { id: 'c1', user: '박춘봉' }
+// ====================================================================
+// 1. 전역 상태 – 서버에서 내려준 INITIAL_COMMENTS 사용
+// ====================================================================
 
-// ----- 2. HTML 생성 함수 -----
-function createCommentHTML(commentData) {
-    const isLiked = likedComments.includes(commentData.id);
-    
-    // 1. 대댓글 HTML 먼저 생성
-    let repliesHTML = '';
-    if (commentData.replies && commentData.replies.length > 0) {
-        repliesHTML = commentData.replies.map(reply => createCommentHTML(reply)).join('');
-    }
+let commentTree = Array.isArray(window.INITIAL_COMMENTS)
+  ? window.INITIAL_COMMENTS
+  : [];
 
-    // 2. 부모 댓글 HTML 생성
-    return `
-    <div class="comment-item ${commentData.replies.length > 0 ? 'has-replies' : ''}" data-comment-id="${commentData.id}">
-        <img src="${commentData.avatar}" alt="${commentData.user}" class="comment-avatar">
+let currentSortOrder = "newest"; // 'newest' or 'oldest'
+let replyTarget = null; // { id: 3, display_name: '홍길동' }
+
+// ====================================================================
+// 2. 헬퍼 함수들
+// ====================================================================
+
+function createCommentHTML(node) {
+  const avatarHTML = `<div class="comment-avatar realname-placeholder"></div>`;
+  const displayName = node.display_name || node.username || "사용자";
+  const isLiked = !!node.is_liked;
+
+  let repliesHTML = "";
+  if (node.replies && node.replies.length > 0) {
+    repliesHTML = node.replies.map((child) => createCommentHTML(child)).join("");
+  }
+
+  return `
+    <div class="comment-item ${
+      node.replies && node.replies.length > 0 ? "has-replies" : ""
+    }" data-comment-id="${node.id}">
+        ${avatarHTML}
         <div class="comment-content">
             <div class="comment-header">
-                <span class="comment-user">${commentData.user}</span>
-                <span class="comment-date">${commentData.date}</span>
+                <span class="comment-user">${displayName}</span>
+                <span class="comment-date">${node.date}</span>
             </div>
-            <p class="comment-text">${commentData.text}</p>
+            <p class="comment-text">${node.text}</p>
             <div class="comment-actions">
-                <button class="action-btn like-btn ${isLiked ? 'active' : ''}">
-                    <span>👍</span> <span class="count">${commentData.likes}</span>
+                <button class="action-btn like-btn ${isLiked ? "active" : ""}">
+                    <span>👍</span> <span class="count">${node.likes || 0}</span>
                 </button>
                 <button class="action-btn reply-btn">
-                    <span>💬</span> <span class="count">${commentData.replies.length}</span>
+                    <span>💬</span> <span class="count">${
+                      node.replies ? node.replies.length : 0
+                    }</span>
                 </button>
             </div>
             <div class="reply-list">
@@ -54,152 +70,219 @@ function createCommentHTML(commentData) {
             </div>
         </div>
     </div>
-    `;
+  `;
 }
 
-// ----- 3. 렌더링 함수 -----
-function renderComments() {
-    const commentContainer = document.getElementById('comment-list');
-    
-    // 1. 정렬
-    dummyComments.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return currentSortOrder === 'oldest' ? dateA - dateB : dateB - dateA;
-    });
-
-    // 2. 렌더링
-    commentContainer.innerHTML = dummyComments.map(comment => createCommentHTML(comment)).join('');
+// 🔧 숫자/문자 타입 맞춰서 찾기 (대댓글 포함 깊이 탐색)
+function findCommentById(list, id) {
+  const targetId = Number(id);
+  for (let c of list) {
+    if (Number(c.id) === targetId) return c;
+    if (c.replies && c.replies.length > 0) {
+      const found = findCommentById(c.replies, targetId);
+      if (found) return found;
+    }
+  }
+  return null;
 }
 
-// (NEW) 댓글 입력창 상태 업데이트
 function updateCommentInputMode() {
-    const input = document.getElementById('comment-input');
-    if (replyTarget) {
-        input.placeholder = `@${replyTarget.user} 님에게 답글 남기기`;
-        input.focus();
-    } else {
-        input.placeholder = 'Add a comment';
-    }
+  const input = document.getElementById("comment-input");
+  const cancelBtn = document.getElementById("cancel-reply-btn");
+  const parentInput = document.getElementById("parent-id-input");
+
+  if (!input) return;
+
+  if (replyTarget) {
+    const displayName = replyTarget.display_name || "사용자";
+    input.placeholder = `@${displayName} 님에게 답글 남기기`;
+    if (cancelBtn) cancelBtn.style.display = "inline-block";
+    if (parentInput) parentInput.value = replyTarget.id;   
+    input.focus();
+  } else {
+    input.placeholder = "Add a comment";
+    if (cancelBtn) cancelBtn.style.display = "none";
+    if (parentInput) parentInput.value = "";
+  }
 }
 
-// ----- 4. 이벤트 리스너 -----
-document.addEventListener('DOMContentLoaded', () => {
-    const commentList = document.getElementById('comment-list');
-    const sortBtn = document.getElementById('sort-btn');
-    const commentInput = document.getElementById('comment-input');
-    const submitBtn = document.getElementById('submit-comment-btn');
+// ====================================================================
+// 3. 정렬 & 렌더링
+// ====================================================================
 
-    // 1. 로그인 확인 및 내 정보 표시
-    const userInfo = JSON.parse(localStorage.getItem('user-info'));
-    if (!userInfo) {
-        alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html';
-        return;
-    }
-    // (핵심) 하단 입력창에 내 프로필 표시
-    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나'; // (user-info에 avatar가 있다고 가정)
-    
-    // 2. 정렬 버튼 클릭
-    sortBtn.addEventListener('click', () => {
-        currentSortOrder = (currentSortOrder === 'oldest') ? 'newest' : 'oldest';
-        sortBtn.innerHTML = `<span>⇅</span> ${currentSortOrder === 'oldest' ? '오래된순' : '최신순'}`;
-        renderComments(); // 정렬 후 다시 그리기
+function sortComments(tree, order = "newest") {
+  function sortNodes(nodes) {
+    nodes.sort((a, b) => {
+      const dateA = new Date(a.created_at || a.date);
+      const dateB = new Date(b.created_at || b.date);
+      return order === "oldest" ? dateA - dateB : dateB - dateA;
     });
 
-    // 3. (핵심) 댓글 목록에서 '좋아요' 또는 '답글' 버튼 클릭 (이벤트 위임)
-    commentList.addEventListener('click', (e) => {
-        const targetCommentElement = e.target.closest('.comment-item');
-        if (!targetCommentElement) return;
-        
-        const clickedCommentId = targetCommentElement.dataset.commentId;
-
-        // 3-1. '좋아요' 버튼 클릭
-        if (e.target.closest('.like-btn')) {
-            const likeButton = e.target.closest('.like-btn');
-            
-            // 댓글 데이터 찾기 (메인 댓글 또는 답글에서)
-            let targetComment = dummyComments.find(c => c.id === clickedCommentId);
-            if (!targetComment) {
-                // 답글에서 찾기
-                for (let comment of dummyComments) {
-                    targetComment = comment.replies.find(r => r.id === clickedCommentId);
-                    if (targetComment) break;
-                }
-            }
-            
-            if (targetComment) {
-                const isCurrentlyLiked = likedComments.includes(clickedCommentId);
-                
-                if (isCurrentlyLiked) {
-                    // 좋아요 취소
-                    likeButton.classList.remove('active');
-                    likedComments = likedComments.filter(id => id !== clickedCommentId);
-                    targetComment.likes = Math.max(0, targetComment.likes - 1);
-                } else {
-                    // 좋아요 추가
-                    likeButton.classList.add('active');
-                    likedComments.push(clickedCommentId);
-                    targetComment.likes += 1;
-                }
-                
-                // 숫자 업데이트
-                const countSpan = likeButton.querySelector('.count');
-                if (countSpan) {
-                    countSpan.textContent = targetComment.likes;
-                }
-                
-                localStorage.setItem('comment_likes', JSON.stringify(likedComments));
-            }
-        }
-
-        // 3-2. '답글' 버튼 클릭
-        if (e.target.closest('.reply-btn')) {
-            // (핵심) 답글 달 대상(부모 댓글)을 저장
-            const parentComment = dummyComments.find(c => c.id === clickedCommentId) || dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
-            replyTarget = { id: clickedCommentId, user: parentComment.user };
-            updateCommentInputMode(); // 입력창 placeholder 변경
-        }
+    nodes.forEach((n) => {
+      if (n.replies && n.replies.length > 0) {
+        sortNodes(n.replies);
+      }
     });
+  }
 
-    // 4. (핵심) '업로드' 버튼 클릭 (새 댓글 또는 답글 등록)
-    submitBtn.addEventListener('click', () => {
-        const commentText = commentInput.value.trim();
-        if (commentText === '') return;
+  sortNodes(tree);
+}
 
-        const newComment = {
-            id: 'c' + (Math.random() * 1000), // 임시 ID
-            user: userInfo.nickname || '나', // (핵심) 내 실명
-            avatar: userInfo.avatar || 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=나',
-            date: new Date().toISOString().split('T')[0], // (임시) 오늘 날짜
-            text: commentText,
-            likes: 0,
-            replies: []
-        };
+function renderComments() {
+  const container = document.getElementById("comment-list");
+  if (!container) return;
 
-        if (replyTarget) {
-            // [답글 등록]
-            // 1. 부모 댓글 찾기 (1~2 depth)
-            let parent = dummyComments.find(c => c.id === replyTarget.id);
-            if (parent) {
-                parent.replies.push(newComment);
+  sortComments(commentTree, currentSortOrder);
+  container.innerHTML = commentTree.map((c) => createCommentHTML(c)).join("");
+
+  console.log("[realname] renderComments / order =", currentSortOrder);
+}
+
+// ====================================================================
+// 4. DOMContentLoaded – 이벤트 연결
+// ====================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const submitBtn = document.getElementById("submit-comment-btn");
+  const commentInput = document.getElementById("comment-input");
+  const myAvatar = document.getElementById("my-avatar");
+  const commentList = document.getElementById("comment-list");
+  const sortBtn = document.getElementById("sort-btn");
+  const cancelReplyBtn = document.getElementById("cancel-reply-btn");
+  const backButton = document.getElementById("back-button");
+  const pinBtn = document.getElementById("pin-btn");
+  const pinnedBox = document.getElementById("pinned-discussion-box");
+
+  const discussionId = document.body.dataset.roomId || "discussion-1";
+
+  // 아바타는 나중에 실제 프로필 연동 (지금은 그냥 존재 여부만 체크)
+  if (myAvatar) {
+    // ex) myAvatar.src = userProfileImageUrl;
+  }
+
+  if (sortBtn) {
+    sortBtn.innerHTML = `<span>⇅</span> ${
+      currentSortOrder === "oldest" ? "오래된순" : "최신순"
+    }`;
+  }
+
+  // 최초 렌더링
+  renderComments();
+
+  // 정렬 버튼
+  if (sortBtn) {
+    sortBtn.addEventListener("click", () => {
+      currentSortOrder = currentSortOrder === "oldest" ? "newest" : "oldest";
+      sortBtn.innerHTML = `<span>⇅</span> ${
+        currentSortOrder === "oldest" ? "오래된순" : "최신순"
+      }`;
+      console.log("[realname] sort changed:", currentSortOrder);
+      renderComments();
+    });
+  }
+
+  // 답글 취소 버튼
+  if (cancelReplyBtn) {
+    cancelReplyBtn.addEventListener("click", () => {
+      replyTarget = null;
+      updateCommentInputMode();
+    });
+  }
+
+  // 댓글 리스트 내 이벤트 (좋아요 / 답글)
+  if (commentList) {
+    commentList.addEventListener("click", (e) => {
+      const commentEl = e.target.closest(".comment-item");
+      if (!commentEl) return;
+
+      const commentId = commentEl.dataset.commentId;
+      const targetComment = findCommentById(commentTree, commentId);
+      if (!targetComment) return;
+
+      // 👍 좋아요 (서버 연동)
+      if (e.target.closest(".like-btn")) {
+        e.preventDefault();
+        const likeBtn = e.target.closest(".like-btn");
+
+        fetch(`/discussion/comment/${commentId}/like/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((res) => {
+            // 로그인 안 한 경우 등 403 처리
+            if (res.status === 403) {
+              alert("좋아요를 누르려면 로그인이 필요합니다.");
+              // 원하면 여기서 바로 로그인 페이지로
+              // window.location.href = "/account/login/";
+              throw new Error("Forbidden (403)");
+            }
+            if (!res.ok) {
+              throw new Error(`Failed to toggle like: HTTP ${res.status}`);
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data.liked) {
+              likeBtn.classList.add("active");
             } else {
-                dummyComments.forEach(c => {
-                    let parentReply = c.replies.find(r => r.id === replyTarget.id);
-                    if(parentReply) parentReply.replies.push(newComment); // (3 depth 이상)
-                });
+              likeBtn.classList.remove("active");
             }
-            replyTarget = null; // 답글 모드 해제
-        } else {
-            // [새 댓글 등록]
-            dummyComments.push(newComment);
-        }
 
-        commentInput.value = ''; // 입력창 비우기
-        updateCommentInputMode(); // placeholder 원복
-        renderComments(); // 새 댓글 포함해서 다시 그리기
+            const countSpan = likeBtn.querySelector(".count");
+            if (countSpan) {
+              countSpan.textContent = data.like_count;
+            }
+
+            targetComment.likes = data.like_count;
+            targetComment.is_liked = data.liked;
+          })
+          .catch((err) => {
+            console.error("[realname] 댓글 좋아요 토글 실패:", err);
+            // 403은 위에서 이미 alert 처리했으니 여기선 조용히 로그만 찍어도 됨
+          });
+
+        return;
+      }
+
+      // 💬 답글
+      if (e.target.closest(".reply-btn")) {
+        replyTarget = {
+          id: commentId,
+          display_name:
+            targetComment.display_name ||
+            targetComment.username ||
+            "사용자",
+        };
+        updateCommentInputMode();
+      }
     });
+  }
 
-    // 5. 페이지 첫 로드
-    renderComments();
+  // 업로드 버튼: 비어 있으면 막기 (실제 저장은 서버에 맡김)
+  if (submitBtn && commentInput) {
+    submitBtn.addEventListener("click", (e) => {
+      if (!commentInput.value.trim()) {
+        e.preventDefault();
+        console.warn("[realname] 댓글 입력이 비어 있습니다.");
+      }
+      // 로그인 여부는 서버에서 판단해서 리다이렉트 or 메시지
+    });
+  }
+
+  // 뒤로가기 버튼 (data-back-url 있으면 그걸 우선)
+  if (backButton) {
+    const backUrl = backButton.dataset.backUrl || "/community/main/";
+    backButton.addEventListener("click", () => {
+      console.log("[realname] back to:", backUrl);
+      window.location.href = backUrl;
+    });
+  }
+
+  // 핀(고정) – 서버 북마크(form) 우선이라 JS에서 추가로 안 해도 OK
+  if (pinBtn && pinnedBox) {
+    // 필요하면 나중에 확장
+  }
 });

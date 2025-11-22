@@ -30,11 +30,13 @@
     <div class="keyword-list">
         {% for c in categories %}
             <span class="keyword-tag {% if forloop.first %}active{% endif %}"
-                  data-nc-id="{{ c.nc_id }}">
+                data-nc-id="{{ c.nc_id }}"
+                data-category-name="{{ c.news_category }}">
                 {{ c.news_category }}
             </span>
         {% endfor %}
     </div>
+
 
     <div id="discussion-list" class="discussion-feed"></div>
 
@@ -42,8 +44,15 @@
 
 <nav class="bottom-nav"></nav>
 
+<script>
+    // 백엔드에서 URL 역으로 찍어주기
+    window.ROOM_LIST_API_URL = "{% url 'discussion:api_room_list' %}";
+</script>
+
 <script src="{% static 'js/nav.js' %}"></script>
 <script src="{% static 'js/community.js' %}"></script>
+
+
 
 </body>
 </html>

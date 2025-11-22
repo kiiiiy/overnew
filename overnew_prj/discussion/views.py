@@ -110,24 +110,32 @@ def api_room_list(request):
     for room in rooms:
         article = room.article
 
+        # ArchiveCategory, Media 모델 필드명에 맞게 정리
         category_name = getattr(article.nc, 'news_category', str(article.nc))
         source_name = getattr(article.media, 'media_name', str(article.media))
         image_url = getattr(article, 'image', '')
         views_count = getattr(article, 'view_count', 0)
+
+        # 좋아요 / 댓글 수
         likes_count = getattr(article, 'like_count', 0) if hasattr(article, 'like_count') \
             else article.likes.count() if hasattr(article, 'likes') else 0
         comments_count = room.comment_set.count()
+
+        # 남은 시간 라벨 (백에서 한 번 계산해서 내려주자)
+        time_label = get_time_left_label(room.finish_time)
 
         # 🔹 실명/익명 선택 페이지로 가는 URL
         enter_url = reverse('discussion:choose_mode', args=[article.article_id])
 
         data.append({
             'id': room.room_id,
+            'article_id': article.article_id,
             'type': 'realname',
             'category': category_name,
             'source': source_name,
             'title': article.title,
             'image': image_url,
+            'time': time_label,
             'time_end': room.finish_time.isoformat(),
             'views': views_count,
             'likes': likes_count,
@@ -151,7 +159,7 @@ def main(request):
     categories = ArchiveCategory.objects.all().order_by('pk')
     # 또는 categories = ArchiveCategory.objects.all().order_by('nc_id')
 
-    return render(request, 'discussion/community-detail.html', {
+    return render(request, 'discussion/community.html', {
         'categories': categories,
     })
 

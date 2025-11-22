@@ -1,6 +1,6 @@
 # account/admin.py
 from django.contrib import admin
-from .models import NewsCategory, Media 
+from .models import *
 # from .models import User, UserNews, UserMedia 는 임포트 불필요
 
 @admin.register(NewsCategory)
@@ -16,3 +16,5 @@ class MediaAdmin(admin.ModelAdmin):
     ordering = ('id',)
 
 # User, UserNews, UserMedia 등록 코드는 모두 users/admin.py로 이동했습니다.
+
+admin.site.register(UserMedia)

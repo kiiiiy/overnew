@@ -1,17 +1,80 @@
-# discussion/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from archive.models import *
 from .models import * 
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.http import require_http_methods
-from django.conf import settings # settings.py에서 설정한 변수를 가져오기 위해 필요
-import google.generativeai as genai
 from .gemini_service import check_for_hate_speech 
+from django.utils import timezone
+from django.urls import reverse
+from django.http import JsonResponse
+
+def api_room_list(request):
+    """
+    ?nc_id=1 같은 식으로 요청 오면
+    해당 카테고리의 진행 중인 토론방 리스트를 JSON으로 내려줌
+    """
+    nc_id = request.GET.get('nc_id')
+    if not nc_id:
+        return JsonResponse({'rooms': []})
+
+    now = timezone.now()
+
+    rooms = (
+        DiscussionRoom.objects
+        .filter(
+            article__nc_id=nc_id,
+            start_time__lte=now,
+            finish_time__gte=now,
+        )
+        .select_related('article', 'article__media', 'article__nc')
+        .order_by('-room_id')
+    )
+
+    data = []
+    for room in rooms:
+        article = room.article
+
+        category_name = article.nc.nc_name if hasattr(article.nc, 'nc_name') else str(article.nc)
+        source_name = article.media.media_name if hasattr(article.media, 'media_name') else str(article.media)
+        image_url = getattr(article, 'thumbnail_url', '')  # 썸네일 필드명에 맞게 바꿔줘
+        views_count = getattr(article, 'view_count', 0)
+        likes_count = getattr(article, 'like_count', 0) if hasattr(article, 'like_count') \
+            else article.likes.count() if hasattr(article, 'likes') else 0
+        comments_count = room.comment_set.count()
+
+        detail_url = reverse(
+            'discussion:anonymous_detail' if room.is_anonymous else 'discussion:discussion_detail',
+            args=[room.room_id]
+        )
+
+        # article detail url 도 있으면 같이 내려주기
+        try:
+            article_url = reverse('archive:article_detail', args=[article.article_id])
+        except Exception:
+            article_url = ''
+
+        data.append({
+            'id': room.room_id,
+            'type': 'anonymous' if room.is_anonymous else 'realname',
+            'category': category_name,
+            'source': source_name,
+            'title': article.title,
+            'image': image_url,
+            'time_end': room.finish_time.isoformat(),
+            'views': views_count,
+            'likes': likes_count,
+            'comments': comments_count,
+            'detail_url': detail_url,
+            'article_url': article_url,
+        })
+
+    return JsonResponse({'rooms': data})
 
 
 def main(request):
-    return render(request, 'discussion/community.html')
+    categories = NewsCategory.objects.all().order_by('nc_id')
+    return render(request, 'discussion/community.html', {
+        'categories': categories,
+    })
 
 def discussion_list(request, nc_id=1):
     categories = NewsCategory.objects.all().order_by('nc_id')

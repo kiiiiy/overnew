@@ -17,5 +17,6 @@ urlpatterns = [
     path('anonymous/room/<int:room_id>/', anonymous_detail, name='anonymous_detail'),
     path('room/<int:room_id>/comment/create/', create_comment, name='create_comment'),
     path('room/<int:room_id>/comment/<int:comment_id>/delete/', delete_comment, name='delete_comment'),
+    path('api/rooms/', api_room_list, name='api_room_list'),
 ]
 

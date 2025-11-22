@@ -23,18 +23,12 @@
     <main class="container" style="padding-top: 20px;">
 
         <div class="settings-menu">
-            <a href="{% url 'account:profile_edit' %}" class="menu-item" id="profile-edit-btn">
-                <img src="{% static 'image/edit.png' %}" alt="프로필 수정" class="icon">
-                <span>프로필 수정</span>
-                <span class="arrow">&gt;</span>
-            </a>
 
-            <a href="#" id="logout-button" class="menu-item">
-                <img src="{% static 'image/logout.png' %}" alt="프로필 수정" class="icon">
+            <a href="{% url 'account:logout' %}" id="logout-button" class="menu-item">
+                <img src="{% static 'image/logout.png' %}" alt="로그아웃" class="icon">
                 <span>로그아웃</span>
                 <span class="arrow">&gt;</span>
             </a>
-
             <!-- <a href="notifications.html" class="menu-item" id="notifications-btn">
                 <span class="icon">🔔</span>
                 <span>알림 설정</span>

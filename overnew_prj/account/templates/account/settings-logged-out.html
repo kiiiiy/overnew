@@ -22,32 +22,12 @@
     </header>
 
     <main class="container" style="padding-top: 20px;">
-
-        <a href="{% url 'account:login' %}" class="login-prompt-card">
-            <div class="profile-placeholder"></div>
-            <span>로그인이 필요해요</span>
-            <span class="arrow">&gt;</span>
-        </a>
-
-        <div class="settings-menu">
-            <a href="{% url 'account:login' %}" class="menu-item">
-                <img src="{% static 'image/edit.png' %}" alt="프로필 수정" class="icon">
-                <span>프로필 수정</span>
-                <span class="arrow">&gt;</span>
-            </a>
-            <a href="{% url 'account:login' %}" class="menu-item">
-                <img src="{% static 'image/logout.png' %}" alt="로그아웃" class="icon">
-                <span>로그아웃</span>
-                <span class="arrow">&gt;</span>
-            </a>
-
-            <a href="{% url 'account:login' %}" class="menu-item">
-                <img src="{% static 'image/bin.png' %}" alt="탈퇴하기" class="icon">
-                <span>탈퇴하기</span>
+        <div class="settings-menu"><a href="{% url 'account:login' %}" id="login-button" class="menu-item">
+                <img src="{% static 'image/login.png' %}" alt="로그인" class="icon">
+                <span>로그인</span>
                 <span class="arrow">&gt;</span>
             </a>
         </div>
-
     </main>
 
 </body>

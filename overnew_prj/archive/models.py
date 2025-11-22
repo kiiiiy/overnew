@@ -97,14 +97,19 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.user.username} likes {self.news.title[:20]}..."
-# 🚨 NameError 해결 (User -> settings.AUTH_USER_MODEL)
-class Discussion(models.Model):
+
+class DiscussionButton(models.Model):
+    """유저가 기사에 대해 '논의' 버튼을 누른 상태를 저장"""
     news = models.ForeignKey(Article, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # 👈 NameError 해결!
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        # 유저 한 명이 한 기사에 한 번만 버튼 상태를 가질 수 있도록 설정
         unique_together = ('news', 'user')
+        
+    def __str__(self):
+        return f"Button state for {self.user.username} on {self.news.title[:20]}..."
 
 
 class Follow(models.Model):

@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실명 토론방 - OVERNEW</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/discussionstyle.css' %}">
+
+    <!-- 실명 토론방 JS -->
+    <script src="{% static 'js/discussion-realname.js' %}" defer></script>
+</head>
+
+<body class="with-fixed-comment-bar"
+      data-page-type="realname"
+      data-room-id="{{ room.room_id }}">
+
+    <!-- 서버에서 내려준 댓글 트리 JSON을 JS 전역 변수로 -->
+    <script>
+        window.INITIAL_COMMENTS = JSON.parse(`{{ comments_json|escapejs }}`);
+    </script>
+
+    <header class="main-header">
+        <!-- 뒤로가기 버튼 -->
+        <button type="button"
+                class="icon-btn menu-btn"
+                id="back-button"
+                data-back-url="{% url 'discussion:main' %}">
+            <span>&lt;</span>
+        </button>
+
+        <h1 class="logo header-logo">OVERNEW</h1>
+
+        <!-- 오른쪽 빈 공간 -->
+        <div style="width:40px;"></div>
+    </header>
+
+    <!-- (옵션) 상단 고정 토론 박스 -->
+    <section id="pinned-discussion-box" class="pinned-discussion-box"></section>
+
+    <main class="container">
+        <div style="height:40px;"></div>
+
+        <div class="discussion-article-header">
+            <div class="article-category-source">
+                <!-- 카테고리 / 미디어: 모델 __str__ 사용 -->
+                <span class="card-category topic-it">
+                    {{ room.article.nc }}
+                </span>
+
+                <span class="card-source">
+                    {{ room.article.media }}
+                </span>
+            </div>
+
+            <h2 class="article-title">
+                {{ room.article.title }}
+            </h2>
+
+            <div class="discussion-meta">
+                <div class="meta-left">
+                    <span class="time-left">
+                        🕒 {{ time_left_label }}
+                    </span>
+                    <span class="participant-count">
+                        💬 {{ participant_count }}명이 토론에 참여중입니다.
+                    </span>
+                </div>
+
+                <div class="meta-right">
+                    <form method="post"
+                          action="{% url 'discussion:toggle_bookmark' room.room_id %}"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="pinned-btn{% if is_bookmarked %} pinned{% endif %}"
+                                id="pin-btn"
+                                title="커뮤니티 상단에 고정">
+                            {% if is_bookmarked %}
+                                📌 고정됨
+                            {% else %}
+                                📌 고정
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    <button type="button" class="sort-toggle-btn" id="sort-btn">
+                        <span>⇅</span> 최신순
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 댓글 리스트 -->
+        <div class="comment-list" id="comment-list"></div>
+    </main>
+
+    <!-- 하단 고정 댓글 입력 바 (폼 → create_comment로 POST) -->
+    <form class="comment-input-bar"
+          method="post"
+          action="{% url 'discussion:create_comment' room.room_id %}">
+        {% csrf_token %}
+
+        <!-- 실명 프로필: 나중에 실제 프로필 이미지로 교체 가능 -->
+        <img src="https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=나"
+             alt="내 프로필"
+             id="my-avatar"
+             class="card-avatar-small">
+
+        <input type="text"
+               id="comment-input"
+               name="content"
+               placeholder="Add a comment"
+               autocomplete="off"
+               required>
+
+        <!-- 답글용 parent_id -->
+        <input type="hidden" name="parent_id" id="parent-id-input" value="">
+
+        <!-- 답글 취소 버튼 (JS에서 show/hide) -->
+        <button type="button"
+                id="cancel-reply-btn"
+                class="cancel-reply-btn"
+                style="display:none; margin-left:8px;">
+            취소
+        </button>
+
+        <!-- 제출 버튼 -->
+        <button type="submit"
+                class="comment-submit-btn"
+                id="submit-comment-btn">
+            업로드
+        </button>
+    </form>
+
+</body>
+</html>

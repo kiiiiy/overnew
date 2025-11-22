@@ -12,5 +12,6 @@ urlpatterns = [
     path("account/", include("account.urls")),
     path("archive/", include("archive.urls")),
     path('recommend/', include('recommend.urls')),
+    path('discussion/', include('discussion.urls')),
     path("", feed_views.feed, name="feed"),
     ]

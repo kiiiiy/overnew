@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>토론방 입장 - OVERNEW</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="with-fixed-nav">
+    <header class="main-header">
+        <!-- 뒤로가기 버튼 -->
+        <button type="button" class="icon-btn menu-btn" id="back-button" onclick="history.back()">
+            <span>&lt;</span>
+        </button>
+
+        <h1 class="logo header-logo">OVERNEW</h1>
+
+        <!-- 오른쪽에는 빈 공간 -->
+        <div style="width:40px;"></div>
+    </header>
+
+    <main class="container" style="padding-top: 30px;">
+
+        <h2 style="margin-bottom: 24px;">
+            "{{ article.title }}" 토론방 입장
+        </h2>
+
+        <!-- 실명 토론방 -->
+        <div class="discussion-choice-card">
+            <h3 class="card-title">실명 토론방</h3>
+            <p class="card-description">
+                신뢰와 소통이 중심이 되는 실명 토론방입니다. 프로필이 공개되어 더 책임감 있는 대화를 경험할 수 있습니다.
+            </p>
+
+            {% if real_room %}
+                <a href="{% url 'discussion:discussion_detail' real_room.room_id %}"
+                   class="entry-button">입장하기</a>
+            {% else %}
+                <button class="entry-button" disabled>아직 개설되지 않았습니다</button>
+            {% endif %}
+        </div>
+
+        <!-- 익명 토론방 -->
+        <div class="discussion-choice-card">
+            <h3 class="card-title">익명 토론방</h3>
+            <p class="card-description">
+                자유롭게 의견을 나누는 익명 토론 공간입니다. 본인의 정보 노출 없이 편하게 이야기하세요.
+            </p>
+
+            {% if anon_room %}
+                <a href="{% url 'discussion:anonymous_detail' anon_room.room_id %}"
+                   class="entry-button">입장하기</a>
+            {% else %}
+                <button class="entry-button" disabled>아직 개설되지 않았습니다</button>
+            {% endif %}
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="{% static 'js/nav.js' %}"></script>
+</body>
+</html>

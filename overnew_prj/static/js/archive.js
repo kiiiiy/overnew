@@ -43,7 +43,7 @@ function createUserListItemHTML(userData) {
 
     return `
         <div class="user-list-item-wrapper ${followingClass}">
-            <a href="profile-detail.html?user_id=${userData.id}" class="user-list-item-info">
+            <a href="/archive/profile/?user_id=${userData.id}" class="user-list-item-info">
                 <img src="${userData.avatar}" alt="${userData.nickname}" class="card-avatar-small">
                 <div class="user-info">
                     <span class="nickname">${userData.nickname}</span>
@@ -121,11 +121,18 @@ function renderFollowingList(searchTerm = "") {
     const listContainer = document.getElementById('following-list');
     if (!listContainer) return;
 
+    // 1. 로컬 스토리지에서 가져오기
     let realFollowingList = JSON.parse(localStorage.getItem('following_list')) || [];
+    
+    // ★ 핵심 수정 1: 저장된 ID들을 전부 '문자열'로 확실하게 변환
+    realFollowingList = realFollowingList.map(id => String(id));
+
     const allUsersArray = Object.values(dummyUserDatabase);
 
+    // 2. 팔로잉 여부 체크
     allUsersArray.forEach(user => {
-        user.isFollowing = realFollowingList.includes(user.id);
+        // ★ 핵심 수정 2: 비교할 때 user.id도 '문자열'로 변환해서 비교
+        user.isFollowing = realFollowingList.includes(String(user.id));
     });
 
     const normalizedSearch = searchTerm.toLowerCase();
@@ -133,10 +140,12 @@ function renderFollowingList(searchTerm = "") {
         if (searchTerm) {
             return user.nickname.toLowerCase().includes(normalizedSearch);
         } else {
+            // 검색어가 없으면 '팔로잉 중인 사람'만 보여줌
             return user.isFollowing;
         }
     });
 
+    // 정렬 (팔로우 중인 사람 우선)
     usersToShow.sort((a, b) => {
         if (a.isFollowing === b.isFollowing) return 0;
         return a.isFollowing ? -1 : 1;
@@ -150,25 +159,38 @@ function renderFollowingList(searchTerm = "") {
         return;
     }
 
+    // 리스트 생성
     usersToShow.forEach(user => {
+        // createUserListItemHTML 함수는 기존에 있다고 가정
         listContainer.innerHTML += createUserListItemHTML(user);
     });
 
+    // 이벤트 리스너 재등록
     document.querySelectorAll('.follow-toggle-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const userId = button.dataset.userId;
-            const isNowFollowing = button.classList.contains('followed');
+        button.addEventListener('click', (e) => {
+            // 버튼 중복 클릭 방지 (선택사항)
+            e.preventDefault();
+
+            // ★ 핵심 수정 3: 가져온 ID도 문자열로 변환
+            const userId = String(button.dataset.userId);
+            const isNowFollowing = button.classList.contains('followed'); // 현재 팔로우 중인가?
+            
             let currentList = JSON.parse(localStorage.getItem('following_list')) || [];
+            // 저장된 리스트도 문자열로 변환해서 다룸
+            currentList = currentList.map(id => String(id));
 
             if (isNowFollowing) {
+                // 언팔로우 (리스트에서 제거)
                 currentList = currentList.filter(id => id !== userId);
             } else {
+                // 팔로우 (리스트에 추가)
                 if (!currentList.includes(userId)) currentList.push(userId);
             }
 
             localStorage.setItem('following_list', JSON.stringify(currentList));
             console.log('Updated Following List:', currentList);
 
+            // 화면 다시 그리기
             renderFollowingList(searchTerm);
         });
     });
@@ -516,6 +538,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         localStorage.setItem('selected_article', JSON.stringify(finalArticleData));
         window.location.href = 'article-detail.html';
+    }
+}
+
+// ============================================================
+// 7. 프로필 상세 페이지 로드 함수
+// ============================================================
+function loadUserProfile(targetUserId) {
+    console.log("프로필 로드 중... 대상 ID:", targetUserId);
+
+    // 1. 더미 데이터베이스나 서버에서 유저 찾기
+    // (일단 dummyUserDatabase가 있다고 가정합니다)
+    const user = dummyUserDatabase[targetUserId];
+
+    if (!user) {
+        alert("존재하지 않는 사용자입니다.");
+        history.back();
+        return;
+    }
+
+    // 2. HTML 요소에 정보 채워넣기
+    const avatarEl = document.getElementById('profile-avatar');
+    const nicknameEl = document.getElementById('profile-nickname');
+    const tagsEl = document.getElementById('profile-tags');
+    const followersEl = document.getElementById('profile-followers');
+    const followBtn = document.getElementById('profile-follow-btn');
+
+    if (avatarEl) avatarEl.src = user.avatar || '/static/image/avatar-placeholder.png';
+    if (nicknameEl) nicknameEl.textContent = user.nickname;
+    if (tagsEl) tagsEl.textContent = user.tags ? user.tags.join(', ') : '';
+    if (followersEl) followersEl.textContent = `팔로워 ${user.followers || 0}`;
+
+    // 3. 팔로우 버튼 상태 확인
+    if (followBtn) {
+        let followingList = JSON.parse(localStorage.getItem('following_list')) || [];
+        // 문자열 비교 필수
+        const isFollowing = followingList.map(String).includes(String(targetUserId));
+        
+        if (isFollowing) {
+            followBtn.textContent = "팔로잉";
+            followBtn.classList.add('followed');
+        } else {
+            followBtn.textContent = "팔로우";
+            followBtn.classList.remove('followed');
+        }
+
+        // 팔로우 버튼 클릭 이벤트
+        followBtn.onclick = () => {
+            // 여기에 팔로우 토글 로직 (아까 만든 로직 재사용 가능)
+            alert("팔로우 기능은 API 연동이 필요합니다.");
+        };
     }
 }
 

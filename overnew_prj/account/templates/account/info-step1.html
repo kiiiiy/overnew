@@ -28,16 +28,18 @@
         <h2 class="title">반갑습니다!</h2>
         <h3 class="subtitle">기본 정보를 알려주세요!</h3>
 
-        <form class="info-form">
+        <form class="info-form" method="POST" action="{% url 'account:info_step1_post' %}">
+
+            {% csrf_token %}
 
             <div class="form-group">
                 <label for="user-name">이름</label>
-                <input type="text" id="user-name" placeholder="Value">
+                <input type="text" id="user-name" name="user-name" placeholder="Value">
             </div>
 
             <div class="form-group">
                 <label for="user-age">나이</label>
-                <input type="number" id="user-age" min="1">
+                <input type="number" id="user-age" name="user-age" min="1">
             </div>
 
             <div class="form-group">
@@ -51,11 +53,11 @@
                 </div>
             </div>
 
+            <button type="submit" class="next-button" id="next-btn-step1">NEXT</button>
+
         </form>
 
     </main>
-
-    <button type="button" class="next-button" id="next-btn-step1">NEXT</button>
 
 </body>
 

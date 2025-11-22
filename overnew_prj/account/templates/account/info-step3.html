@@ -31,7 +31,9 @@
             <span class="subtitle-comment">(복수 선택 가능)</span>
         </h3>
 
-        <form class="info-form">
+        <form class="info-form" method="POST" action="{% url 'account:info_step3' %}">
+
+            {% csrf_token %}
 
             <div class="form-group">
                 <div class="topics-toggle">
@@ -64,11 +66,11 @@
                 </div>
             </div>
 
+            <button type="submit" class="next-button" id="next-btn-step3">NEXT</button>
+
         </form>
 
     </main>
-
-    <button type="button" class="next-button" id="next-btn-step3">NEXT</button>
 
 </body>
 

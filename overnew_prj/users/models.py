@@ -40,6 +40,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         "정치 성향", max_length=20, choices=STANCE_CHOICES, default="unsure"
     )
 
+    preferred_categories = models.ManyToManyField(
+        'account.NewsCategory', 
+        through='account.UserNews',  # 이미 정의된 중개 모델을 사용
+        through_fields=('user', 'category'),
+        related_name='users_by_category'
+    )
+    
+    # 🌟 [추가된 필드 2] 사용자가 선택한 언론사 (info-step4.html 반영)
+    # Media 모델과 다대다 관계를 맺으며, 중개 테이블로 UserMedia를 사용합니다.
+    preferred_media = models.ManyToManyField(
+        'account.Media', 
+        through='account.UserMedia', # 이미 정의된 중개 모델을 사용
+        through_fields=('user', 'media'),
+        related_name='users_by_media'
+    )
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)

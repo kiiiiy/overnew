@@ -95,7 +95,7 @@ def anonymous_detail(request, room_id):
     }
     return render(request, 'discussion/discussion-article-detail.html', context)
 
-@login_required
+
 def create_comment(request, room_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
 
@@ -147,7 +147,6 @@ def create_comment(request, room_id):
     return redirect('discussion:discussion_detail', room_id=room_id)
 
 
-@login_required
 def delete_comment(request, room_id, comment_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
     comment = get_object_or_404(Comment, pk=comment_id, room=room, user=request.user)
@@ -155,7 +154,7 @@ def delete_comment(request, room_id, comment_id):
     
     return redirect('discussion:discussion_detail', room_id=room_id)
 
-@login_required
+
 def toggle_bookmark(request, room_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
     user = request.user

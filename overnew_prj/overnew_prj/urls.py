@@ -15,4 +15,5 @@ urlpatterns = [
     path('discussion/', include('discussion.urls')),
     path("", feed_views.feed, name="feed"),
     path("community/", include(("discussion.urls", "discussion"), namespace="discussion")),
+    path("feed/", include("feed.urls"))
     ]

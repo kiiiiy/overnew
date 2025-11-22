@@ -1,5 +1,7 @@
 # recommend/views.py (최종 로직 변경: 성향 기반 반대 사용자 추천 + 중립/미정 성향 포함)
 
+from django.shortcuts import render
+
 from django.http import JsonResponse
 from django.views import View
 from django.db.models import Count, OuterRef, Subquery, Exists
@@ -170,4 +172,11 @@ class RecommendUserView(View):
             topic_code: data
         }
 
+        
+
         return JsonResponse(response_data)
+    
+
+
+def recommend_main(request):
+    return render(request, 'recommend/main.html')

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>이메일 인증 - OVERNEW</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'css/js/account.js' %}" defer></script>
+    <script src="{% static 'js/account.js' %}" defer></script>
 </head>
 
 <body id="page-email-verify">
@@ -16,13 +16,13 @@
         <div class="form-group">
             <label for="signup-email">이메일</label>
             <input id="signup-email" type="email" placeholder="example@domain.com">
-            <button type="button" id="send-code-btn">인증번호 전송</button>
+            <button type="button" class="entry-button" id="send-code-btn">인증번호 전송</button>
         </div>
 
         <div class="form-group">
             <label for="signup-code">인증번호</label>
             <input id="signup-code" type="text" placeholder="6자리 인증번호">
-            <button type="button" id="verify-code-btn">인증번호 확인</button>
+            <button type="button" class="entry-button" id="verify-code-btn">인증번호 확인</button>
         </div>
 
         <p class="hint">

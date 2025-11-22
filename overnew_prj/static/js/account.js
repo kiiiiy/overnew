@@ -54,6 +54,80 @@ function initSplashPage() {
     }, 2000);
 }
 
+// [Email Verify] email_verify.html - 👈 새로 추가된 기능
+function initEmailVerifyPage() {
+    const sendCodeBtn = document.getElementById('send-code-btn');
+    const verifyCodeBtn = document.getElementById('verify-code-btn');
+    const emailInput = document.getElementById('signup-email');
+    const codeInput = document.getElementById('signup-code');
+
+    // --- 1. 인증번호 전송 버튼 이벤트 (send-code-btn) ---
+    if (sendCodeBtn) {
+        sendCodeBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                alert('이메일 주소를 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/account/api/send-email-code/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    alert('✅ 메일을 보냈습니다. (10분 이내 입력)');
+                } else {
+                    alert('전송 실패: ' + (data.error || '알 수 없는 서버 오류'));
+                }
+            } catch (error) {
+                console.error('API 요청 오류:', error);
+                alert('네트워크 연결 오류 또는 서버 문제.');
+            }
+        });
+    }
+
+    // --- 2. 인증번호 확인 버튼 이벤트 (verify-code-btn) ---
+    if (verifyCodeBtn) {
+        verifyCodeBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const code = codeInput.value.trim();
+
+            if (!email || !code) {
+                alert('이메일과 인증번호를 모두 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/account/api/verify-email-code/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, code: code })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    alert('🎉 이메일 인증이 완료되었습니다! 다음 단계로 이동합니다.');
+                    // 인증 성공 시 다음 단계 (step1)로 이동
+                    window.location.href = '/account/signup/step1/';
+                } else {
+                    alert('인증 실패: ' + (data.error || '인증번호가 일치하지 않습니다.'));
+                }
+            } catch (error) {
+                console.error('API 요청 오류:', error);
+                alert('네트워크 연결 오류 또는 서버 문제.');
+            }
+        });
+    }
+}
+
+
 // [Step 1] info-step1.html
 function initInfoStep1Page() {
     document.getElementById('next-btn-step1').addEventListener('click', () => {
@@ -291,6 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (bodyId === 'page-splash') {
         initSplashPage();
+    } else if (bodyId === 'page-email-verify') { // 👈 이메일 인증 페이지 초기화 함수 호출 추가
+        initEmailVerifyPage();
     } else if (bodyId === 'page-info-step1') {
         initInfoStep1Page();
     } else if (bodyId === 'page-info-step2') {
@@ -304,7 +380,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (bodyId === 'page-login') {
         initLoginPage();
     } else if (bodyId === 'page-notifications') {
-        initNotificationPage();
+        // initNotificationPage() 함수는 위 코드에 없으므로 주석 처리 또는 추가 필요
+        // initNotificationPage(); 
     } else if (bodyId === 'page-settings-logged-in') {
         initSettingsLoggedInPage();
     } else if (bodyId === 'page-settings-logged-out') {

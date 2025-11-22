@@ -29,8 +29,9 @@
         <h2 class="title" id="user-greeting">...님</h2>
         <h3 class="subtitle">뉴스를 주로 접하는 언론사를<br>모두 체크해주세요.</h3>
 
-        <form class="info-form">
+        <form class="info-form" method="POST" action="{% url 'account:info_step4_post' %}">
 
+            {% csrf_token %}
             <div class="form-group">
                 <h4 class="section-title">종합</h4>
 
@@ -272,7 +273,7 @@
 
     </main>
 
-    <button type="button" class="next-button" id="next-btn-step4">NEXT</button>
+    <button type="submit" class="next-button" id="next-btn-step4">NEXT</button>
 
 </body>
 

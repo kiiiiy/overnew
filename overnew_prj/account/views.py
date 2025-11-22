@@ -1,5 +1,10 @@
 # account/views.py (통합 및 수정 완료)
-
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from .tokens import account_activation_token
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
@@ -90,7 +95,9 @@ def profile_edit_view(request):
 def settings_view(request):
     """설정 페이지 렌더링 (로그인 상태에 따라 다름)"""
     if request.user.is_authenticated:
-        return render(request, "account/settings-logged-in.html")
+        return render(request, "account/settings-logged-in.html",{
+            "user": request.user 
+        })
     else:
         return render(request, "account/settings-logged-out.html")
 
@@ -360,3 +367,7 @@ def api_signup(request):
             del request.session[key]
     
     return JsonResponse({"ok": True, "redirect_url": "/signup/complete/"})
+
+def email_verify_view(request):
+    """이메일 인증 페이지 (email_verify.html) 렌더링"""
+    return render(request, "account/email_verify.html")

@@ -6,7 +6,7 @@ urlpatterns = [
     # API 엔드포인트
     path('api/article/preview', views.fetch_article_preview, name='api_article_preview'),
     path("articles/upload/", views.upload_article, name="upload_article"),
-    path("users/<int:user_id>/scraps/", views.scrap_list, name="scrap_list"),
+    path("api/users/<int:user_id>/scraps/", views.scrap_list, name="scrap_list"),
     path("api/articles/<int:article_id>/", views.get_article_detail_api, name="api_article_detail"), 
     path("api/follow/toggle/", views.follow_toggle, name="api_follow_toggle"),
     path("api/users/<int:user_id>/following/", views.get_following_list, name="api_get_following_list"), # 🌟 추가

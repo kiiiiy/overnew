@@ -1,4 +1,8 @@
 // archive.js 파일 맨 위에 추가
+const dummyUserDatabase = {
+    1: { id: 1, nickname: 'admin', tags: ['IT', '정치'], isFollowing: false, avatar: '' },
+    2: { id: 2, nickname: 'test2', tags: ['경제', '문화'], isFollowing: false, avatar: '' },
+};
 //const sessionInfo = {};
 // ============================================================
 // 2. HTML 생성 함수
@@ -53,13 +57,9 @@ function createUserListItemHTML(userData) {
 }
 
 
-// ============================================================
-// 3. 렌더링 함수
-// ============================================================
-
-// [아카이브 메인] 스크랩/북마크 탭 렌더링
-// [archive.js] 3. 렌더링 함수 - renderFeed 수정
-
+// ============================================
+// Django API 기반 Feed 로딩 (스크랩 / 북마크)
+// ============================================
 async function renderFeed() {
     const tabInput = document.querySelector('input[name="archive-tab"]:checked');
     if (!tabInput) return;
@@ -71,49 +71,50 @@ async function renderFeed() {
     feedContainer.innerHTML = '';
     let articles = [];
 
-    // 🚨 [핵심] 로컬 스토리지 대신 Django API 호출
-    if (currentTab === 'scrap') {
-        const userId = 1; // 👈 현재 로그인된 사용자 ID를 동적으로 가져와야 함 (예: context에서 받은 값을 전역 변수에 저장)
-        const apiUrl = `/archive/users/${userId}/scraps/`; // urls.py에 정의된 URL 사용
+    const userId = 1; // TODO: 로그인한 사용자 ID로 교체 필요
+    const apiUrl = currentTab === 'scrap'
+        ? `http://127.0.0.1:8000/archive/api/users/${userId}/scraps/`
+        : `http://127.0.0.1:8000/archive/api/users/${userId}/bookmarks/`;
 
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            // Django view에서 JsonResponse로 반환한 데이터(article list)를 받습니다.
-            const data = await response.json(); 
-            articles = data.map(item => ({
-                // Django API 응답 형식에 맞춰 Front-end card data 형식으로 변환
-                id: item.article_id,
-                category: item.category,
-                source: item.media, // media 필드를 source로 사용
-                title: item.title,
-                views: 'N/A', // Django API에 조회수 필드가 없으면 N/A 처리
-                time: item.scraped_at, // 스크랩 시각 사용
-                image: item.image,
-                // article-card의 data-article-json에 들어갈 정보도 추가
-                topic: item.category, 
-                summary: item.summary
-            }));
+    try {
+        const response = await fetch(apiUrl, { method: 'GET' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const data = await response.json();
 
-        } catch (error) {
-            console.error("스크랩 피드 로드 실패:", error);
-            feedContainer.innerHTML = '<p style="text-align: center; color: red; margin-top: 50px;">데이터 로드 실패.</p>';
-            return;
-        }
-    } 
-    // else if (currentTab === 'bookmark') { ... (북마크 API 연결 로직) }
-
-
-    // 렌더링 (기존 로직 유지)
-    if (articles.length === 0) {
-        feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 탭의 기사가 없습니다.</p>';
+        articles = data.map(item => ({
+            id: item.article_id,
+            category: item.category,
+            source: item.media,
+            title: item.title,
+            views: 'N/A',
+            time: item.scraped_at || item.bookmarked_at,
+            image: item.image,
+            summary: item.summary,
+            topic: item.category,
+        }));
+    } catch (err) {
+        console.error("API 로드 실패:", err);
+        feedContainer.innerHTML = `
+            <p style="text-align:center; color:red; margin-top:50px;">
+                데이터 로드 실패.
+            </p>`;
         return;
     }
+
+    if (articles.length === 0) {
+        feedContainer.innerHTML = `
+            <p style="text-align:center; color:#888; margin-top:50px;">
+                이 탭의 기사가 없습니다.
+            </p>`;
+        return;
+    }
+
     articles.forEach(article => {
         feedContainer.innerHTML += createArticleCardHTML(article);
     });
 }
+
 
 // [아카이브 메인] 팔로잉 탭 (유저 목록) 렌더링
 function renderFollowingList(searchTerm = "") {
@@ -486,33 +487,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🚨 [핵심 추가] 기사 클릭 핸들러 (메인 & 프로필 공통)
     function handleArchiveArticleClick(e) {
-        const card = e.target.closest('.article-card');
+    const card = e.target.closest('.article-card');
+    if (!card) return;
+    if (e.target.closest('.bookmark-btn')) return;
 
-        // 북마크 버튼이 눌렸다면 이동 안 함
-        if (e.target.closest('.bookmark-btn') || !card) return;
+    e.preventDefault();
 
-        e.preventDefault();
+    if (card.dataset.articleJson) {
+        const rawData = JSON.parse(card.dataset.articleJson);
 
-        if (card.dataset.articleJson) {
-            const rawData = JSON.parse(card.dataset.articleJson);
+        const finalArticleData = {
+            ...rawData,
+            body: [
+                `기사 로드 성공: "${rawData.title}"`,
+                "---",
+                "본문 내용은 API 또는 스크랩 DB에서 불러옵니다.",
+                `출처: ${rawData.source}, 카테고리: ${rawData.category}`
+            ],
+            author: rawData.source,
+            date: rawData.time,
+            mainImage: rawData.image || 'https://via.placeholder.com/400x300'
+        };
 
-            const finalArticleData = {
-                ...rawData,
-                body: [
-                    `✅ 기사 로드 성공: "${rawData.title}" (ID: ${rawData.id || 'N/A'})`,
-                    "---",
-                    "본문 내용은 스크랩/북마크 목록에서 가져온 데이터입니다.",
-                    `출처: ${rawData.source}, 카테고리: ${rawData.category}`
-                ],
-                author: rawData.source || "OVERNEW 기자",
-                date: rawData.time || "2025.11.21",
-                mainImage: rawData.image || 'https://via.placeholder.com/400x300'
-            };
-
-            localStorage.setItem('selected_article', JSON.stringify(finalArticleData));
-            window.location.href = 'article-detail.html';
-        }
+        localStorage.setItem('selected_article', JSON.stringify(finalArticleData));
+        window.location.href = 'article-detail.html';
     }
+}
+
 
     // 🚨 [리스너 등록] 아카이브 메인 페이지
     const feedScrap = document.getElementById('feed-scrap');

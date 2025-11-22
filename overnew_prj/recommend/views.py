@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 # 핵심 모델 임포트
 from account.models import NewsCategory, UserNews as AccountUserNews 
 from archive.models import Article
+import random
 
 User = get_user_model()
 
@@ -59,58 +60,82 @@ class RecommendUserView(View):
         
         if not topic_code:
             topic_code = 'politics' 
-        
-        # 🌟🌟🌟 성향 기반 반대 사용자 추천 로직 🌟🌟🌟
-        
-        current_user_stance = current_user.stance
-        opposite_stances = get_opposite_stance(current_user_stance)
-        
-        if not opposite_stances:
-            # 이 로직은 위에서 수정했기 때문에 'unsure'나 'neutral'에서도 다른 성향이 나옵니다.
-            return JsonResponse({'message': '현재 성향으로는 추천할 반대 성향 사용자를 찾을 수 없습니다.'}, status=200)
-
-        # 1. 반대 성향 사용자만 필터링
-        recommend_users = User.objects.filter(
-            stance__in=opposite_stances
-        ).exclude(
-            pk=current_user.pk
-        )
-        
-        if not recommend_users.exists():
-            return JsonResponse({'message': '추천 대상인 반대 성향 사용자가 없습니다.'}, status=200)
-
-        # 2. Topic Category 설정
+            
+        # 2. Topic Category 설정 (카테고리 코드로 조회)
         try:
             target_category = NewsCategory.objects.get(code=topic_code)
         except NewsCategory.DoesNotExist:
             return JsonResponse({'error': f'해당 카테고리({topic_code})가 DB에 존재하지 않습니다.'}, status=404)
         
+        recommend_users = User.objects.none()
+
         # -----------------------------------------------------
-        # 3. 팔로우 상태 주입 및 최종 사용자 목록 (무작위 10명)
+        # 1. 핵심 추천 로직 분기 (rec_type에 따라 필터링)
+        # -----------------------------------------------------
+        if rec_type == 'similar':
+            # [유사] 관심사 기반: target_category를 선택한 모든 사용자
+            users_with_target_topic_ids = AccountUserNews.objects.filter(
+                category=target_category 
+            ).values_list('user_id', flat=True)
+            
+            recommend_users = User.objects.filter(
+                id__in=users_with_target_topic_ids
+            ).exclude(
+                pk=current_user.pk
+            ).distinct()
+            
+        else: # rec_type이 'opposite'이거나 정의되지 않은 경우 (성향 기반 반대 추천을 기본으로 사용)
+            # [반대] 성향 기반: 현재 사용자와 반대 성향을 가진 사용자
+            current_user_stance = current_user.stance
+            opposite_stances = get_opposite_stance(current_user_stance)
+
+            if not opposite_stances:
+                return JsonResponse({'message': '현재 성향으로는 추천할 반대 성향 사용자를 찾을 수 없습니다.'}, status=200)
+
+            recommend_users = User.objects.filter(
+                stance__in=opposite_stances
+            ).exclude(
+                pk=current_user.pk
+            )
+
+
+        if not recommend_users.exists():
+            return JsonResponse({'message': '추천 대상 사용자가 없습니다.'}, status=200)
+
+        # -----------------------------------------------------
+        # 2. 팔로우 상태 주입 및 최종 사용자 목록 (무작위 10명)
+        # -----------------------------------------------------
         if FOLLOWING_MODEL_AVAILABLE:
+            # Following 모델 필드명을 user(팔로워), user2(팔로우 대상)로 가정
             is_followed_subquery = Following.objects.filter(
                 user=current_user,
                 user2=OuterRef('id')
             )
-            final_users = recommend_users.annotate(
+            final_users_qs = recommend_users.annotate(
                 is_followed=Exists(is_followed_subquery)
-            ).order_by('?')[:10]
+            )
         else:
-            final_users = recommend_users.order_by('?')[:10]
+            final_users_qs = recommend_users
+            
+        # 쿼리셋을 리스트로 변환 후 무작위로 10명 선택
+        final_users = list(final_users_qs)
+        random.shuffle(final_users)
+        final_users = final_users[:10]
         # -----------------------------------------------------
 
-        # 4. 최종 JSON 응답 생성
+        # 3. 최종 JSON 응답 생성
         data = []
         for user in final_users:
             
             is_followed_status = getattr(user, 'is_followed', False) 
 
-            # 4-1. 해당 사용자가 현재 topic에 대해 스크랩한 최신 기사 2개 조회
+            # 3-1. 해당 사용자가 현재 topic에 대해 스크랩한 최신 기사 1개 조회
             try:
+                # 💡 [수정] 기사 개수를 1개로 명확하게 제한
                 scrapped_articles = Scrap.objects.filter(
                     user=user,
                     news__nc=target_category 
-                ).order_by('-news__article_id')[:2]
+                ).select_related('news', 'news__media').order_by('-news__article_id')[:1]
             except Exception:
                 scrapped_articles = []
 
@@ -118,26 +143,19 @@ class RecommendUserView(View):
             
             for scrap in scrapped_articles:
                 article = scrap.news
-                reaction_count = 0
                 
-                # 기사에 대한 반응 카운트
-                try:
-                    # rec_type이 'similar'인 경우와 아닌 경우를 모두 처리
-                    if rec_type == 'similar':
-                        reaction_count = Scrap.objects.filter(news=article).count() 
-                    else: # 'opposite' 또는 type이 명시되지 않은 경우
-                        reaction_count = Comment.objects.filter(article=article).count()
-                except Exception:
-                    reaction_count = 0 
+                # 기사 출처 정보 가져오기
+                source_name = '출처 정보 없음'
+                if hasattr(article, 'media') and article.media and hasattr(article.media, 'name'):
+                    source_name = article.media.name
 
                 articles_list.append({
                     'id': str(article.article_id),
                     'image': article.image if hasattr(article, 'image') and article.image else None,
                     'title': article.title,
-                    'source': 'Media 필드 임의 지정', 
-                    'reactions': str(reaction_count) if rec_type == 'similar' else None,
-                    'comments': str(reaction_count) if rec_type in ['opposite', None] or rec_type != 'similar' else None,
-                    'noImage': False
+                    'source': source_name,
+                    # 🛑 [제거] reactions 키와 comments 키를 응답에서 제거
+                    'noImage': not bool(article.image if hasattr(article, 'image') and article.image else False)
                 })
 
 
@@ -147,6 +165,7 @@ class RecommendUserView(View):
                 'userId': user.username,
                 'isFollowed': is_followed_status,
                 'articles': articles_list,
+                'stance': user.stance,
             })
 
         response_data = {

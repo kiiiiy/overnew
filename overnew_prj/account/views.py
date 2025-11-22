@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.contrib import messages
 import json
 import random
 import time
@@ -94,36 +95,80 @@ def settings_view(request):
         return render(request, "account/settings-logged-out.html")
 
 
-# --- 인증 및 로그인/로그아웃 뷰 ---
-
 def login_view(request):
-    """로그인 뷰 (GET: 렌더링, POST: 로그인 처리)"""
-    if request.user.is_authenticated:
-        return redirect('/') # 이미 로그인되어 있으면 홈으로 이동
+    """
+    로그인 폼을 렌더링하고, POST 요청이 들어오면 인증을 처리합니다.
+    """
+    #if request.user.is_authenticated:
+        # 이미 로그인된 경우, 피드 페이지로 리다이렉션
+        #return redirect('feed') # 'feed'는 피드 뷰의 URL 이름이라고 가정합니다.
 
     if request.method == 'POST':
-        # login.html의 폼에서 전송된 데이터
-        username = request.POST.get('user-id') 
-        password = request.POST.get('user-password') 
-        
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            # 인증 성공 시 로그인 세션 생성
-            login(request, user)
-            return redirect('/') 
-        else:
-            # 인증 실패
-            context = {'error': '아이디 또는 비밀번호가 올바르지 않습니다.'}
-            return render(request, "account/login.html", context)
-            
-    return render(request, "account/login.html")
+        # 1. 폼에서 ID와 비밀번호를 가져옵니다. (HTML input의 name 속성 사용)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-@login_required 
+        # 2. Django의 authenticate 함수를 사용하여 사용자 인증
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # 3. 인증 성공 시, login 함수를 사용하여 세션을 시작합니다.
+            login(request, user)
+            
+            # 4. 로그인 성공 후 피드 페이지(루트 '/' 또는 'feed' URL 이름)로 리다이렉션
+            return redirect('feed') 
+        else:
+            # 5. 인증 실패 시, 에러 메시지를 템플릿으로 전달합니다.
+            messages.error(request, '아이디 또는 비밀번호가 올바르지 않습니다.')
+            # 다시 로그인 페이지를 렌더링
+            return render(request, 'account/login.html')
+
+    # GET 요청 시, 로그인 폼을 렌더링
+    return render(request, 'account/login.html')
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='account:login')
+def profile_edit_view(request):
+    """프로필 수정 페이지 렌더링"""
+    return render(request, "account/profile-edit.html")
+
+@login_required
 def logout_view(request):
-    """로그아웃 뷰"""
+    """
+    로그아웃을 처리하고 로그인 페이지로 리다이렉션합니다.
+    """
     logout(request)
+    # 로그아웃 후 로그인 페이지로 리다이렉션 (URL 이름: 'account:login')
     return redirect('account:login')
+
+# ------------------------------------------------------------------
+# 💡 [추가] 로그인 API 엔드포인트 구현 (JSON 요청 처리)
+# ------------------------------------------------------------------
+@csrf_exempt
+@require_POST
+def api_login(request):
+    """
+    JSON 형식의 POST 요청을 처리하여 로그인 인증 및 세션 설정을 수행합니다.
+    """
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except json.JSONDecodeError:
+        return JsonResponse({"ok": False, "error": "잘못된 JSON 형식입니다."}, status=400)
+    
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
+    
+    if not username or not password:
+        return JsonResponse({"ok": False, "error": "아이디와 비밀번호를 모두 입력해 주세요."}, status=400)
+
+    user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        login(request, user)
+        # 💡 로그인 성공 시, 필요한 유저 정보만 JSON으로 반환
+        return JsonResponse({"ok": True, "message": "로그인 성공", "user": {"username": user.username, "nickname": user.nickname}})
+    else:
+        return JsonResponse({"ok": False, "error": "아이디 또는 비밀번호가 올바르지 않습니다."}, status=401)
 
 
 # --- 다단계 회원가입 Step 1/2 세션 처리 (POST) ---

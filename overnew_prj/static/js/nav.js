@@ -2,12 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const navContainer = document.querySelector('.bottom-nav');
     if (!navContainer) return;
 
-    // nav가 보여질 메인 페이지 경로
     const mainPages = [
-        '/feed.html',
-        '/archive.html',
-        '/main.html',
-        '/community.html'
+        '/',               // 루트 경로 (피드)
+        '/archive/',       // 아카이브
+        '/recommend/',     // 추천
+        '/discussion/'     // 커뮤니티
     ];
 
     const currentPath = window.location.pathname;
@@ -19,10 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const navItems = [
-        { label: '피드', icon: '◆', href: '/overnew_prj/feed/templates/feed/feed.html' },
-        { label: '아카이브', icon: '●', href: '/overnew_prj/archive/templates/archive/archive.html' },
-        { label: '추천', icon: '▲', href: '/overnew_prj/recommend/templates/recommend/main.html' },
-        { label: '커뮤니티', icon: '◐', href: '/overnew_prj/discussion/templates/discussion/community.html' },
+        // 🚨 [수정]: 피드는 루트 경로 '/'를 사용합니다.
+        { label: '피드', icon: '◆', href: '/' },
+
+        // 🚨 [수정]: 아카이브는 '/archive/' 경로를 사용합니다.
+        // Django의 URL 패턴에 따라 정확한 경로로 수정해야 합니다.
+        { label: '아카이브', icon: '●', href: '/archive/' },
+
+        // 🚨 [수정]: 추천은 '/recommend/' 경로를 사용합니다. (main.html이 해당 뷰로 렌더링된다고 가정)
+        { label: '추천', icon: '▲', href: '/recommend/' },
+
+        // 🚨 [수정]: 커뮤니티는 '/discussion/' 경로를 사용합니다. (community.html이 해당 뷰로 렌더링된다고 가정)
+        { label: '커뮤니티', icon: '◐', href: '/discussion/' },
     ];
 
     navContainer.innerHTML = navItems.map(item => `
@@ -32,19 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>
     `).join('');
 
-    // 햄버거 메뉴 이벤트
     const menuBtn = document.getElementById("settings-menu-btn");
     if (menuBtn) {
         menuBtn.addEventListener("click", () => {
-            window.location.href = "/overnew_prj/account/templates/account/settings-logged-in.html";
+            // 🚨 [수정]: '/account/settings/' 경로를 사용합니다.
+            window.location.href = "/account/settings/";
         });
     }
 
-    // 알람 버튼 이벤트
+    // 알람 버튼 이벤트 (알림 페이지)
     const alarmBtn = document.getElementById("notifications-btn");
     if (alarmBtn) {
         alarmBtn.addEventListener("click", () => {
-            window.location.href = "/overnew_prj/account/templates/account/notifications.html";
+            // 🚨 [수정]: '/account/notifications/' 경로를 사용합니다.
+            window.location.href = "/account/notifications/";
         });
     }
 });

@@ -1,54 +1,5 @@
-// ============================================================
-// 1. 데이터 영역
-// ============================================================
-
-// [내 데이터] - 아카이브 메인 '스크랩/북마크' 탭용 (더미 데이터 삭제됨)
-const dummyMyData = {
-    scrap: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] },
-    bookmark: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] }
-};
-
-// [다른 유저 데이터] - (유지)
-const dummyUserDatabase = {
-    'kwon': {
-        id: 'kwon', nickname: '권또또', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권', tags: ['정치', '사회'],
-        scrap: [
-            { id: 'kwon-1', topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'kwon-2', topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        bookmark: []
-    },
-    'leftgabi': {
-        id: 'leftgabi', nickname: '왼가비', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼', tags: ['경제'],
-        scrap: [
-            { id: 'left-1', topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
-            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기... 개미들 '패닉'", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        bookmark: []
-    },
-    'kimlinky': {
-        id: 'kimlinky', nickname: '김링키', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김', tags: ['경제'],
-        scrap: [
-            { id: 'kim-1', topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        bookmark: []
-    },
-    'ByeWind': {
-        id: 'ByeWind', nickname: 'ByeWind', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=B', tags: ['IT/과학', '문화'],
-        scrap: [
-            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
-        ],
-        bookmark: []
-    },
-    'Natali': { id: 'Natali', nickname: 'Natali Craig', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['경제', 'it'], scrap: [], bookmark: [] },
-    'Drew': { id: 'Drew', nickname: 'Drew Cano', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=D', tags: ['문화'], scrap: [], bookmark: [] },
-    'Orlando': { id: 'Orlando', nickname: 'Orlando Diggs', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=O', tags: ['경제'], scrap: [], bookmark: [] },
-    'Andi': { id: 'Andi', nickname: 'Andi Lane', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', tags: ['it', '스포츠', '경제'], scrap: [], bookmark: [] },
-    'NonFollow': { id: 'NonFollow', nickname: 'Non Follow User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['사회'], scrap: [], bookmark: [] },
-    'AnotherUser': { id: 'AnotherUser', nickname: 'Another User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', tags: ['정치'], scrap: [], bookmark: [] }
-};
-
-
+// archive.js 파일 맨 위에 추가
+const sessionInfo = {};
 // ============================================================
 // 2. HTML 생성 함수
 // ============================================================
@@ -107,38 +58,56 @@ function createUserListItemHTML(userData) {
 // ============================================================
 
 // [아카이브 메인] 스크랩/북마크 탭 렌더링
-function renderFeed() {
+// [archive.js] 3. 렌더링 함수 - renderFeed 수정
+
+async function renderFeed() {
     const tabInput = document.querySelector('input[name="archive-tab"]:checked');
     if (!tabInput) return;
 
     const currentTab = tabInput.value; // 'scrap' or 'bookmark'
-    const currentTopicEl = document.querySelector('#scrap-bookmark-content .keyword-tag.active');
-    const currentTopic = currentTopicEl ? currentTopicEl.dataset.topic : 'politics';
-
     const feedContainer = document.getElementById(`feed-${currentTab}`);
     if (!feedContainer) return;
 
     feedContainer.innerHTML = '';
     let articles = [];
 
+    // 🚨 [핵심] 로컬 스토리지 대신 Django API 호출
     if (currentTab === 'scrap') {
-        const savedScrapObject = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
-        const savedTopicArticles = savedScrapObject[currentTopic] || [];
-        articles = savedTopicArticles;
-    } else if (currentTab === 'bookmark') {
-        const allBookmarks = JSON.parse(localStorage.getItem('bookmarked_articles') || '[]');
-        const currentTopicText = currentTopicEl ? currentTopicEl.textContent.trim() : '';
+        const userId = 1; // 👈 현재 로그인된 사용자 ID를 동적으로 가져와야 함 (예: context에서 받은 값을 전역 변수에 저장)
+        const apiUrl = `/archive/users/${userId}/scraps/`; // urls.py에 정의된 URL 사용
 
-        const savedTopicBookmarks = allBookmarks.filter(article => {
-            const matchesTopicId = article.topic && article.topic === currentTopic;
-            const matchesCategoryKo = article.category && article.category === currentTopicText;
-            return matchesTopicId || matchesCategoryKo;
-        });
-        articles = savedTopicBookmarks;
-    }
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            // Django view에서 JsonResponse로 반환한 데이터(article list)를 받습니다.
+            const data = await response.json(); 
+            articles = data.map(item => ({
+                // Django API 응답 형식에 맞춰 Front-end card data 형식으로 변환
+                id: item.article_id,
+                category: item.category,
+                source: item.media, // media 필드를 source로 사용
+                title: item.title,
+                views: 'N/A', // Django API에 조회수 필드가 없으면 N/A 처리
+                time: item.scraped_at, // 스크랩 시각 사용
+                image: item.image,
+                // article-card의 data-article-json에 들어갈 정보도 추가
+                topic: item.category, 
+                summary: item.summary
+            }));
 
+        } catch (error) {
+            console.error("스크랩 피드 로드 실패:", error);
+            feedContainer.innerHTML = '<p style="text-align: center; color: red; margin-top: 50px;">데이터 로드 실패.</p>';
+            return;
+        }
+    } 
+    // else if (currentTab === 'bookmark') { ... (북마크 API 연결 로직) }
+
+
+    // 렌더링 (기존 로직 유지)
     if (articles.length === 0) {
-        feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 주제의 기사가 없습니다.</p>';
+        feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 탭의 기사가 없습니다.</p>';
         return;
     }
     articles.forEach(article => {
@@ -361,7 +330,8 @@ function initScrapFeature() {
         localStorage.setItem('scrapped_articles', JSON.stringify(savedScraps));
 
         alert('기사가 스크랩되었습니다!');
-        window.location.href = 'archive.html';
+        window.location.href = '/archive/scrap/create/';
+
     });
 }
 
@@ -379,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- A. 로그인 확인 ---
     const nicknameEl = document.getElementById('user-nickname');
     if (nicknameEl || isArchivePage || isScrapPage || isProfileDetailPage) {
-        const userInfo = JSON.parse(localStorage.getItem('user-info')) || sessionInfo;
+        const userInfo = JSON.parse(localStorage.getItem('user-info')) || null;
 
         if (!userInfo) {
             // 로그인 체크 필요 시 주석 해제
@@ -398,6 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (followersEl) followersEl.textContent = '팔로워 : 2023명 (dummy)';
         }
     }
+    document.getElementById('scrap-btn').addEventListener('click', () => {
+    window.location.href = '/archive/scrap/create/';
+});
+
 
     // --- B. 뒤로 가기 시 탭 상태 강제 복원 ---
     const storedTab = sessionStorage.getItem('activeArchiveTab'); // 1. 저장된 탭을 가져옴

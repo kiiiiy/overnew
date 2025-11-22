@@ -1,5 +1,3 @@
-# feed/views.py
-
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -34,12 +32,13 @@ TOPIC_TO_CATEGORY_NAME = {
 }
 
 def hot_feed_api(request):
-    topic = request.GET.get('topic')  
+    topic = request.GET.get('topic')
 
     qs = (
         Article.objects
         .select_related('media', 'nc')
         .annotate(like_count=Count('likes'))
+        .filter(view_count__gte=500)  
         .order_by('-like_count', '-created_at')
     )
 
@@ -50,15 +49,12 @@ def hot_feed_api(request):
 
     qs = qs[:20]
 
-    def format_time(article):
-        return article.created_at.strftime('%Y-%m-%d %H:%M')
-
     articles = []
     for a in qs:
         articles.append({
             "id": a.article_id,
-            "category": a.nc.news_category if a.nc else "",   
-            "source": a.media.media_name if a.media else "",     
+            "category": a.nc.news_category if a.nc else "",
+            "source": a.media.media_name if a.media else "",
             "title": a.title,
             "views": a.view_count,
             "time": a.created_at.strftime('%Y-%m-%d %H:%M'),
@@ -67,12 +63,17 @@ def hot_feed_api(request):
 
     return JsonResponse({"articles": articles})
 
-
-
 @login_required
 def following_feed_api(request):
-    topic = request.GET.get('topic')  # 'politics' 같은 애
+    topic = request.GET.get('topic')
     category_name = TOPIC_TO_CATEGORY_NAME.get(topic)
+
+    # 🔹 비로그인: 200 OK + requires_login 플래그
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "requires_login": True,
+            "results": []
+        })
 
     following_ids = Following.objects.filter(
         user=request.user
@@ -109,4 +110,7 @@ def following_feed_api(request):
             }
         })
 
-    return JsonResponse({"results": results})
+    return JsonResponse({
+        "requires_login": False,
+        "results": results
+    })

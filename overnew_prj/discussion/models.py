@@ -13,12 +13,28 @@ class DiscussionRoom(models.Model):
     room_id = models.AutoField(primary_key=True)
     start_time = models.DateTimeField(default=timezone.now)
     finish_time = models.DateTimeField(default=default_finish_time)
-    article = models.OneToOneField(Article, on_delete=models.CASCADE)
+
+    # 🔥 OneToOne → ForeignKey 로 변경
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name='discussion_rooms'
+    )
+
     is_anonymous = models.BooleanField(default=False)
     bookmark = models.ManyToManyField(User, related_name="bookmark_room")
 
     def __str__(self):
-        return f"Room for {self.article.title}"
+        return f"[{'익명' if self.is_anonymous else '실명'}] {self.article.title}"
+
+    class Meta:
+        # 한 기사당 (실명, 익명) 각 1개씩만 허용
+        constraints = [
+            models.UniqueConstraint(
+                fields=['article', 'is_anonymous'],
+                name='unique_article_room_per_type',
+            )
+        ]
     
 
 class Comment(models.Model):

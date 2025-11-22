@@ -1,21 +1,86 @@
 import json
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
-
+from django.dispatch import receiver
 from archive.models import *
 from .models import *
 from .gemini_service import check_for_hate_speech
+from django.db.models.signals import post_save
+
+@receiver(post_save, sender=Article)
+def create_discussion_rooms_for_article(sender, instance, created, **kwargs):
+    """
+    Article 이 처음 생성될 때
+    - 실명방 (is_anonymous=False)
+    - 익명방 (is_anonymous=True)
+    둘 다 자동으로 만들어 준다
+    """
+    if not created:
+        return
+
+    for is_anonymous in (False, True):
+        DiscussionRoom.objects.get_or_create(
+            article=instance,
+            is_anonymous=is_anonymous,
+        )
+
+def choose_mode(request, article_id):
+    """
+    기사 1개 기준으로:
+    - 실명 토론방
+    - 익명 토론방
+    중 어디로 들어갈지 선택하는 페이지
+    """
+    article = get_object_or_404(Article, pk=article_id)
+
+    # 현재 모델이 OneToOneField 라서 일반적으로 room 하나만 존재함
+    # (우리가 signals 에서 is_anonymous=False 만 자동 생성해둔 상태)
+    real_room = DiscussionRoom.objects.filter(
+        article=article,
+        is_anonymous=False,
+    ).first()
+
+    anon_room = DiscussionRoom.objects.filter(
+        article=article,
+        is_anonymous=True,
+    ).first()
+
+    return render(request, "discussion/discussion-detail.html", {
+        "article": article,
+        "real_room": real_room,
+        "anon_room": anon_room,
+    })
+
+def get_time_left_label(finish_time):
+    now = timezone.now()
+    diff = finish_time - now
+    seconds = diff.total_seconds()
+
+    if seconds <= 0:
+        return "종료된 토론입니다."
+
+    minutes = int(seconds // 60)
+    hours = minutes // 60
+    days = hours // 24
+
+    if days > 0:
+        return f"{days}일 {hours % 24}시간 남음"
+    elif hours > 0:
+        return f"{hours}시간 {minutes % 60}분 남음"
+    else:
+        return f"{minutes}분 남음"
 
 
 def api_room_list(request):
     """
-    ?nc_id=1 같은 식으로 요청 오면
-    해당 카테고리의 진행 중인 토론방 리스트를 JSON으로 내려줌
+    ?nc_id=1 로 오면,
+    해당 카테고리의 '실명 토론방' 기준으로
+    기사당 1개씩 카드 데이터를 내려준다.
+    (익명방은 choose_mode 화면에서만 사용)
     """
     nc_id = request.GET.get('nc_id')
     if not nc_id:
@@ -23,10 +88,12 @@ def api_room_list(request):
 
     now = timezone.now()
 
+    # 🔥 실명방(is_anonymous=False)만 가져오기 → 기사당 1개 카드
     rooms = (
         DiscussionRoom.objects
         .filter(
             article__nc_id=nc_id,
+            is_anonymous=False,          # ✅ 여기!
             start_time__lte=now,
             finish_time__gte=now,
         )
@@ -38,28 +105,20 @@ def api_room_list(request):
     for room in rooms:
         article = room.article
 
-        category_name = getattr(article.nc, 'nc_name', str(article.nc))
+        category_name = getattr(article.nc, 'news_category', str(article.nc))
         source_name = getattr(article.media, 'media_name', str(article.media))
-        image_url = getattr(article, 'thumbnail_url', '')  # 썸네일 필드명에 맞게 수정
+        image_url = getattr(article, 'image', '')
         views_count = getattr(article, 'view_count', 0)
         likes_count = getattr(article, 'like_count', 0) if hasattr(article, 'like_count') \
             else article.likes.count() if hasattr(article, 'likes') else 0
         comments_count = room.comment_set.count()
 
-        detail_url = reverse(
-            'discussion:anonymous_detail' if room.is_anonymous else 'discussion:discussion_detail',
-            args=[room.room_id]
-        )
-
-        # article detail url 도 있으면 같이 내려주기
-        try:
-            article_url = reverse('archive:article_detail', args=[article.article_id])
-        except Exception:
-            article_url = ''
+        # 🔹 실명/익명 선택 페이지로 가는 URL
+        enter_url = reverse('discussion:choose_mode', args=[article.article_id])
 
         data.append({
             'id': room.room_id,
-            'type': 'anonymous' if room.is_anonymous else 'realname',
+            'type': 'realname',                 # 실명 기준 카드
             'category': category_name,
             'source': source_name,
             'title': article.title,
@@ -68,19 +127,24 @@ def api_room_list(request):
             'views': views_count,
             'likes': likes_count,
             'comments': comments_count,
-            'detail_url': detail_url,
-            'article_url': article_url,
+            'enter_url': enter_url,             # ✅ 토론 참여하기 버튼이 탈 URL
+            'article_url': article.url,         # 기사 원본 링크
         })
 
     return JsonResponse({'rooms': data})
 
+def discussion_list(request):
+    categories = NewsCategory.objects.all().order_by('nc_id')
+    return render(request, 'discussion/community.html', {
+        'categories': categories,
+    })
+
 
 def main(request):
-    """
-    필요하면 메인 페이지에서 특정 room_id로 redirect 하거나
-    리스트 페이지로 보내는 용도로 사용
-    """
-    return render(request, 'discussion/discussion-detail.html')
+    categories = NewsCategory.objects.all().order_by('nc_id')
+    return render(request, 'discussion/community.html', {
+        'categories': categories,
+    })
 
 
 # ============================== 댓글 트리 빌더 ==============================
@@ -90,7 +154,8 @@ def build_comment_tree(comments_qs):
     Comment 쿼리셋을 JS에서 쓰던 형태로 변환:
     {
       id: 'c1',
-      userId: 'user1',
+      userId: 3,
+      display_name: '홍길동',
       date: 'Aug 19, 2021',
       text: '내용',
       likes: 0,
@@ -99,15 +164,32 @@ def build_comment_tree(comments_qs):
     """
     by_id = {}
     for c in comments_qs:
-        pk = c.pk  # ✅ PK는 항상 .pk 로 접근
+        pk = c.pk
+
+        # user / user_id 안전하게 가져오기
+        user = getattr(c, "user", None)
+        user_id = getattr(c, "user_id", None)
+        user_pk = user.pk if user is not None else None
+
+        # 표시 이름: nickname > username > str(user) > '알 수 없음'
+        if user is not None:
+            display_name = (
+                getattr(user, "nickname", None)
+                or getattr(user, "username", None)
+                or str(user)
+            )
+        else:
+            display_name = "알 수 없음"
+
         by_id[pk] = {
-            "id": f"c{pk}",                  # JS에서 쓰는 id (문자열)
-            "userId": f"user{c.user.pk}",    # 유저도 pk 기준
-            "date": c.created_at.strftime("%b %d, %Y"),  # 예: Aug 19, 2021
+            "id": f"c{pk}",                 # JS용 ID (문자열)
+            "userId": user_pk,              # 필요하면 JS에서 프로필로 쓸 수 있음
+            "display_name": display_name,   # 실명 토론방에서 바로 사용
+            "date": c.created_at.strftime("%b %d, %Y"),
             "text": c.comment_content,
-            "likes": 0,   # 나중에 좋아요 모델 붙이면 수정
+            "likes": 0,                     # 나중에 좋아요 모델 붙이면 수정
             "replies": [],
-            "parent_id": getattr(c, "parent_id", None),  # FK면 parent_id 자동 생성됨
+            "parent_id": getattr(c, "parent_id", None),
         }
 
     roots = []
@@ -135,6 +217,7 @@ def build_comment_tree(comments_qs):
     return roots
 
 
+
 # ============================== 상세 페이지들 ==============================
 
 def anonymous_detail(request, room_id):
@@ -149,18 +232,27 @@ def anonymous_detail(request, room_id):
 
     comments_qs = room.comment_set.all().order_by('created_at')
 
- 
+    
     participant_count = comments_qs.values_list('user_id', flat=True).distinct().count()
+    time_left_label = get_time_left_label(room.finish_time)
 
+    # 📌 북마크 여부 (로그인 되어 있을 때만 체크)
+    if request.user.is_authenticated:
+        is_bookmarked = room.bookmark.filter(pk=request.user.pk).exists()
+    else:
+        is_bookmarked = False
 
+    # 댓글 트리 → JSON
     comments_tree = build_comment_tree(comments_qs)
     comments_json = json.dumps(comments_tree, cls=DjangoJSONEncoder, ensure_ascii=False)
 
     context = {
         'room': room,
-        'comments': comments_qs,          
-        'comments_json': comments_json,   
-        'participant_count': participant_count,  
+        'comments': comments_qs,
+        'comments_json': comments_json,
+        'participant_count': participant_count,
+        'is_bookmarked': is_bookmarked,
+        'time_left_label': time_left_label,
     }
     return render(request, 'discussion/discussion-anonymous.html', context)
 
@@ -176,8 +268,16 @@ def discussion_detail(request, room_id):
         is_anonymous=False,
     )
 
-    # 실명방도 댓글 트리 쓰고 싶으면 동일하게 적용 가능
     comments_qs = room.comment_set.all().order_by('created_at')
+
+    participant_count = comments_qs.values_list('user_id', flat=True).distinct().count()
+    time_left_label = get_time_left_label(room.finish_time)
+
+    if request.user.is_authenticated:
+        is_bookmarked = room.bookmark.filter(pk=request.user.pk).exists()
+    else:
+        is_bookmarked = False
+
     comments_tree = build_comment_tree(comments_qs)
     comments_json = json.dumps(comments_tree, cls=DjangoJSONEncoder, ensure_ascii=False)
 
@@ -185,9 +285,11 @@ def discussion_detail(request, room_id):
         'room': room,
         'comments': comments_qs,
         'comments_json': comments_json,
+        'participant_count': participant_count,
+        'is_bookmarked': is_bookmarked,
+        'time_left_label': time_left_label,
     }
     return render(request, 'discussion/discussion-realname.html', context)
-
 
 # ============================== 댓글 생성 / 삭제 ==============================
 

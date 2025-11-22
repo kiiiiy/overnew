@@ -251,10 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 뒤로가기 버튼
     if (backButton) {
-        backButton.addEventListener('click', () => {
-            history.back();
-        });
-    }
+    const backUrl = backButton.dataset.backUrl || "/community/main/";
+    backButton.addEventListener("click", () => {
+      console.log("[realname] back to:", backUrl);
+      window.location.href = backUrl;
+    });
+  }
 
     // =========================================================================
     // 4. 핀(고정) 기능 - 프론트 로컬 (위에서 북마크는 서버용)

@@ -21,9 +21,12 @@
 </script>
 
     <header class="main-header">
-        <button type="button" class="icon-btn menu-btn" id="back-button">
-            <span>&lt;</span>
-        </button>
+        <button type="button"
+        class="icon-btn menu-btn"
+        id="back-button"
+        data-back-url="{% url 'discussion:main' %}">
+    <span>&lt;</span>
+</button>
 
         <h1 class="logo header-logo">OVERNEW</h1>
         <div style="width:40px;"></div>
@@ -52,19 +55,23 @@
             <div class="discussion-meta">
                 <div class="meta-left">
                     <!-- TODO: 남은 시간, 참여자 수는 나중에 실제 값으로 -->
-                    <span class="time-left">🕒 12 hours left</span>
+                    <span class="time-left">{{ time_left_label }}</span>
                     <span class="participant-count">💬 {{ participant_count }}명이 토론에 참여중입니다.</span>
                 </div>
                 <div class="meta-right">
                     <form method="post"
-                          action="{% url 'discussion:toggle_bookmark' room.room_id %}"
-                          style="display:inline;">
+                        action="{% url 'discussion:toggle_bookmark' room.room_id %}"
+                        style="display:inline;">
                         {% csrf_token %}
                         <button type="submit"
-                                class="pin-btn pinned-btn"
+                                class="pinned-btn{% if is_bookmarked %} pinned{% endif %}"
                                 id="pin-btn"
                                 title="커뮤니티 상단에 고정">
-                            📌 고정
+                            {% if is_bookmarked %}
+                                📌 고정됨
+                            {% else %}
+                                📌 고정
+                            {% endif %}
                         </button>
                     </form>
                     <button type="button" class="sort-toggle-btn" id="sort-btn">
@@ -109,12 +116,8 @@
 
         <!-- 제출 버튼 -->
         <button type="submit"
-                class="comment-submit-btn"
-                id="submit-comment-btn"
-                style="border: none; background: none; padding: 0; cursor: pointer; margin-left: 8px;">
-            <img src="{% static 'img/icon-upload.png' %}"
-                 alt="업로드"
-                 style="width: 32px; height: 32px;">
+        class="comment-submit-btn"
+        id="submit-comment-btn">업로드
         </button>
     </form>
 

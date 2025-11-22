@@ -1,5 +1,7 @@
+// static/js/community.js
+
 // ===============================
-// 토론 목록 & 고정 관리 JS (discussion.js)
+// 토론 목록 & 고정 관리 JS (community.js)
 // ===============================
 
 // 고정된 토론 / 북마크 상태 로컬스토리지에서 불러오기
@@ -16,7 +18,7 @@ const THUMBTACK_ICON_URL = "/static/image/thumbtacks.png";
  * {
  *   id, type, category, source, title, image,
  *   time_end, views, likes, comments,
- *   detail_url, article_url
+ *   enter_url, detail_url, article_url
  * }
  */
 function createDiscussionCardHTML(cardData) {
@@ -27,37 +29,42 @@ function createDiscussionCardHTML(cardData) {
         "IT/과학": "topic-it",
         "정치": "topic-politics",
         "경제": "topic-economy"
-        // 필요시 더 추가
     };
     const categoryClass = topicClassMap[cardData.category] || "topic-default";
 
-    const articleLink = cardData.article_url || "#";
-    const discussionLink = cardData.detail_url || "#";
-    const remainingText = calculateRemainingTime(cardData.time_end);
+    const articleLink = cardData.article_url;        // ✅ 더 이상 "#” 안 넣기
+    const enterLink   = cardData.enter_url || "#";
+    const typeValue   = cardData.type ? cardData.type : "realname";
+
+    const hasArticleLink = !!articleLink;            // 링크 있는지 여부
 
     return `
     <div class="discussion-card"
-         data-article-id="${cardData.id}"
+         data-article-id="${idStr}"
          data-end-time="${cardData.time_end}"
-         data-detail-url="${discussionLink}"
-         data-type="${cardData.type || "realname"}">
+         data-detail-url="${enterLink}"
+         data-type="${typeValue}">
 
         <span class="card-category ${categoryClass}">${cardData.category}</span>
 
-        <a href="${articleLink}" class="card-title-link">
-            <h3 class="card-title">${cardData.title}</h3>
-        </a>
+        ${
+          hasArticleLink
+            ? `<a href="${articleLink}" class="card-title-link">
+                   <h3 class="card-title">${cardData.title}</h3>
+               </a>`
+            : `<h3 class="card-title">${cardData.title}</h3>`
+        }
 
         ${
-            cardData.image
-                ? `<a href="${articleLink}" class="card-image-link">
-                       <img src="${cardData.image}" alt="${cardData.title}" class="discussion-card-image">
-                   </a>`
-                : ""
+          cardData.image
+            ? `<a href="${articleLink || '#'}" class="card-image-link">
+                   <img src="${cardData.image}" alt="${cardData.title}" class="discussion-card-image">
+               </a>`
+            : ""
         }
 
         <div class="discussion-card-meta">
-            <span class="time-left">🕒 ${remainingText}</span>
+            <span class="time-left">🕒 ${calculateRemainingTime(cardData.time_end)}</span>
         </div>
 
         <div class="discussion-card-footer">
@@ -74,9 +81,10 @@ function createDiscussionCardHTML(cardData) {
             </div>
         </div>
 
-        <a href="${discussionLink}" class="discussion-join-btn">토론 참여하기</a>
+        <a href="${enterLink}" class="discussion-join-btn">토론 참여하기</a>
     </div>`;
 }
+
 
 /**
  * 상단 고정 토론 렌더링
@@ -120,11 +128,10 @@ function renderPinnedDiscussions() {
 
     pinnedArea.innerHTML = html;
 
-    // 클릭 이벤트: 전체 영역 클릭 시 토론 상세로 이동
+    // 클릭 이벤트: 전체 영역 클릭 시 토론 선택 페이지로 이동
     const pinnedItem = pinnedArea.querySelector(".pinned-item");
     if (pinnedItem) {
         pinnedItem.addEventListener("click", (e) => {
-            // "고정 삭제" 버튼 클릭은 여기서 처리하지 않음
             if (e.target.classList.contains("unpin-btn")) return;
             const id = pinnedItem.dataset.id;
             const item = pinnedData[id];
@@ -193,10 +200,6 @@ function pinDiscussion(discussionId, discussionData) {
 
 /**
  * 현재 선택된 카테고리(nc_id)에 맞는 토론방 목록을 API로부터 불러와 렌더링
- * - body data-page-type 값에 따라 실명/익명 필터링
- *   <body data-page-type="realname">
- *   <body data-page-type="anonymous">
- *   <body data-page-type="all"> (전체)
  */
 function renderFeed() {
     const feedContainer = document.getElementById("discussion-list");
@@ -218,10 +221,10 @@ function renderFeed() {
 
     feedContainer.innerHTML = '<p class="loading-text">불러오는 중...</p>';
 
-    // 현재 페이지 타입(realname / anonymous / all)
     const pageType = document.body.dataset.pageType || "all";
 
-    fetch(`/discussion/api/rooms/?nc_id=${encodeURIComponent(ncId)}`)
+    // 🔥 URL 확인: project urls.py 에서 community/ 로 include 했으면 이게 맞음
+    fetch(`/community/api/rooms/?nc_id=${encodeURIComponent(ncId)}`)
         .then((res) => res.json())
         .then((data) => {
             const rooms = data.rooms || [];
@@ -251,7 +254,7 @@ function renderFeed() {
             updateDiscussionTimes();
         })
         .catch((err) => {
-            console.error("[discussion.js] /discussion/api/rooms/ 에러:", err);
+            console.error("[community.js] /community/api/rooms/ 에러:", err);
             feedContainer.innerHTML =
                 '<p class="error-text">토론 목록을 불러오지 못했습니다.</p>';
         });
@@ -259,7 +262,6 @@ function renderFeed() {
 
 /**
  * 종료 시각까지 남은 시간 텍스트를 계산
- * @param {string} endTime ISO 문자열 (예: "2025-11-22T18:00:00+09:00")
  */
 function calculateRemainingTime(endTime) {
     if (!endTime) return "종료 시각 정보 없음";
@@ -332,10 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 navigator.clipboard
                     .writeText(fullUrl)
                     .then(() => {
-                        alert(
-                            "공유 링크가 복사되었습니다:\n" +
-                                fullUrl
-                        );
+                        alert("공유 링크가 복사되었습니다:\n" + fullUrl);
                     })
                     .catch((err) => {
                         console.error("클립보드 복사 실패:", err);
@@ -366,21 +365,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // "토론 참여하기" 버튼 → 고정 및 이동
+            // "토론 참여하기" 버튼 → 고정 및 선택 페이지로 이동
             if (e.target.closest(".discussion-join-btn")) {
                 const title =
                     card.querySelector(".card-title")?.textContent || "";
+                const enterUrl = detailUrl;
 
                 if (!pinnedDiscussions.includes(id)) {
                     pinDiscussion(id, {
                         title: title,
                         type: type,
-                        detail_url: detailUrl,
+                        detail_url: enterUrl,
                     });
                 }
 
-                if (detailUrl) {
-                    window.location.href = detailUrl;
+                if (enterUrl) {
+                    // <a> 기본 동작으로도 이동하지만, 확실히 하기 위해
+                    window.location.href = enterUrl;
                 }
                 return;
             }

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "account",
-    "discussion",
+    'discussion.apps.DiscussionConfig',
     "recommend",
     "feed",
     "archive",

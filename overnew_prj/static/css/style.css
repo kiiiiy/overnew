@@ -2038,12 +2038,22 @@ img {
 
 .keyword-list {
     display: flex;
-    flex-wrap: nowrap; /* 줄바꿈 없이 한 줄로 */
+    flex-wrap: nowrap;
     gap: 8px;
     margin-bottom: 20px;
-    overflow-x: auto; /* 가로 스크롤 */
-    padding: 0 4px 8px 4px; /* 스크롤바 공간 */
-    scrollbar-width: thin; /* Firefox */
+    overflow-x: auto;
+    padding: 0 4px 8px 4px;
+    align-items: center;
+}
+
+.keyword-list .keyword-tag {
+    display: inline-flex;   /* 중요 */
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #f0f0f0;
+    color: #333;
+    white-space: nowrap;
+    border: 1px solid #ddd;
 }
 
 /* 웹킷 기반 브라우저 스크롤바 스타일 */
@@ -2063,6 +2073,32 @@ img {
 
 .keyword-list::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
+}
+
+.comment-submit-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 아이콘 크기 조절은 여기서 */
+.comment-submit-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.card-title-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-title-link:hover {
+    text-decoration: underline; /* 싫으면 none 으로 */
 }
 
 .keyword-tag {

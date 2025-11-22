@@ -1,36 +1,65 @@
+// ===============================
+// 토론 목록 & 고정 관리 JS (discussion.js)
+// ===============================
+
+// 고정된 토론 / 북마크 상태 로컬스토리지에서 불러오기
 let pinnedDiscussions = JSON.parse(localStorage.getItem("pinned_discussions")) || [];
 let pinnedData = JSON.parse(localStorage.getItem("pinned_discussions_data")) || {};
-let bookmarkedArticles = JSON.parse(localStorage.getItem('bookmarked_articles')) || [];
+let bookmarkedArticles = JSON.parse(localStorage.getItem("bookmarked_articles")) || [];
 
-const dummyCommunityData = {
-    it: [
-        { id: 'article-ai-food', category: 'IT/과학', source: '뉴스웍스', title: "국민 건강 위협하는 '수입식품'...AI가 자동으로 걸러낸다", image: 'https://via.placeholder.com/280x180/0D47A1/FFFFFF?text=IT뉴스', time: '12 hours left', views: '25.9k', likes: 100, comments: 205 },
-        { id: 'article-sds', category: 'IT/과학', source: '빅데이터뉴스', title: "삼성SDS, IT서비스 상장기업 브랜드 평판 11월 빅데이터 분석 1위", image: 'https://via.placeholder.com/180x120/0D47A1/FFFFFF?text=차트', time: '6 days left', views: '33k', likes: 431, comments: 192 }
-    ],
-    politics: [
-        { id: 'article-politics-1', category: '정치', source: '서울신문', title: "정치 현안 토론, 7일간 진행됩니다.", image: 'https://via.placeholder.com/280x180/4A148C/FFFFFF?text=정치뉴스', time: '3 days left', views: '10.2k', likes: 50, comments: 88 }
-    ],
-    economy: [], society: [], culture: [], world: [], enter: [], sport: []
-};
+// 정적 이미지 경로 (프로젝트 static 위치에 맞게 필요시 수정)
+const THUMBTACK_ICON_URL = "/static/image/thumbtacks.png";
 
+/**
+ * 토론 카드 HTML 생성
+ * 백엔드에서 내려주는 room JSON 구조를 기준으로 렌더링
+ * {
+ *   id, type, category, source, title, image,
+ *   time_end, views, likes, comments,
+ *   detail_url, article_url
+ * }
+ */
 function createDiscussionCardHTML(cardData) {
-    const isBookmarked = bookmarkedArticles.includes(cardData.id);
-    const topicClassMap = {
-        'IT/과학': 'topic-it',
-        '정치': 'topic-politics',
-        '경제': 'topic-economy'
-    };
-    const categoryClass = topicClassMap[cardData.category] || 'topic-default';
+    const idStr = String(cardData.id);
+    const isBookmarked = bookmarkedArticles.includes(idStr);
 
-    const articleLink = `../../../archive/templates/archive/article-detail.html?id=${cardData.id}`;
-    const discussionLink = `../../../discussion/templates/discussion/discussion-detail.html?id=${cardData.id}`;
+    const topicClassMap = {
+        "IT/과학": "topic-it",
+        "정치": "topic-politics",
+        "경제": "topic-economy"
+        // 필요시 더 추가
+    };
+    const categoryClass = topicClassMap[cardData.category] || "topic-default";
+
+    const articleLink = cardData.article_url || "#";
+    const discussionLink = cardData.detail_url || "#";
+    const remainingText = calculateRemainingTime(cardData.time_end);
 
     return `
-    <div class="discussion-card" data-article-id="${cardData.id}" data-end-time="${cardData.time}">
+    <div class="discussion-card"
+         data-article-id="${cardData.id}"
+         data-end-time="${cardData.time_end}"
+         data-detail-url="${discussionLink}"
+         data-type="${cardData.type || "realname"}">
+
         <span class="card-category ${categoryClass}">${cardData.category}</span>
-        <a href="${articleLink}" class="card-title-link"><h3 class="card-title">${cardData.title}</h3></a>
-        <a href="${articleLink}" class="card-image-link"><img src="${cardData.image}" alt="${cardData.title}" class="discussion-card-image"></a>
-        <div class="discussion-card-meta"><span class="time-left">🕒 ${cardData.time}</span></div>
+
+        <a href="${articleLink}" class="card-title-link">
+            <h3 class="card-title">${cardData.title}</h3>
+        </a>
+
+        ${
+            cardData.image
+                ? `<a href="${articleLink}" class="card-image-link">
+                       <img src="${cardData.image}" alt="${cardData.title}" class="discussion-card-image">
+                   </a>`
+                : ""
+        }
+
+        <div class="discussion-card-meta">
+            <span class="time-left">🕒 ${remainingText}</span>
+        </div>
+
         <div class="discussion-card-footer">
             <div class="discussion-stats">
                 <span>👁️ ${cardData.views}</span>
@@ -39,96 +68,211 @@ function createDiscussionCardHTML(cardData) {
             </div>
             <div class="discussion-actions">
                 <button class="icon-btn share-btn"><span>↗</span></button>
-                <button class="icon-btn bookmark-btn ${isBookmarked ? 'active' : ''}"><span>□</span></button>
+                <button class="icon-btn bookmark-btn ${isBookmarked ? "active" : ""}">
+                    <span>□</span>
+                </button>
             </div>
         </div>
+
         <a href="${discussionLink}" class="discussion-join-btn">토론 참여하기</a>
     </div>`;
 }
 
+/**
+ * 상단 고정 토론 렌더링
+ */
 function renderPinnedDiscussions() {
     const pinnedArea = document.getElementById("pinned-discussions");
+    if (!pinnedArea) return;
+
     if (pinnedDiscussions.length === 0) {
-        pinnedArea.innerHTML = `<h3 class="pinned-title">
-                                    <img src="../../../static/image/thumbtacks.png" alt="고정핀" style="width: 24px; vertical-align: middle; margin-right: 8px;">
-                                    고정된 토론
-                                </h3>
-                                <p class="no-pinned">현재 고정된 토론이 없습니다.</p>`;
-        pinnedArea.style.minHeight = "100px"; // 고정된 영역의 최소 높이 설정
+        pinnedArea.innerHTML = `
+            <h3 class="pinned-title">
+                <img src="${THUMBTACK_ICON_URL}" alt="고정핀"
+                     style="width: 24px; vertical-align: middle; margin-right: 8px;">
+                고정된 토론
+            </h3>
+            <p class="no-pinned">현재 고정된 토론이 없습니다.</p>`;
+        pinnedArea.style.minHeight = "100px";
         return;
     }
 
-    let html = `<h3 class="pinned-title">
-                    <img src="../../../static/image/thumbtacks.png" alt="고정핀" style="width: 24px; vertical-align: middle; margin-right: 8px;">
-                    고정된 토론
-                </h3>`;
     const id = pinnedDiscussions[0];
     const item = pinnedData[id];
-    if (item) {
-        const discussionType = item.type === 'anonymous' ? 'discussion-anonymous' : 'discussion-realname';
-        html += `<div class="pinned-item" data-id="${id}" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="window.location.href='../../../discussion/templates/discussion/${discussionType}.html?id=${id}'">
-                    <span class="text" style="flex-grow: 1;">${item.title}</span>
-                    <button class="unpin-btn" style="flex-shrink: 0;">고정 삭제</button>
-                 </div>`;
+    if (!item) {
+        pinnedArea.innerHTML = "";
+        return;
     }
+
+    const html = `
+        <h3 class="pinned-title">
+            <img src="${THUMBTACK_ICON_URL}" alt="고정핀"
+                 style="width: 24px; vertical-align: middle; margin-right: 8px;">
+            고정된 토론
+        </h3>
+        <div class="pinned-item"
+             data-id="${id}"
+             style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span class="text" style="flex-grow: 1;">${item.title}</span>
+            <button class="unpin-btn" style="flex-shrink: 0;">고정 삭제</button>
+        </div>
+    `;
+
     pinnedArea.innerHTML = html;
 
-    document.querySelectorAll(".unpin-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-            e.stopPropagation(); // Prevent triggering the click on the pinned item
+    // 클릭 이벤트: 전체 영역 클릭 시 토론 상세로 이동
+    const pinnedItem = pinnedArea.querySelector(".pinned-item");
+    if (pinnedItem) {
+        pinnedItem.addEventListener("click", (e) => {
+            // "고정 삭제" 버튼 클릭은 여기서 처리하지 않음
+            if (e.target.classList.contains("unpin-btn")) return;
+            const id = pinnedItem.dataset.id;
+            const item = pinnedData[id];
+            if (item && item.detail_url) {
+                window.location.href = item.detail_url;
+            }
+        });
+    }
+
+    // "고정 삭제" 버튼 클릭
+    const unpinBtn = pinnedArea.querySelector(".unpin-btn");
+    if (unpinBtn) {
+        unpinBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
             const parent = e.target.closest(".pinned-item");
             const id = parent.dataset.id;
-            pinnedDiscussions = pinnedDiscussions.filter(x => x !== id);
+
+            pinnedDiscussions = pinnedDiscussions.filter((x) => x !== id);
             delete pinnedData[id];
-            localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
-            localStorage.setItem("pinned_discussions_data", JSON.stringify(pinnedData));
+
+            localStorage.setItem(
+                "pinned_discussions",
+                JSON.stringify(pinnedDiscussions)
+            );
+            localStorage.setItem(
+                "pinned_discussions_data",
+                JSON.stringify(pinnedData)
+            );
+
             renderPinnedDiscussions();
             renderFeed();
         });
-    });
+    }
 }
 
+/**
+ * 새로운 토론을 고정
+ */
 function pinDiscussion(discussionId, discussionData) {
-    // 기존 고정된 토론방 제거
+    // 기존 고정된 토론 제거 (하나만 유지)
     if (pinnedDiscussions.length > 0) {
         const currentPinnedId = pinnedDiscussions[0];
         pinnedDiscussions = [];
         delete pinnedData[currentPinnedId];
-        localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
-        localStorage.setItem("pinned_discussions_data", JSON.stringify(pinnedData));
     }
 
-    // 새로운 토론방 고정
-    pinnedDiscussions.push(discussionId);
-    pinnedData[discussionId] = {
-        id: discussionId,
+    pinnedDiscussions.push(String(discussionId));
+    pinnedData[String(discussionId)] = {
+        id: String(discussionId),
         title: discussionData.title,
-        type: discussionData.type || 'anonymous',
-        category: discussionData.category,
-        source: discussionData.source
+        type: discussionData.type || "realname",
+        detail_url: discussionData.detail_url || "",
     };
-    localStorage.setItem("pinned_discussions", JSON.stringify(pinnedDiscussions));
-    localStorage.setItem("pinned_discussions_data", JSON.stringify(pinnedData));
+
+    localStorage.setItem(
+        "pinned_discussions",
+        JSON.stringify(pinnedDiscussions)
+    );
+    localStorage.setItem(
+        "pinned_discussions_data",
+        JSON.stringify(pinnedData)
+    );
+
     renderPinnedDiscussions();
 }
 
+/**
+ * 현재 선택된 카테고리(nc_id)에 맞는 토론방 목록을 API로부터 불러와 렌더링
+ * - body data-page-type 값에 따라 실명/익명 필터링
+ *   <body data-page-type="realname">
+ *   <body data-page-type="anonymous">
+ *   <body data-page-type="all"> (전체)
+ */
 function renderFeed() {
-    const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
-    const feedContainer = document.getElementById('discussion-list');
-    const articles = dummyCommunityData[currentTopic] || [];
+    const feedContainer = document.getElementById("discussion-list");
+    if (!feedContainer) return;
 
-    feedContainer.innerHTML = '';
-    let html = '';
-    articles.forEach(article => html += createDiscussionCardHTML(article));
-    feedContainer.innerHTML = html;
+    const activeTag = document.querySelector(".keyword-tag.active");
+    if (!activeTag) {
+        feedContainer.innerHTML =
+            '<p class="error-text">카테고리가 선택되지 않았습니다.</p>';
+        return;
+    }
+
+    const ncId = activeTag.dataset.ncId;
+    if (!ncId) {
+        feedContainer.innerHTML =
+            '<p class="error-text">유효한 카테고리 ID가 없습니다.</p>';
+        return;
+    }
+
+    feedContainer.innerHTML = '<p class="loading-text">불러오는 중...</p>';
+
+    // 현재 페이지 타입(realname / anonymous / all)
+    const pageType = document.body.dataset.pageType || "all";
+
+    fetch(`/discussion/api/rooms/?nc_id=${encodeURIComponent(ncId)}`)
+        .then((res) => res.json())
+        .then((data) => {
+            const rooms = data.rooms || [];
+
+            if (rooms.length === 0) {
+                feedContainer.innerHTML =
+                    '<p class="no-rooms">현재 진행 중인 토론이 없습니다.</p>';
+                return;
+            }
+
+            let html = "";
+            rooms.forEach((room) => {
+                // 페이지 타입에 따라 실명/익명 필터링
+                if (pageType !== "all" && room.type !== pageType) {
+                    return;
+                }
+                html += createDiscussionCardHTML(room);
+            });
+
+            if (!html) {
+                feedContainer.innerHTML =
+                    '<p class="no-rooms">현재 진행 중인 토론이 없습니다.</p>';
+            } else {
+                feedContainer.innerHTML = html;
+            }
+
+            updateDiscussionTimes();
+        })
+        .catch((err) => {
+            console.error("[discussion.js] /discussion/api/rooms/ 에러:", err);
+            feedContainer.innerHTML =
+                '<p class="error-text">토론 목록을 불러오지 못했습니다.</p>';
+        });
 }
 
+/**
+ * 종료 시각까지 남은 시간 텍스트를 계산
+ * @param {string} endTime ISO 문자열 (예: "2025-11-22T18:00:00+09:00")
+ */
 function calculateRemainingTime(endTime) {
+    if (!endTime) return "종료 시각 정보 없음";
+
     const now = new Date();
     const end = new Date(endTime);
     const diff = end - now;
 
-    if (diff <= 0) return '종료됨';
+    if (isNaN(end.getTime())) {
+        return "종료 시각 정보 없음";
+    }
+
+    if (diff <= 0) return "종료됨";
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -140,10 +284,13 @@ function calculateRemainingTime(endTime) {
     }
 }
 
+/**
+ * 모든 카드의 남은 시간 텍스트 갱신
+ */
 function updateDiscussionTimes() {
-    const cards = document.querySelectorAll('.discussion-card');
-    cards.forEach(card => {
-        const timeElement = card.querySelector('.time-left');
+    const cards = document.querySelectorAll(".discussion-card");
+    cards.forEach((card) => {
+        const timeElement = card.querySelector(".time-left");
         const endTime = card.dataset.endTime;
         if (timeElement && endTime) {
             timeElement.textContent = `🕒 ${calculateRemainingTime(endTime)}`;
@@ -151,55 +298,100 @@ function updateDiscussionTimes() {
     });
 }
 
+/**
+ * DOM 로드 후 이벤트 바인딩
+ */
 document.addEventListener("DOMContentLoaded", () => {
-    const tags = document.querySelectorAll('.keyword-tag');
-    tags.forEach(tag => {
-        tag.addEventListener('click', () => {
-            tags.forEach(t => t.classList.remove('active'));
-            tag.classList.add('active');
+    // 카테고리 태그 클릭 시 필터 변경
+    const tags = document.querySelectorAll(".keyword-tag");
+    tags.forEach((tag) => {
+        tag.addEventListener("click", () => {
+            tags.forEach((t) => t.classList.remove("active"));
+            tag.classList.add("active");
             renderFeed();
         });
     });
 
+    // 토론 카드 내부 버튼들(공유, 북마크, 참여하기) 이벤트 위임
     const list = document.getElementById("discussion-list");
-    list.addEventListener("click", e => {
-        const card = e.target.closest(".discussion-card");
-        if (!card) return;
-        const id = card.dataset.articleId;
+    if (list) {
+        list.addEventListener("click", (e) => {
+            const card = e.target.closest(".discussion-card");
+            if (!card) return;
 
-        if (e.target.closest(".share-btn")) {
-            const url = `${location.origin}/discussion/templates/discussion/discussion-detail.html?id=${id}`;
-            navigator.clipboard.writeText(url);
-            alert("공유 링크가 복사되었습니다:\n" + url);
-        }
+            const id = String(card.dataset.articleId);
+            const detailUrl = card.dataset.detailUrl;
+            const type = card.dataset.type || "realname";
 
-        if (e.target.closest(".bookmark-btn")) {
-            const btn = e.target.closest(".bookmark-btn");
-            btn.classList.toggle("active");
-            if (btn.classList.contains("active")) {
-                if (!bookmarkedArticles.includes(id)) bookmarkedArticles.push(id);
-            } else {
-                bookmarkedArticles = bookmarkedArticles.filter(x => x !== id);
+            // 공유 버튼
+            if (e.target.closest(".share-btn")) {
+                const fullUrl = detailUrl
+                    ? location.origin + detailUrl
+                    : location.href;
+
+                navigator.clipboard
+                    .writeText(fullUrl)
+                    .then(() => {
+                        alert(
+                            "공유 링크가 복사되었습니다:\n" +
+                                fullUrl
+                        );
+                    })
+                    .catch((err) => {
+                        console.error("클립보드 복사 실패:", err);
+                        alert("공유 링크를 복사하는 데 실패했습니다.");
+                    });
+                return;
             }
-            localStorage.setItem("bookmarked_articles", JSON.stringify(bookmarkedArticles));
-        }
 
-        if (e.target.closest(".discussion-join-btn")) {
-            const currentTopic = document.querySelector('.keyword-tag.active').dataset.topic;
-            const discussionData = dummyCommunityData[currentTopic]?.find(article => article.id === id);
-            if (discussionData) {
-                // 고정 상태를 설정하기 전에 기존 상태 확인
-                if (!pinnedDiscussions.includes(id)) {
-                    pinDiscussion(id, discussionData);
+            // 북마크 버튼
+            if (e.target.closest(".bookmark-btn")) {
+                const btn = e.target.closest(".bookmark-btn");
+                btn.classList.toggle("active");
+
+                if (btn.classList.contains("active")) {
+                    if (!bookmarkedArticles.includes(id)) {
+                        bookmarkedArticles.push(id);
+                    }
+                } else {
+                    bookmarkedArticles = bookmarkedArticles.filter(
+                        (x) => x !== id
+                    );
                 }
+
+                localStorage.setItem(
+                    "bookmarked_articles",
+                    JSON.stringify(bookmarkedArticles)
+                );
+                return;
             }
-        }
-    });
 
-    // 주기적으로 시간 업데이트
-    setInterval(updateDiscussionTimes, 60000); // 1분마다 업데이트
+            // "토론 참여하기" 버튼 → 고정 및 이동
+            if (e.target.closest(".discussion-join-btn")) {
+                const title =
+                    card.querySelector(".card-title")?.textContent || "";
 
+                if (!pinnedDiscussions.includes(id)) {
+                    pinDiscussion(id, {
+                        title: title,
+                        type: type,
+                        detail_url: detailUrl,
+                    });
+                }
+
+                if (detailUrl) {
+                    window.location.href = detailUrl;
+                }
+                return;
+            }
+        });
+    }
+
+    // 주기적으로 남은 시간 업데이트 (1분마다)
+    setInterval(updateDiscussionTimes, 60000);
+
+    // 초기 렌더링
     renderPinnedDiscussions();
     renderFeed();
-    updateDiscussionTimes(); // 초기 호출
+    updateDiscussionTimes();
 });

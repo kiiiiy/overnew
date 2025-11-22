@@ -1,19 +1,4 @@
-import google.generativeai as genai
-from django.conf import settings
-
-try:
-    API_KEY = getattr(settings, "GEMINI_API_KEY", None)
-    if not API_KEY:
-        raise ValueError("GEMINI_API_KEY is not set in Django settings.")
-    genai.configure(api_key=API_KEY)
-except (AttributeError, ValueError) as e:
-    print(f"Error configuring Gemini API: {e}. Check your settings.py and .env file.")
-    API_KEY = None
-
-# 사용할 모델 정의
-MODEL_NAME = "gemini-2.5-flash"
-
-
+import re
 import google.generativeai as genai
 from django.conf import settings
 
@@ -27,24 +12,97 @@ except (AttributeError, ValueError) as e:
     API_KEY = None
 
 MODEL_NAME = "gemini-2.5-flash"
+
+# 1) 그냥 욕설 (개인/상대방 상관없이 무조건 막고 싶은 단어)
+HARD_BAN_KEYWORDS = [
+    "좆병신",
+    "병신",
+    "씨발",
+    "시발",
+    "씹새끼",
+    "개새끼",
+    # 필요하면 추가
+]
+
+# 2) "집단 + 폭력" 패턴용 키워드들
+GROUP_KEYWORDS = [
+    "한남",
+    "남자",
+    "여자",
+    "페미",
+    "흑인",
+    "백인",
+    "게이",
+    "레즈",
+
+]
+
+VIOLENT_KEYWORDS = [
+    "죽어",
+    "죽어라",
+    "죽여",
+    "죽여라",
+    "뒤져",
+    "뒤져라",
+    "없어져",
+    "싹다죽어",
+    "다죽어",
+    # 필요 시 추가
+]
+
+
+def contains_hard_ban(text: str) -> bool:
+    """
+    1) 욕설 키워드 포함 여부
+    2) 특정 집단 + 폭력 표현 여부 ("한남 죽어", "여자들 다 뒤져라" 등)
+    """
+
+    # 공백 제거한 버전 (한남 죽어 / 한남   죽어 / 한남죽어 다 잡기 위해)
+    normalized = re.sub(r"\s+", "", text).lower()
+
+    # 1) 욕설 키워드
+    for kw in HARD_BAN_KEYWORDS:
+        if kw in normalized:
+            return True
+
+    # 2) 집단 + 폭력 조합
+    has_group = any(g in normalized for g in GROUP_KEYWORDS)
+    has_violence = any(v in normalized for v in VIOLENT_KEYWORDS)
+
+    if has_group and has_violence:
+        return True
+
+    return False
 
 
 def check_for_hate_speech(comment_text: str) -> bool:
     """
-    혐오 발언이면 True, 아니면 False
-    API 오류나 안전 필터로 막힌 경우는 보수적으로 FILTER 처리(True)하거나
-    필요하면 False로 바꿔도 됨
+    True = 차단, False = 통과
+    1단계: 로컬 contains_hard_ban() 에서 걸리면 무조건 차단
+    2단계: 나머지는 Gemini에게 넘기되, 'FILTER'라고 명확히 말한 경우에만 차단
     """
+
+    # 1단계: 로컬 하드 필터
+    if contains_hard_ban(comment_text):
+        print("[Filter] 금지어/집단+폭력 패턴 탐지 → FILTER 처리")
+        return True
+
+    # 2단계: Gemini 느슨 필터
     if not API_KEY:
-        print("[Gemini] API_KEY 없음, 필터링 스킵")
+        print("[Gemini] API_KEY 없음, 필터링 스킵 → SAFE 처리")
         return False
 
     system_instruction = (
-        "당신은 혐오 발언 필터링 시스템입니다. "
-        "사용자 댓글을 분석하여 인종, 성별, 종교, 국적, 성적 지향 등에 대한 "
-        "혐오, 비하, 공격적인 의도가 담겨 있는지 판단하고, 판단 결과만 단일 단어로 응답하세요. "
-        "명확히 감지되면 'FILTER', 감지되지 않으면 'SAFE'만 응답합니다."
-    )
+    "You are a filtering system that detects only clear and explicit hate speech in user comments. "
+    "Classify as 'SAFE' whenever possible, even if the comment contains mild profanity, jokes, sarcasm, or general negativity. "
+    "However, if the comment contains: "
+    "- explicit hate or severe derogatory expressions "
+    "- OR violence, harm, or elimination directed at a protected group (e.g., men, women, racial groups, nationalities, sexual orientations, religions, disabilities) "
+    "- OR violence/harm directed at a specific individual "
+    "then you must classify it as 'FILTER'. "
+    "This rule applies regardless of the language used. "
+    "Your response must be exactly one word: either 'FILTER' or 'SAFE'."
+)
 
     try:
         model = genai.GenerativeModel(
@@ -60,33 +118,28 @@ def check_for_hate_speech(comment_text: str) -> bool:
             },
         )
 
-        # 1. 후보가 하나도 없으면 → 보수적으로 FILTER로 처리
-        if not getattr(response, "candidates", None):
-            print("[Gemini] candidates 없음, finish_reason 확인 불가 → FILTER 처리")
-            return True
-
-        candidate = response.candidates[0]
-        finish_reason = getattr(candidate, "finish_reason", None)
-        print(f"[Gemini] finish_reason: {finish_reason}")
-
-        # finish_reason이 비정상(텍스트 안 나온 상황 포함)이면 FILTER로 취급
-        if finish_reason is not None and finish_reason != 1:  # 1 = STOP(정상 종료)
-            print("[Gemini] finish_reason 비정상 → FILTER 처리")
-            return True
         try:
             raw_text = (response.text or "").strip()
         except Exception as e:
-            print(f"[Gemini] response.text 접근 실패: {e} → FILTER 처리")
-            return True
+            print(f"[Gemini] response.text 접근 실패: {e} → SAFE 처리")
+            return False  # 실패 시 너무 빡세지 않게 통과
 
-        result = raw_text.upper()
+        if not raw_text:
+            print("[Gemini] 빈 응답 → SAFE 처리")
+            return False
+
+        result = raw_text.upper().strip()
         print(f"[Gemini] 입력: {comment_text}")
-        print(f"[Gemini] 응답: {repr(raw_text)} → 파싱: {result}")
+        print(f"[Gemini] 응답(raw): {repr(raw_text)} → 파싱: {result}")
 
-        return "FILTER" in result
+        if result == "FILTER":
+            return True
+        if result == "SAFE":
+            return False
+
+        print("[Gemini] 예상 밖 응답 → SAFE 처리")
+        return False
 
     except Exception as e:
         print(f"[Gemini] 호출 중 예외(비하 발언 체크): {e}")
-        # 여기서는 보수적으로 True/False 둘 다 가능
-        # 댓글을 막는 쪽으로 가려면 True로 바꿔도 됨
         return False

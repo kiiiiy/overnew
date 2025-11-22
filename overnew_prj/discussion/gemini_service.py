@@ -1,7 +1,6 @@
 import google.generativeai as genai
 from django.conf import settings
 
-# API 설정 (settings.py에서 GEMINI_API_KEY 변수를 설정했다고 가정)
 try:
     API_KEY = getattr(settings, "GEMINI_API_KEY", None)
     if not API_KEY:
@@ -71,12 +70,9 @@ def check_for_hate_speech(comment_text: str) -> bool:
         print(f"[Gemini] finish_reason: {finish_reason}")
 
         # finish_reason이 비정상(텍스트 안 나온 상황 포함)이면 FILTER로 취급
-        # 필요하면 여기 로직은 너가 완화해도 됨
         if finish_reason is not None and finish_reason != 1:  # 1 = STOP(정상 종료)
             print("[Gemini] finish_reason 비정상 → FILTER 처리")
             return True
-
-        # 2. 이제 텍스트 뽑기 (response.text가 또 예외 날 수 있으니 안전하게)
         try:
             raw_text = (response.text or "").strip()
         except Exception as e:

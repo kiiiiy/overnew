@@ -2066,26 +2066,30 @@ img {
 }
 
 .keyword-tag {
-    padding: 8px 16px;
-    background-color: rgba(0, 0, 0, 0.07);
-    color: #666;
-    border: none;
-    border-radius: 20px;
+    flex-shrink: 0;
+    padding: 10px 16px;
     font-size: 14px;
     font-weight: 500;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-    flex-shrink: 0; /* 버튼 크기 고정 */
+
+    background-color: #F0F0F0 !important; /* 안 눌렸을 때 */
+    color: #AAAAAA !important;            /* 기본 글씨색 */
+
+    border: none !important;
 }
 
-.keyword-tag:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
+/* 활성 상태 */
 .keyword-tag.active {
-    background-color: #620B95;
-    color: #FFFFFF;
+    background-color: #EBEBEB !important; /* 눌렸을 때 */
+    color: #222222 !important;             /* 더 진한 글씨 */
+    font-weight: 600;
+}
+
+/* 호버 효과 - 선택사항 (원하면 유지/삭제 가능) */
+.keyword-tag:hover {
+    background-color: #E5E5E5;
 }
 
 .keyword-tag:focus {
@@ -2400,4 +2404,27 @@ h1.splash-logo {
     vertical-align: middle; /* 텍스트와 수직 정렬 */
     margin-right: 4px;
     margin-top: -2px; /* 미세 조정 */
+}
+
+.keyword-tag.active {
+    background-color: #D0D0D0 ;
+    color: white ;
+}
+
+.follower-read-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F4F1DA;       /* 네가 예시로 준 연한 베이지 */
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.follower-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
 }

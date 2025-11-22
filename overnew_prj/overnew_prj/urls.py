@@ -14,4 +14,5 @@ urlpatterns = [
     path('recommend/', include('recommend.urls')),
     path('discussion/', include('discussion.urls')),
     path("", feed_views.feed, name="feed"),
+    path("community/", include(("discussion.urls", "discussion"), namespace="discussion")),
     ]

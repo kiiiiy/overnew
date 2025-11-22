@@ -10,9 +10,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-
-from archive.models import Article, ArchiveCategory
-from .models import DiscussionRoom, Comment, CommentLike
+from account.models import *
+from archive.models import *
+from .models import *
 from .gemini_service import check_for_hate_speech
 
 
@@ -140,15 +140,18 @@ def api_room_list(request):
 
 
 def discussion_list(request):
-    categories = NewsCategory.objects.all().order_by('nc_id')
+    categories = ArchiveCategory.objects.all().order_by('pk')
     return render(request, 'discussion/community.html', {
         'categories': categories,
     })
 
 
 def main(request):
-    categories = NewsCategory.objects.all().order_by('nc_id')
-    return render(request, 'discussion/community.html', {
+    # id 대신 pk 또는 nc_id 사용
+    categories = ArchiveCategory.objects.all().order_by('pk')
+    # 또는 categories = ArchiveCategory.objects.all().order_by('nc_id')
+
+    return render(request, 'discussion/community-detail.html', {
         'categories': categories,
     })
 

@@ -2,16 +2,20 @@ from django.db import models
 from archive.models import *
 from django.utils import timezone
 from users.models import *
+from datetime import timedelta
 
 # Create your models here.
 
+def default_finish_time():
+    return timezone.now() + timedelta(days=7)
+
 class DiscussionRoom(models.Model):
     room_id = models.AutoField(primary_key=True)
-    start_time = models.DateTimeField()
-    finish_time = models.DateTimeField(null=True, blank=True)
+    start_time = models.DateTimeField(default=timezone.now)
+    finish_time = models.DateTimeField(default=default_finish_time)
     article = models.OneToOneField(Article, on_delete=models.CASCADE)
     is_anonymous = models.BooleanField(default=False)
-    bookmark=models.ManyToManyField(User, related_name="bookmark_room")
+    bookmark = models.ManyToManyField(User, related_name="bookmark_room")
 
     def __str__(self):
         return f"Room for {self.article.title}"

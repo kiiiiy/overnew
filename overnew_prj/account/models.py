@@ -38,50 +38,6 @@ class UserManager(BaseUserManager):
         return self.create_user(username, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    # ERD: user_id (PK)
-    id = models.AutoField(primary_key=True, db_column="user_id")
-
-    username = models.CharField("아이디", max_length=20, unique=True)
-    email = models.EmailField("이메일", max_length=50, blank=True)
-    nickname = models.CharField("닉네임", max_length=15)
-    age = models.PositiveIntegerField("나이", null=True, blank=True)
-
-    GENDER_CHOICES = [
-        ("F", "여성"),
-        ("M", "남성"),
-        ("U", "기타/모름"),
-    ]
-    gender = models.CharField("성별", max_length=2, choices=GENDER_CHOICES, default="F")
-
-    # 프론트에 있는 정치 성향 필드 (ERD에는 없지만 실사용을 위해 추가)
-    STANCE_CHOICES = [
-        ("progressive", "진보"),
-        ("moderate", "중도"),
-        ("conservative", "보수"),
-        ("unsure", "모름"),
-    ]
-    stance = models.CharField(
-        "정치 성향", max_length=20, choices=STANCE_CHOICES, default="unsure"
-    )
-
-    # 장고 권한/관리용 필드 (ERD에는 없지만 필수)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
-
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS: list[str] = []
-
-    objects = UserManager()
-
-    class Meta:
-        db_table = "user"
-
-    def __str__(self):
-        return self.username
-
-
 class NewsCategory(models.Model):
     """
     분야 테이블 (ERD의 nc_id 가 가리키는 대상)
@@ -113,12 +69,7 @@ class Media(models.Model):
 
 
 class UserNews(models.Model):
-    """
-    유저가 선택한 분야 (다대다)
-    """
-    # 🌟 related_name 추가: acc_usernews_set
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='acc_usernews_set')
-    # 🌟 related_name 추가: acc_category_set
     category = models.ForeignKey(NewsCategory, on_delete=models.CASCADE, related_name='acc_category_set')
 
     class Meta:

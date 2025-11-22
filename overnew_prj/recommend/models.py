@@ -40,9 +40,8 @@ class Article(models.Model):
 # -----------------
 class UserNews(models.Model):
     """ 사용자가 선택한 관심사 키워드 (User - NewsCategory) """
-    # 'account.User' 참조 및 related_name 추가
     user = models.ForeignKey(
-        'account.User', 
+        'users.User', 
         on_delete=models.CASCADE, 
         db_column='user_id',
         related_name='rec_usernews_set' 
@@ -62,13 +61,13 @@ class UserNews(models.Model):
 class Following(models.Model):
     """ 팔로우 관계 (user_id가 user_id2를 팔로우) """
     user = models.ForeignKey(
-        'account.User', 
+        'users.User', 
         related_name='following_set', 
         on_delete=models.CASCADE, 
         db_column='user_id'
     )
     user2 = models.ForeignKey(
-        'account.User', 
+        'users.User', 
         related_name='follower_set', 
         on_delete=models.CASCADE, 
         db_column='user_id2'

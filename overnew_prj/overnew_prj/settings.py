@@ -119,3 +119,40 @@ AUTH_USER_MODEL = 'users.User'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+# 비밀번호 유효성 검사 설정
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # 사용자 속성 유사성 검사
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # 최소 비밀번호 길이 설정
+        'OPTIONS': {
+            'min_length': 8,  # 최소 8자
+        },
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # 일반적인 비밀번호 방지
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # 숫자만 비밀번호 방지
+    },
+]
+
+# 국제화 설정
+LANGUAGE_CODE = 'ko-kr'  # 언어 설정 (한국어)
+TIME_ZONE = 'Asia/Seoul'  # 시간대 설정
+USE_I18N = True  # 국제화 사용
+USE_TZ = True  # 시간대 사용
+
+# 기본 Primary Key 필드 설정
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 이메일 설정
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # 이메일 백엔드 설정
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP 서버 주소
+EMAIL_PORT = 587  # SMTP 포트
+EMAIL_USE_TLS = True  # TLS 사용
+EMAIL_HOST_USER = 'saramsaramto@gmail.com'  # 발신자 이메일 주소
+EMAIL_HOST_PASSWORD = 'osez psrz wpjm eear'  # 발신자 이메일 비밀번호

@@ -22,15 +22,6 @@
 
     <main class="container" style="padding-top: 20px;">
 
-        <div class="profile-card">
-            <img src="avatar-placeholder.png" alt="Profile Avatar" class="profile-avatar">
-
-            <div class="profile-info">
-                <span class="profile-name" id="user-nickname">...</span>
-                <span class="profile-tags" id="user-tags">...</span>
-            </div>
-        </div>
-
         <div class="settings-menu">
             <a href="{% url 'account:profile_edit' %}" class="menu-item" id="profile-edit-btn">
                 <img src="{% static 'image/edit.png' %}" alt="프로필 수정" class="icon">

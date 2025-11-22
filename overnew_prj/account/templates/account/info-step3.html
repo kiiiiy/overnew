@@ -31,7 +31,7 @@
             <span class="subtitle-comment">(복수 선택 가능)</span>
         </h3>
 
-        <form class="info-form" method="POST" action="{% url 'account:info_step3' %}">
+        <form class="info-form" method="POST" action="{% url 'account:info_step3_post' %}">
 
             {% csrf_token %}
 

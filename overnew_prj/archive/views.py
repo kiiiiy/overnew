@@ -1,18 +1,20 @@
-#archive/views.py
+# archive/views.py (AttributeError 해결을 위해 fetch_article_preview 재배치)
+
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
-
-from .models import User, Article, NewsCategory, Scrap, Media
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.apps import apps
 from .utils import fetch_article_metadata
-from django.shortcuts import render
 
+User = get_user_model() 
 
-
-def get_user_or_404(user_id: int) -> User:
+# 🌟 user_id 대신 id 필드로 검색하도록 수정합니다.
+def get_user_or_404(user_id: int):
     try:
-        return User.objects.get(user_id=user_id)
+        return User.objects.get(id=user_id)
     except User.DoesNotExist:
         raise ValueError("존재하지 않는 사용자입니다.")
 
@@ -33,6 +35,16 @@ def upload_article(request):
 
     if not user_id or not url or not nc_id:
         return JsonResponse({"error": "user_id, url, nc_id는 필수입니다."}, status=400)
+    
+    # 🌟 순환 임포트 해결을 위해 함수 내부에서 모델을 로드합니다.
+    try:
+        ArchiveCategory = apps.get_model('archive', 'ArchiveCategory')
+        ArchiveMedia = apps.get_model('archive', 'ArchiveMedia')
+        Article = apps.get_model('archive', 'Article')
+        Scrap = apps.get_model('archive', 'Scrap')
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
 
     #유저
     try:
@@ -42,19 +54,19 @@ def upload_article(request):
 
     #카테고리
     try:
-        category = NewsCategory.objects.get(nc_id=nc_id)
-    except NewsCategory.DoesNotExist:
+        category = ArchiveCategory.objects.get(nc_id=nc_id)
+    except ArchiveCategory.DoesNotExist:
         return JsonResponse({"error": "존재하지 않는 카테고리입니다."}, status=400)
 
     #언론사
     media = None
     if media_id:
         try:
-            media = Media.objects.get(media_id=media_id)
-        except Media.DoesNotExist:
+            media = ArchiveMedia.objects.get(id=media_id) # ID 필드를 사용하도록 가정
+        except ArchiveMedia.DoesNotExist:
             return JsonResponse({"error": "존재하지 않는 언론사입니다."}, status=400)
     elif media_name:
-        media, _ = Media.objects.get_or_create(name=media_name)
+        media, _ = ArchiveMedia.objects.get_or_create(name=media_name)
 
     #1) 메타데이터 크롤링
     try:
@@ -92,6 +104,45 @@ def upload_article(request):
         "created": created,
     })
 
+
+# ------------------------------------------------------------------
+# 🌟 [재배치] fetch_article_preview를 앞쪽 API 영역으로 이동 (오류 해결 목적)
+# ------------------------------------------------------------------
+@csrf_exempt
+@require_POST
+def fetch_article_preview(request):
+    """
+    URL을 받아 메타데이터(제목, 이미지, 언론사 등)를 추출하여 반환합니다.
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON 형식이 아닙니다."}, status=400)
+
+    url = data.get("url")
+
+    if not url:
+        return JsonResponse({"error": "url은 필수입니다."}, status=400)
+
+    # 1) 메타데이터 크롤링
+    try:
+        meta = fetch_article_metadata(url)
+    except Exception as e:
+        # 크롤링 실패 시 오류 메시지와 함께 빈 객체 반환
+        print(f"Metadata fetch failed for {url}: {e}")
+        return JsonResponse({"error": f"기사 정보를 가져오는 데 실패했습니다: {e}"}, status=500)
+
+    # 2) 응답: 프론트엔드가 미리보기에 사용할 정보만 반환
+    return JsonResponse({
+        "title": meta.get("title", "제목 없음"),
+        "summary": meta.get("summary", ""),
+        "image": meta.get("image", ""),
+        "url": url,
+        "media_name_from_meta": meta.get("media_name", "출처 불명"),
+    })
+# ------------------------------------------------------------------
+
+
 # --- 스크랩 리스트 API ---
 @require_GET
 def scrap_list(request, user_id: int):
@@ -99,7 +150,14 @@ def scrap_list(request, user_id: int):
     GET /api/users/<user_id>/scraps/
     """
     try:
-        user = User.objects.get(user_id=user_id)
+        Article = apps.get_model('archive', 'Article')
+        Scrap = apps.get_model('archive', 'Scrap')
+        User = get_user_model() 
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
+    try:
+        user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return JsonResponse({"error": "해당 사용자를 찾을 수 없습니다"}, status=404)
 
@@ -126,11 +184,48 @@ def scrap_list(request, user_id: int):
 
     return JsonResponse(data, safe=False)
 
+# 🌟 추가: Article ID로 상세 정보 조회 API
+@require_GET
+def get_article_detail_api(request, article_id: int):
+    """
+    GET /archive/api/articles/<article_id>/
+    article_id를 받아 해당 기사의 상세 정보(iframe용 url 포함)를 반환합니다.
+    """
+    try:
+        Article = apps.get_model('archive', 'Article')
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
+    # Article 객체를 가져옵니다.
+    article = get_object_or_404(Article, article_id=article_id)
+
+    return JsonResponse({
+        "article_id": article.article_id,
+        "title": article.title,
+        "url": article.url, # 👈 iframe에 사용할 핵심 정보
+    })
+
+
 def ping(request):
     return HttpResponse("archive API OK")
 
 def archive_main(request):
-    return render(request, "archive/archive.html")
+    # 로그인 여부와 관계없이 접근 허용
+    current_user = request.user
+    
+    if not current_user.is_authenticated:
+        try:
+            current_user = User.objects.all().first()
+        except Exception:
+            current_user = None 
+            
+    context = {}
+    if current_user:
+        context['current_user_id'] = current_user.id
+        context['current_user_nickname'] = current_user.nickname if hasattr(current_user, 'nickname') else current_user.username
+    
+    return render(request, "archive/archive.html", context)
+
 
 def article_detail(request):
     return render(request, "archive/article-detail.html")
@@ -140,3 +235,90 @@ def create_scrap(request):
 
 def profile_detail(request):
     return render(request, "archive/profile-detail.html")
+
+
+# 🌟 추가: 팔로우/언팔로우 처리 API
+@csrf_exempt
+@require_POST
+def follow_toggle(request):
+    """
+    POST /archive/api/follow/toggle/
+    팔로우 관계를 생성하거나 삭제(토글)합니다.
+    요청 데이터: { "follower_id": 1, "following_id": 2 }
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON 형식이 아닙니다."}, status=400)
+    
+    follower_id = data.get("follower_id")
+    following_id = data.get("following_id")
+
+    if not follower_id or not following_id:
+        return JsonResponse({"error": "follower_id와 following_id는 필수입니다."}, status=400)
+
+    try:
+        # Follow 모델이 archive 앱에 있다고 가정합니다.
+        Follow = apps.get_model('archive', 'Follow') 
+        User = get_user_model()
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
+    try:
+        follower = User.objects.get(id=follower_id)
+        following = User.objects.get(id=following_id)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "사용자를 찾을 수 없습니다."}, status=404)
+
+    if follower.id == following.id:
+        return JsonResponse({"error": "자기 자신을 팔로우할 수 없습니다."}, status=400)
+    
+    # 팔로우 관계 확인 및 토글
+    follow_relation, created = Follow.objects.get_or_create(
+        follower=follower,
+        following=following
+    )
+
+    if not created:
+        # 이미 존재하면 삭제 (언팔로우)
+        follow_relation.delete()
+        return JsonResponse({"status": "unfollowed", "message": "언팔로우했습니다."})
+    else:
+        # 새로 생성됨 (팔로우)
+        return JsonResponse({"status": "followed", "message": "팔로우했습니다."})
+
+
+# 🌟 추가: 특정 사용자의 팔로잉 목록 조회 API
+@require_GET
+def get_following_list(request, user_id: int):
+    """
+    GET /archive/api/users/<user_id>/following/
+    특정 사용자가 팔로우하는 사용자 목록을 반환합니다.
+    """
+    try:
+        Follow = apps.get_model('archive', 'Follow')
+        User = get_user_model()
+    except LookupError as e:
+        return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
+
+    try:
+        # 1. 대상 사용자 객체 조회
+        target_user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "사용자를 찾을 수 없습니다."}, status=404)
+
+    # 2. 해당 사용자가 팔로우하는 관계만 필터링 (follower=target_user)
+    following_qs = Follow.objects.filter(follower=target_user).select_related('following')
+
+    following_data = []
+    for relation in following_qs:
+        followed_user = relation.following
+        
+        following_data.append({
+            "id": followed_user.id,
+            "nickname": followed_user.nickname,
+            "tags": ["IT/과학", "문화"], # 임시 데이터 (실제 데이터 연동 필요)
+            "avatar": "/static/image/avatar-placeholder.png",
+        })
+        
+    return JsonResponse(following_data, safe=False)

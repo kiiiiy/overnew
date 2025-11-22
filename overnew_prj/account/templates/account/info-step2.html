@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 기입 2 - OVERNEW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="{% static 'js/account.js' %}" defer></script>
+</head>
+
+<body id="page-info-step2">
+
+    <main class="container">
+
+        <h1 class="logo">OVERNEW</h1>
+
+        <div class="progress-bar">
+            <div class="progress-value" style="width: 40%;"></div>
+        </div>
+
+        <h2 class="title" id="user-greeting">...님</h2>
+        <h3 class="subtitle">평소 어떤 정치적 입장에<br>가까우신가요?</h3>
+
+        <form class="info-form" method="POST" action="{% url 'account:info_step2_post' %}">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <div class="stance-toggle">
+                    <input type="radio" id="stance-progressive" name="stance" value="progressive" checked>
+                    <label for="stance-progressive">진보</label>
+
+                    <input type="radio" id="stance-moderate" name="stance" value="moderate">
+                    <label for="stance-moderate">중도</label>
+
+                    <input type="radio" id="stance-conservative" name="stance" value="conservative">
+                    <label for="stance-conservative">보수</label>
+
+                    <input type="radio" id="stance-unsure" name="stance" value="unsure">
+                    <label for="stance-unsure">모름</label>
+                </div>
+            </div>
+
+            <button type="submit" class="next-button" id="next-btn-step2">NEXT</button>
+
+        </form>
+
+    </main>
+
+</body>
+
+</html>

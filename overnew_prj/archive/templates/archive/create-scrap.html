@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기사 스크랩 - OVERNEW</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="../../../static/css/style.css">
 </head>
 
 <body class="with-fixed-nav">
@@ -38,7 +38,7 @@
         </div>
 
         <form class="info-form" style="margin-top: 30px;">
-            <div class="form-group">
+            <div class="form-group input-with-clear">
                 <input type="text" id="article-source" placeholder="언론사를 입력해주세요">
                 <button type="button" class="clear-btn" id="clear-source-btn">×</button>
             </div>
@@ -51,4 +51,4 @@
 
     <button type="button" class="next-button" id="submit-scrap-btn">기사 스크랩하기</button>
 
-    <script src="{% static 'js/archive.js' %}"></script>
+    <script src="../../../static/js/archive.js"></script>

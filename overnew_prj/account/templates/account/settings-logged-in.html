@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설정 - OVERNEW</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="{% static 'js/account.js' %}" defer></script>
+</head>
+
+<body id="page-settings-logged-in">
+
+    <header class="page-header">
+        <a href="#" class="back-arrow" id="back-button"> &lt; </a>
+        <h1>Settings</h1>
+        <div class="header-spacer"></div>
+    </header>
+
+    <main class="container" style="padding-top: 20px;">
+
+        <div class="profile-card">
+            <img src="avatar-placeholder.png" alt="Profile Avatar" class="profile-avatar">
+
+            <div class="profile-info">
+                <span class="profile-name" id="user-nickname">...</span>
+                <span class="profile-tags" id="user-tags">...</span>
+            </div>
+        </div>
+
+        <div class="settings-menu">
+            <a href="profile-edit.html" class="menu-item" id="profile-edit-btn">
+                <img src="{% static 'image/edit.png' %}" alt="프로필 수정" class="icon">
+                <span>프로필 수정</span>
+                <span class="arrow">&gt;</span>
+            </a>
+
+            <a href="#" id="logout-button" class="menu-item">
+                <img src="{% static 'image/logout.png' %}" alt="프로필 수정" class="icon">
+                <span>로그아웃</span>
+                <span class="arrow">&gt;</span>
+            </a>
+
+            <!-- <a href="notifications.html" class="menu-item" id="notifications-btn">
+                <span class="icon">🔔</span>
+                <span>알림 설정</span>
+                <span class="arrow">&gt;</span>
+            </a> -->
+
+            <a href="delete-account.html" class="menu-item" id="delete-account-btn">
+                <img src="{% static 'bin.png' %}" alt="탈퇴하기" class="icon">
+                <span>탈퇴하기</span>
+                <span class="arrow">&gt;</span>
+            </a>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

@@ -4,14 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     const backButton = document.getElementById('back-to-settings');
     const saveButton = document.getElementById('save-profile-btn');
-    
+
     // 프로필 필드
     const nicknameInput = document.getElementById('profile-nickname-input');
     const ageInput = document.getElementById('profile-age-input');
-    
+
     // 체크박스 그룹
     const topicCheckboxes = document.querySelectorAll('input[name="topics"]');
-    const mediaCheckboxes = document.querySelectorAll('input[name="media"]'); 
+    const mediaCheckboxes = document.querySelectorAll('input[name="media"]');
 
 
     // ----------------------------------------------------
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!userInfo) {
         alert('로그인 정보가 없습니다. 로그인 페이지로 이동합니다.');
         // profile-edit.html이 account/templates/account/에 있으므로
-        window.location.href = 'login.html'; 
-        return; 
+        window.location.href = '/account/login/';
+        return;
     }
 
     // ----------------------------------------------------
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadProfileDataIntoForm() {
         if (nicknameInput) nicknameInput.value = userInfo.nickname || '';
         if (ageInput) ageInput.value = userInfo.age || '';
-        
+
         // 성별 채우기 (Radio)
         const genderRadios = document.querySelectorAll('input[name="gender-selection"]');
         if (genderRadios && userInfo.gender) {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         // 관심 분야 채우기 (Topics Checkboxes)
         if (topicCheckboxes && userInfo.topics && Array.isArray(userInfo.topics)) {
             topicCheckboxes.forEach(checkbox => {
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         // 🚨 선호 언론사 채우기 (Media Checkboxes)
         if (mediaCheckboxes && userInfo.media && Array.isArray(userInfo.media)) {
             mediaCheckboxes.forEach(checkbox => {
@@ -92,12 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         userInfo.media = updatedMedia;
-        
+
         // 로컬 스토리지에 업데이트된 정보 저장 및 반영 완료
         localStorage.setItem('user-info', JSON.stringify(userInfo));
 
         alert('프로필이 성공적으로 수정되었습니다!');
-        
+
         // 🚨 저장 후 페이지 이동: replace()를 사용하여 뒤로가기 지옥 방지
         window.location.replace('settings-logged-in.html');
     }
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 5. 이벤트 리스너 연결
     // ----------------------------------------------------
-    
+
     // 저장 버튼 클릭 이벤트 연결
     if (saveButton) {
         saveButton.addEventListener('click', saveProfileData);
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backButton) {
         backButton.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'settings-logged-in.html'; 
+            window.location.href = 'settings-logged-in.html';
         });
     }
 

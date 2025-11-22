@@ -32,7 +32,7 @@
         </div>
 
         <div class="settings-menu">
-            <a href="profile-edit.html" class="menu-item" id="profile-edit-btn">
+            <a href="{% url 'account:profile_edit' %}" class="menu-item" id="profile-edit-btn">
                 <img src="{% static 'image/edit.png' %}" alt="프로필 수정" class="icon">
                 <span>프로필 수정</span>
                 <span class="arrow">&gt;</span>
@@ -51,7 +51,7 @@
             </a> -->
 
             <a href="delete-account.html" class="menu-item" id="delete-account-btn">
-                <img src="{% static 'bin.png' %}" alt="탈퇴하기" class="icon">
+                <img src="{% static 'image/bin.png' %}" alt="탈퇴하기" class="icon">
                 <span>탈퇴하기</span>
                 <span class="arrow">&gt;</span>
             </a>

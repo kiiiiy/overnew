@@ -1,23 +1,23 @@
 // ----- 1. 가짜 데이터 (Dummy Data) -----
 // (수정) user는 "익명N", avatar는 null (익명)
 let dummyComments = [
-    { 
-        id: 'c1', user: '익명1', avatar: null, date: 'Aug 19, 2021', 
-        text: 'AI가 수입식품 검사에 도입되면 정말 위험한 제품들을 더 빨리 걸러낼 수 있을까? 아직도 뭔가 불안한데 ...난 잘 모르겠다..', 
+    {
+        id: 'c1', user: '익명1', avatar: null, date: 'Aug 19, 2021',
+        text: 'AI가 수입식품 검사에 도입되면 정말 위험한 제품들을 더 빨리 걸러낼 수 있을까? 아직도 뭔가 불안한데 ...난 잘 모르겠다..',
         likes: 5, replies: [
             { id: 'c3', user: '익명2', avatar: null, date: 'Aug 19, 2021', text: '맞아요, 기사에서 읽었는데 심사 기간이 엄청 줄어들긴 했다던데, 혹시 놓치는 부분이 있지 않을지 걱정돼요.', likes: 0, replies: [] },
             { id: 'c4', user: '익명1', avatar: null, date: 'Aug 19, 2021', text: 'AI 버전으로 문제가 생기는 시나리오가 더 있을까요?', likes: 1, replies: [] }
-        ] 
+        ]
     },
-    { 
-        id: 'c2', user: '익명2', avatar: null, date: 'Aug 18, 2021', 
-        text: '이거 정말 필요한 기능이라고 생각합니다. 식품 안전이 중요하죠.', 
-        likes: 12, replies: [] 
+    {
+        id: 'c2', user: '익명2', avatar: null, date: 'Aug 18, 2021',
+        text: '이거 정말 필요한 기능이라고 생각합니다. 식품 안전이 중요하죠.',
+        likes: 12, replies: []
     }
 ];
 
 let likedComments = JSON.parse(localStorage.getItem('comment_likes')) || [];
-let currentSortOrder = 'oldest'; 
+let currentSortOrder = 'oldest';
 let replyTarget = null;
 
 // (NEW) 이 토론방에서 '나'의 익명 (임시)
@@ -26,7 +26,7 @@ let myAnonymousName = '익명' + (Math.floor(Math.random() * 100) + 3);
 // ----- 2. HTML 생성 함수 -----
 function createCommentHTML(commentData) {
     const isLiked = likedComments.includes(commentData.id);
-    
+
     // (NEW) avatar가 null이면 회색 원, 아니면 img 태그
     const avatarHTML = commentData.avatar
         ? `<img src="${commentData.avatar}" alt="${commentData.user}" class="comment-avatar">`
@@ -64,7 +64,7 @@ function createCommentHTML(commentData) {
 // ----- 3. 렌더링 함수 -----
 function renderComments() {
     const commentContainer = document.getElementById('comment-list');
-    
+
     dummyComments.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
@@ -96,17 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInfo = JSON.parse(localStorage.getItem('user-info'));
     if (!userInfo) {
         alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html';
+        window.location.href = 'account/login/';
         return;
     }
     // (스크린샷대로) 하단 입력창에는 '내' 아바타 표시
-    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤'; 
-    
+    document.getElementById('my-avatar').src = userInfo.avatar || 'https://via.placeholder.com/32x32/CCCCCC/FFFFFF?text=👤';
+
     // 2. 정렬 버튼 클릭
     sortBtn.addEventListener('click', () => {
         currentSortOrder = (currentSortOrder === 'oldest') ? 'newest' : 'oldest';
         sortBtn.innerHTML = `<span>⇅</span> ${currentSortOrder === 'oldest' ? '오래된순' : '최신순'}`;
-        renderComments(); 
+        renderComments();
     });
 
     // 3. '좋아요' 또는 '답글' 버튼 클릭
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3-1. '좋아요'
         if (e.target.closest('.like-btn')) {
             const likeButton = e.target.closest('.like-btn');
-            
+
             // 댓글 데이터 찾기 (메인 댓글 또는 답글에서)
             let targetComment = dummyComments.find(c => c.id === clickedCommentId);
             if (!targetComment) {
@@ -128,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (targetComment) break;
                 }
             }
-            
+
             if (targetComment) {
                 const isCurrentlyLiked = likedComments.includes(clickedCommentId);
-                
+
                 if (isCurrentlyLiked) {
                     // 좋아요 취소
                     likeButton.classList.remove('active');
@@ -143,13 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     likedComments.push(clickedCommentId);
                     targetComment.likes += 1;
                 }
-                
+
                 // 숫자 업데이트
                 const countSpan = likeButton.querySelector('.count');
                 if (countSpan) {
                     countSpan.textContent = targetComment.likes;
                 }
-                
+
                 localStorage.setItem('comment_likes', JSON.stringify(likedComments));
             }
         }
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // (수정) 답글 대상 찾기 (익명 이름)
             const parentComment = dummyComments.find(c => c.id === clickedCommentId) || dummyComments.flatMap(c => c.replies).find(r => r.id === clickedCommentId);
             replyTarget = { id: clickedCommentId, user: parentComment.user }; // user: '익명1'
-            updateCommentInputMode(); 
+            updateCommentInputMode();
         }
     });
 
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // (수정) '익명'으로 새 댓글/답글 생성
         const newComment = {
-            id: 'c' + (Math.random() * 1000), 
+            id: 'c' + (Math.random() * 1000),
             user: myAnonymousName, // (수정) '내' 익명
             avatar: null, // (수정) 익명 아바타
             date: new Date().toISOString().split('T')[0],
@@ -187,18 +187,18 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 dummyComments.forEach(c => {
                     let parentReply = c.replies.find(r => r.id === replyTarget.id);
-                    if(parentReply) parentReply.replies.push(newComment);
+                    if (parentReply) parentReply.replies.push(newComment);
                 });
             }
-            replyTarget = null; 
+            replyTarget = null;
         } else {
             // [새 댓글 등록]
             dummyComments.push(newComment);
         }
 
-        commentInput.value = ''; 
-        updateCommentInputMode(); 
-        renderComments(); 
+        commentInput.value = '';
+        updateCommentInputMode();
+        renderComments();
     });
 
     // 5. 페이지 첫 로드

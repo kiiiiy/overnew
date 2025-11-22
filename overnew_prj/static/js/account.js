@@ -48,10 +48,9 @@ function initializeNotifications() {
 
 // [Splash] index.html
 function initSplashPage() {
-    // 🚨 [수정된 로직] 2초 후에 'feed' 페이지로 이동
+    // 🚨 [수정됨] 2초 후에 'feed' 페이지로 이동. 피드 화면이 루트 경로 '/'라고 가정합니다.
     setTimeout(() => {
-        // 절대 경로로 수정 (로그인 페이지의 경로를 기준으로 추정)
-        window.location.href = '/overnew_prj/feed/templates/feed/feed.html';
+        window.location.href = '/';
     }, 2000);
 }
 
@@ -169,11 +168,11 @@ function initInfoStep5Page() {
 // [Signup Complete] signup-complete.html
 function initSignupCompletePage() {
     setTimeout(() => {
-        window.location.href = '/overnew_prj/feed/templates/feed/feed.html';
+        // 🚨 [수정됨] 완료 후 루트 경로 '/' (피드 화면)로 이동
+        window.location.href = '/';
     }, 3000);
 }
 
-// [Login] login.html
 function initLoginPage() {
     const togglePassword = document.querySelector('.input-icon');
     const passwordInput = document.getElementById('user-password');
@@ -188,51 +187,22 @@ function initLoginPage() {
     const loginForm = document.getElementById('login-form');
     const userIdInput = document.getElementById('user-id');
 
+    // 💡 [수정됨] 폼 제출 이벤트 리스너:
+    // 로컬 스토리지 기반의 임시 로그인 로직을 삭제하고, 
+    // 빈 값 체크만 남겨 Django 백엔드(views.py의 login_view)로 폼이 정상적으로 제출되도록 허용합니다.
     if (loginForm && userIdInput && passwordInput) {
         loginForm.addEventListener('submit', (event) => {
-            event.preventDefault();
             const id = userIdInput.value.trim();
             const password = passwordInput.value.trim();
 
             if (id === '' || password === '') {
+                event.preventDefault(); // 빈 값이면 제출을 막고 알림 표시
                 alert('ID와 비밀번호를 모두 입력해주세요.');
-                return;
             }
-            const savedInfo = JSON.parse(localStorage.getItem('user-info'));
-            if (savedInfo && savedInfo.userId === id && savedInfo.password === password) {
-                const sessionData = { ...savedInfo };
-                delete sessionData.password;
-                localStorage.setItem('current-session', JSON.stringify(sessionData));
-                alert(`'${savedInfo.nickname}'님, 환영합니다!`);
-                window.location.href = '../../../feed/templates/feed/feed.html';
-            } else {
-                alert('ID 또는 비밀번호가 일치하지 않습니다.');
-            }
+            // 유효성 검사를 통과하면 event.preventDefault()를 호출하지 않아 
+            // HTML 폼이 Django views.py로 POST 요청을 보냅니다.
         });
     }
-}
-
-// [Notifications] notifications.html
-function initNotificationPage() {
-    const backButton = document.getElementById('back-button');
-    if (backButton) {
-        backButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.history.back();
-        });
-    }
-
-    // 🚨 [수정!] 'current-session' 사용
-    const userInfo = JSON.parse(localStorage.getItem('current-session'));
-    if (!userInfo || !userInfo.nickname) {
-        alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html';
-        return;
-    }
-    document.querySelectorAll('.username').forEach(element => {
-        element.textContent = userInfo.nickname;
-    });
-    initializeNotifications();
 }
 
 // [Settings - Logged In] settings-logged-in.html
@@ -241,19 +211,14 @@ function initSettingsLoggedInPage() {
     if (backButton) {
         backButton.addEventListener('click', (e) => {
             e.preventDefault();
-            const feedUrl = '../../../feed/templates/feed/feed.html';
-
-            window.location.href = feedUrl;
+            // 🚨 [수정됨] 피드 화면(루트 경로 '/')으로 이동
+            window.location.href = '/';
         });
     }
 
-    // 🚨 [수정!] 'current-session' 사용
+    // 🚨 'current-session' 사용
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
-    if (!userInfo) {
-        alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'settings-logged-out.html';
-        return;
-    }
+
 
     const nicknameEl = document.getElementById('user-nickname');
     const tagsEl = document.getElementById('user-tags');
@@ -271,7 +236,9 @@ function initSettingsLoggedInPage() {
             if (confirm('정말 로그아웃 하시겠습니까?')) {
                 localStorage.removeItem('current-session');
                 alert('로그아웃되었습니다.');
-                window.location.href = 'login.html';
+
+                // ✅ 이 부분을 수정합니다: Django settings 뷰 경로(절대 경로)로 이동
+                window.location.href = '/account/settings/';
             }
         });
     }
@@ -280,14 +247,14 @@ function initSettingsLoggedInPage() {
     if (profileEditBtn) {
         profileEditBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'profile-edit.html';
+            window.location.href = '/account/profile/edit/';
         });
     }
     const notificationsBtn = document.getElementById('notifications-btn');
     if (notificationsBtn) {
         notificationsBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'notifications.html';
+            window.location.href = '/account/notifications/';
         });
     }
     const deleteAccountBtn = document.getElementById('delete-account-btn');
@@ -298,7 +265,7 @@ function initSettingsLoggedInPage() {
                 localStorage.removeItem('user-info');
                 localStorage.removeItem('current-session');
                 alert('계정이 성공적으로 삭제되었습니다.');
-                window.location.href = 'login.html';
+                window.location.href = '/account/login/';
             }
         });
     }
@@ -344,74 +311,5 @@ document.addEventListener('DOMContentLoaded', () => {
         initSettingsLoggedOutPage();
     } else if (bodyId === 'page-signup-complete') {
         initSignupCompletePage();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 🚨 기존의 모든 이벤트 리스너 코드 (로그아웃, 뒤로가기 등)는 여기에 포함되어 있다고 가정합니다.
-
-    // 1. 사용자 정보를 불러와 화면에 표시하는 함수
-    function displayUserInfo() {
-        // 로컬 스토리지에서 최신 정보 로드
-        const userInfo = JSON.parse(localStorage.getItem('user-info') || 'null');
-
-        // 설정 페이지 HTML 요소 ID (settings-logged-in.html에 있어야 함)
-        const nicknameEl = document.getElementById('user-nickname');
-        const tagsEl = document.getElementById('user-tags');
-
-        if (userInfo) {
-            // A. 닉네임 업데이트
-            if (nicknameEl) {
-                // 저장된 닉네임이 있으면 표시, 없으면 기본값 표시
-                nicknameEl.textContent = userInfo.nickname || 'OVERNEW 사용자';
-            }
-
-            // B. 관심 분야 태그 업데이트
-            if (tagsEl && userInfo.topics && Array.isArray(userInfo.topics)) {
-                // ['정치', '경제'] -> '#정치 #경제' 문자열로 변환하여 표시
-                tagsEl.textContent = userInfo.topics.map(t => `#${t}`).join(' ');
-            } else if (tagsEl) {
-                tagsEl.textContent = '관심 분야 미설정';
-            }
-        }
-
-        // 🚨 (옵션) 로그인 정보가 없을 경우 처리 (이 페이지는 로그인 상태여야 함)
-        if (!userInfo) {
-            // 닉네임 영역 등에 "로그인 필요" 등의 메시지를 표시하거나
-            // window.location.href = 'login.html'; 로 리다이렉션할 수 있습니다.
-        }
-    }
-
-    // 2. 페이지 로드 시 정보 표시 함수를 실행
-    // settings-logged-in.html이 로드될 때마다 이 함수가 실행되어 최신 정보를 표시합니다.
-    displayUserInfo();
-
-    // ----------------------------------------------------
-    // 3. 로그아웃 버튼 이벤트 리스너 (기존 코드)
-    // ----------------------------------------------------
-    const logoutButton = document.getElementById('logout-button');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('정말 로그아웃 하시겠습니까?')) {
-                // 🚨 수정: 등록 정보(user-info)는 보존하고 세션만 삭제합니다.
-                localStorage.removeItem('current-session');
-                alert('로그아웃되었습니다.');
-                // 🚨 수정: settings-logged-out.html로 이동합니다. (login.html은 settings-logged-out에서 다시 연결될 수 있음)
-                window.location.href = 'settings-logged-out.html';
-            }
-        });
-    }
-
-    // ----------------------------------------------------
-    // 4. 프로필 수정 버튼 이벤트 리스너 (settings -> profile-edit으로 이동)
-    // ----------------------------------------------------
-    const profileEditBtn = document.getElementById('profile-edit-btn');
-    if (profileEditBtn) {
-        profileEditBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            // 🚨 경로 수정: profile-edit.html로 이동
-            window.location.href = 'profile-edit.html';
-        });
     }
 });

@@ -1,71 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-<<<<<<< HEAD=======>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>프로필 - OVERNEW</title>
-        <<<<<<< HEAD <link rel="stylesheet" href="../../../static/css/style.css">
-    </head>
-
-    <body class="with-fixed-nav">
-        <header class="main-header">
-            <!-- 뒤로가기 버튼 -->
-            <button type="button" class="icon-btn menu-btn" id="back-button">
-                <span>&lt;</span>
-            </button>
-
-            <h1 class="logo header-logo">OVERNEW</h1>
-
-            <!-- 오른쪽에는 빈 공간 (알람 제거) -->
-            <div style="width:40px;"></div>
-        </header>
-        <main class="container" style="padding-top: 20px;">
-            <div class="archive-profile-card profile-detail-card">
-                <img src="avatar-placeholder.png" alt="Profile Avatar" class="profile-avatar" id="profile-avatar">
-                <div class="profile-info">
-                    <span class="profile-name" id="profile-nickname">...</span>
-                    <span class="profile-tags" id="profile-tags">...</span>
-                    <span class="profile-followers" id="profile-followers">...</span>
-                </div>
-                <button class="profile-follow-btn" id="profile-follow-btn" data-userid="">
-                    팔로우
-                </button>
-            </div>
-
-            <div class="view-toggle">
-                <input type="radio" id="tab-scrap" name="profile-tab" value="scrap" checked>
-                <label for="tab-scrap">스크랩</label>
-                <input type="radio" id="tab-bookmark" name="profile-tab" value="bookmark">
-                <label for="tab-bookmark">북마크</label>
-            </div>
-
-            <div class="keyword-list">
-                <span class="keyword-tag active" data-topic="politics">정치</span>
-                <span class="keyword-tag" data-topic="economy">경제</span>
-                <span class="keyword-tag" data-topic="society">사회</span>
-                <span class="keyword-tag" data-topic="culture">생활/문화</span>
-                <span class="keyword-tag" data-topic="it">IT/과학</span>
-                <span class="keyword-tag" data-topic="world">세계</span>
-            </div>
-
-            <div class="tab-content" id="content-scrap">
-                <div class="article-list" id="profile-scrap-list"></div>
-            </div>
-
-            <div class="tab-content" id="content-bookmark" style="display: none;">
-                <div class="article-list" id="profile-bookmark-list"></div>
-            </div>
-
-        </main>
-
-        <!-- JS 분리 -->
-        <script src="../../../static/js/archive.js"></script>
-    </body>
-
-</html>
-=======
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
@@ -116,19 +50,19 @@
     </main>
 
     <nav class="bottom-nav">
-        <a href="feed.html" class="nav-item active">
+        <a href="{% url 'feed' %}" class="nav-item active">
             <div class="nav-icon-wrapper"><span class="nav-icon">◆</span></div>
             <span class="nav-label">피드</span>
         </a>
-        <a href="archive.html" class="nav-item">
+        <a href="{% url 'archive:home' %}" class="nav-item">
             <div class="nav-icon-wrapper"><span class="nav-icon">●</span></div>
             <span class="nav-label">아카이브</span>
         </a>
-        <a href="main.html" class="nav-item">
+        <a href="{% url 'recommend:main' %}" class="nav-item">
             <div class="nav-icon-wrapper"><span class="nav-icon">▲</span></div>
             <span class="nav-label">추천</span>
         </a>
-        <a href="community.html" class="nav-item">
+        <a href="{% url 'discussion:community' %}" class="nav-item">
             <div class="nav-icon-wrapper"><span class="nav-icon">◐</span></div>
             <span class="nav-label">커뮤니티</span>
         </a>
@@ -139,4 +73,3 @@
 </body>
 
 </html>
->>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

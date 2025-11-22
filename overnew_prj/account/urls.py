@@ -4,7 +4,7 @@ from . import views
 app_name = "account"
 
 urlpatterns = [
-    path("onboarding/", views.splash, name="splash"),
+    path("", views.splash, name="splash"),
 
     path("api/send-email-code/", views.send_signup_verification_code, name="send_email_code"),
     path("api/verify-email-code/", views.verify_signup_verification_code, name="verify_email_code"),
@@ -18,6 +18,7 @@ urlpatterns = [
     
 
     path("api/signup/", views.api_signup, name="api_signup"),
+    path("api/login/", views.api_login, name="api_login"),
 
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
@@ -25,5 +26,4 @@ urlpatterns = [
     path("settings/", views.settings_view, name="settings"),
     path("profile/edit/", views.profile_edit_view, name="profile_edit"),
 
-    path("notifications/", views.notifications_view, name="notifications"),
 ]

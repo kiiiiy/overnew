@@ -85,7 +85,18 @@ class Scrap(models.Model):
     class Meta:
         unique_together = ('user', 'news')
 
+class Like(models.Model):
+    """유저가 기사에 '좋아요'를 누르는 것을 기록하는 모델"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    news = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        # 💡 유저 한 명이 한 기사에 한 번만 좋아요를 누를 수 있도록 설정
+        unique_together = ('user', 'news')
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.news.title[:20]}..."
 # 🚨 NameError 해결 (User -> settings.AUTH_USER_MODEL)
 class Discussion(models.Model):
     news = models.ForeignKey(Article, on_delete=models.CASCADE)

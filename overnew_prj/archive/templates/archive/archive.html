@@ -1,11 +1,89 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="ko">
+=======
 {% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아카이브 - OVERNEW</title>
+<<<<<<< HEAD
+    <link rel="stylesheet" href="../../../static/css/style.css">
+</head>
+<body class="with-fixed-nav"> 
+<header class="main-header">
+    <button type="button" class="icon-btn menu-btn" id="settings-menu-btn">
+        <img src="../../../static/image/hamburger.png" alt="메뉴" class="header-icon">
+    </button>
+
+    <h1 class="logo header-logo">OVERNEW</h1>
+
+    <button type="button" class="icon-btn bell-btn" id="notifications-btn">
+        <img src="../../../static/image/bell.png" alt="알림" style="width: 26px; height: 26px; vertical-align: middle;">
+    </button>
+</header>
+
+<a href="create-scrap.html" class="floating-action-button"><span>✎</span></a>
+
+<main class="container">
+
+    <div class="archive-profile-card">
+        <img src="../../../static/images/avatar-placeholder.png" alt="Profile Avatar" class="profile-avatar">
+        <div class="profile-info">
+            <span class="profile-name" id="user-nickname">...</span>
+            <span class="profile-tags" id="user-tags">...</span>
+            <span class="profile-followers" id="user-followers">...</span>
+        </div>
+    </div>
+
+    <div class="view-toggle three-tabs">
+        <input type="radio" id="tab-scrap" name="archive-tab" value="scrap" checked>
+        <label for="tab-scrap">스크랩</label>
+
+        <input type="radio" id="tab-bookmark" name="archive-tab" value="bookmark">
+        <label for="tab-bookmark">북마크</label>
+
+        <input type="radio" id="tab-following" name="archive-tab" value="following">
+        <label for="tab-following">팔로잉</label>
+    </div>
+
+    <div id="scrap-bookmark-content">
+        <div class="keyword-list">
+            <span class="keyword-tag active" data-topic="politics">정치</span>
+            <span class="keyword-tag" data-topic="economy">경제</span>
+            <span class="keyword-tag" data-topic="society">사회</span>
+            <span class="keyword-tag" data-topic="culture">생활/문화</span>
+            <span class="keyword-tag" data-topic="it">IT/과학</span>
+            <span class="keyword-tag" data-topic="world">세계</span>
+            <span class="keyword-tag" data-topic="enter">연예</span>
+            <span class="keyword-tag" data-topic="sport">스포츠</span>
+        </div>
+
+        <div class="article-list" id="feed-scrap"></div>
+        <div class="article-list" id="feed-bookmark" style="display: none;"></div>
+    </div>
+
+    <div id="following-content" style="display: none;">
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-user" placeholder="아이디 검색">
+        </div>
+        <div class="user-list" id="following-list"></div>
+    </div>
+
+</main>
+<nav class="bottom-nav"></nav>
+
+    <!-- JS 파일 불러오기 -->
+<script src="../../../static/js/nav.js"></script>
+<script src="../../../static/js/archive.js"></script>
+</body>
+</html>
+=======
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
@@ -75,3 +153,4 @@
     <!-- JS 파일 불러오기 -->
     <script src="{% static 'js/nav.js' %}"></script>
     <script src="{% static 'js/archive.js' %}"></script>
+>>>>>>> b2c985c2b2b3249d9e0e669bd4007e9398b0a982

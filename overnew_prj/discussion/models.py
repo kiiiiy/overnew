@@ -1,13 +1,14 @@
 from django.db import models
 from archive.models import *
 from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 
 class DiscussionRoom(models.Model):
     room_id = models.AutoField(primary_key=True)
     start_time = models.DateTimeField()
-    finish_time = models.DateTimeField(null=True, blank=True)
+    finish_time = models.DateTimeField(default=lambda: timezone.now() + timedelta(days=7))
     article = models.OneToOneField(Article, on_delete=models.CASCADE)
     is_anonymous = models.BooleanField(default=False)
 

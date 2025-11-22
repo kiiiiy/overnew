@@ -155,12 +155,25 @@ def discussion_list(request):
 
 
 def main(request):
-    # id 대신 pk 또는 nc_id 사용
     categories = ArchiveCategory.objects.all().order_by('pk')
-    # 또는 categories = ArchiveCategory.objects.all().order_by('nc_id')
+
+    pinned_rooms = []
+    if request.user.is_authenticated:
+        now = timezone.now()
+        pinned_rooms = (
+            DiscussionRoom.objects
+            .filter(
+                bookmark=request.user,      # 내가 핀 한 방
+                start_time__lte=now,
+                finish_time__gte=now,
+            )
+            .select_related('article', 'article__media', 'article__nc')
+            .order_by('-room_id')
+        )
 
     return render(request, 'discussion/community.html', {
         'categories': categories,
+        'pinned_rooms': pinned_rooms,
     })
 
 

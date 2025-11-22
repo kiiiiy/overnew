@@ -25,26 +25,46 @@
 
 <main class="container">
 
-    <div id="pinned-discussion-box" class="pinned-discussion-box">
+    <div id="pinned-discussions" class="pinned-discussion-box">
     {% if pinned_rooms %}
-        {% for room in pinned_rooms %}
-            <a href="{% url 'discussion:choose_mode' room.article.article_id %}"
-               class="pinned-card">
-                <div class="pinned-card-inner">
-                    <span class="pinned-badge">📌 고정된 토론</span>
-                    <div class="pinned-title">{{ room.article.title }}</div>
-                    <div class="pinned-meta">
-                        <span>{{ room.article.nc }}</span>
-                        <span>{{ room.article.media }}</span>
-                        <span>댓글 {{ room.comment_count }}개</span>
+        <div class="pinned-header">
+            <span class="pinned-header-icon">📌</span>
+            <span class="pinned-header-title">고정된 토론</span>
+        </div>
+
+        <div class="pinned-list">
+            {% for room in pinned_rooms %}
+                <a href="{% url 'discussion:discussion_detail' room.room_id %}"
+                   class="pinned-card">
+                    <div class="pinned-card-inner">
+                        <div class="pinned-chip-row">
+                            <span class="pinned-chip pinned-chip-category">
+                                {{ room.article.nc }}
+                            </span>
+                            <span class="pinned-chip pinned-chip-media">
+                                {{ room.article.media }}
+                            </span>
+                            <span class="pinned-chip pinned-chip-fixed">
+                                고정됨
+                            </span>
+                        </div>
+
+                        <h3 class="pinned-article-title">
+                            {{ room.article.title }}
+                        </h3>
+
+                        <div class="pinned-meta-row">
+                            <span class="pinned-meta">
+                                🕒 {{ room.finish_time|date:"n/j" }} 종료
+                            </span>
+                            <span class="pinned-meta">
+                                💬 {{ room.comment_set.count }}개 댓글
+                            </span>
+                        </div>
                     </div>
-                </div>
-            </a>
-        {% endfor %}
-    {% else %}
-        <p class="pinned-empty-text">
-            아직 고정한 토론방이 없습니다.
-        </p>
+                </a>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
 

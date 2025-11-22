@@ -83,3 +83,146 @@
 .pinned-btn.pinned {
     background-color: #d8bfd8; /* 연한 보라색 */
 }
+
+/* ===== 댓글 입력 바 하단 고정 ===== */
+.comment-input-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    padding: 10px 12px;
+    background: #ffffff;
+    border-top: 1px solid #ddd;
+
+    z-index: 9999;   /* 항상 위에 보이게 */
+}
+
+/* 입력창 안 겹치게 본문 아래 여백 확보 */
+.with-fixed-comment-bar main {
+    padding-bottom: 90px !important;
+}
+
+/* 댓글 입력창 내부 요소 정리 */
+.comment-input-bar input[type="text"] {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    margin: 0 10px;
+}
+
+.comment-submit-btn {
+    background: #7b2ff7;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* ================== 고정된 토론 박스 ================== */
+
+.pinned-discussion-box {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    background: #ffffff;              /* 약간 보라빛 배경 */
+    border-radius: 18px;
+    border: 1px solid #ffffff;
+}
+
+.pinned-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.pinned-header-icon {
+    font-size: 18px;
+}
+
+.pinned-header-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #3b247a;
+}
+
+/* 카드 전체 (클릭 영역) */
+
+.pinned-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pinned-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.pinned-card-inner {
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(123, 47, 247, 0.1);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+
+.pinned-card-inner:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* 상단 태그들 */
+
+.pinned-chip-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.pinned-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.pinned-chip-category {
+    background: #eef3ff;
+    color: #4353b3;
+}
+
+.pinned-chip-media {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.pinned-chip-fixed {
+    background: #fdf2ff;
+    color: #7b48aa;
+}
+
+/* 제목 & 메타 */
+
+.pinned-article-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2b2140;
+    margin: 4px 0 6px;
+    line-height: 1.4;
+}
+
+.pinned-meta-row {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: #94a3b8;
+}

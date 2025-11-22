@@ -273,13 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 뒤로가기 버튼 (data-back-url 있으면 그걸 우선)
-  if (backButton) {
-    const backUrl = backButton.dataset.backUrl || "/community/main/";
-    backButton.addEventListener("click", () => {
-      console.log("[realname] back to:", backUrl);
-      window.location.href = backUrl;
-    });
-  }
+  backButton.addEventListener("click", () => {
+    if (document.referrer && document.referrer !== "") {
+        history.back();
+    } else {
+        // 직접 주소로 들어온 경우 안전한 fallback
+        window.location.href = "/community/main/";
+    }
+});
 
   // 핀(고정) – 서버 북마크(form) 우선이라 JS에서 추가로 안 해도 OK
   if (pinBtn && pinnedBox) {

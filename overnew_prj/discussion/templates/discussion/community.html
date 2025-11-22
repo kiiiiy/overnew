@@ -25,7 +25,28 @@
 
 <main class="container">
 
-    <div id="pinned-discussions" class="pinned-discussion-box"></div>
+    <div id="pinned-discussion-box" class="pinned-discussion-box">
+    {% if pinned_rooms %}
+        {% for room in pinned_rooms %}
+            <a href="{% url 'discussion:choose_mode' room.article.article_id %}"
+               class="pinned-card">
+                <div class="pinned-card-inner">
+                    <span class="pinned-badge">📌 고정된 토론</span>
+                    <div class="pinned-title">{{ room.article.title }}</div>
+                    <div class="pinned-meta">
+                        <span>{{ room.article.nc }}</span>
+                        <span>{{ room.article.media }}</span>
+                        <span>댓글 {{ room.comment_count }}개</span>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="pinned-empty-text">
+            아직 고정한 토론방이 없습니다.
+        </p>
+    {% endif %}
+</div>
 
     <div class="keyword-list">
         {% for c in categories %}

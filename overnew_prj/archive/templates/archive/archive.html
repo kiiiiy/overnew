@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아카이브 - OVERNEW</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="../../../static/css/style.css">
 </head>
 <body class="with-fixed-nav"> 
 <header class="main-header">
@@ -15,13 +15,11 @@
 
     <h1 class="logo header-logo">OVERNEW</h1>
 
-    <button type="button" class="icon-btn bell-btn" id="notifications-btn">
-        <img src="../../../static/image/bell.png" alt="알림" class="header-icon">
-    </button>
+    <div style="width:40px;"></div>
 </header>
 
 <!-- 플로팅 버튼 -->
-<a href="{% url 'create_scrap' %}" class="floating-action-button"><span>✎</span></a>
+<a href="../../../static/create_scrap" class="floating-action-button"><span>✎</span></a>
 
 <main class="container">
     <div class="archive-profile-card">

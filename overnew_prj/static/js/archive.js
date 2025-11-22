@@ -288,39 +288,42 @@ function initScrapFeature() {
     const sourceInput = document.getElementById('article-source');
     const clearSourceBtn = document.getElementById('clear-source-btn');
 
+    // 필수 요소가 없으면 실행 중단
     if (!topicButtons.length || !linkInput) return;
 
+    // ★ 수정 1: 단일 선택을 위한 변수 선언
     let selectedTopic = null;
 
+    // ★ 수정 2: 토픽 버튼 클릭 이벤트 (하나만 선택되도록 변경)
     topicButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const isActive = button.classList.toggle('active'); // 토글로 active 상태 변경
+        button.addEventListener('click', () => {
+            // 1. 모든 버튼에서 active 클래스 제거 (초기화)
+            topicButtons.forEach(btn => btn.classList.remove('active'));
 
-        // selectedTopic 배열로 관리
-        if (!window.selectedTopics) window.selectedTopics = [];
-        
-        const topic = button.dataset.topic;
-        if (isActive) {
-            if (!window.selectedTopics.includes(topic)) window.selectedTopics.push(topic);
-        } else {
-            window.selectedTopics = window.selectedTopics.filter(t => t !== topic);
-        }
+            // 2. 클릭한 버튼에만 active 추가
+            button.classList.add('active');
 
-        console.log('선택된 분야:', window.selectedTopics);
+            // 3. 변수에 값 저장 (dataset.topic 값)
+            selectedTopic = button.dataset.topic;
+            
+            console.log('선택된 분야:', selectedTopic);
+        });
     });
-});
 
-
+    // 입력창 지우기 버튼 기능
     if (clearSourceBtn) clearSourceBtn.addEventListener('click', () => { sourceInput.value = ''; });
     if (clearLinkBtn) clearLinkBtn.addEventListener('click', () => { linkInput.value = ''; });
 
+    // 완료(Submit) 버튼 클릭 이벤트
     submitBtn.addEventListener('click', () => {
         const linkValue = linkInput.value.trim();
         const sourceValue = sourceInput ? sourceInput.value.trim() : '외부기사';
 
+        // ★ 수정 3: selectedTopic 변수 확인 (이제 정상 작동함)
         if (!selectedTopic) { alert('기사의 분야(토픽)를 1개 선택해주세요.'); return; }
         if (!linkValue) { alert('기사 링크를 입력해주세요.'); return; }
 
+        // 로컬 스토리지 저장 로직
         let savedScraps = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
 
         const categoryMap = {
@@ -334,16 +337,18 @@ function initScrapFeature() {
             title: linkValue,
             views: '0k',
             time: '방금 전',
-            image: 'image-placeholder.jpg'
+            image: 'image-placeholder.jpg' // 필요시 이미지 처리 로직 추가
         };
 
         if (!savedScraps[selectedTopic]) savedScraps[selectedTopic] = [];
+        // 최신순 저장을 위해 unshift 사용
         savedScraps[selectedTopic].unshift(newArticle);
+        
         localStorage.setItem('scrapped_articles', JSON.stringify(savedScraps));
 
         alert('기사가 스크랩되었습니다!');
+        // 페이지 새로고침 혹은 이동
         window.location.href = '/archive/scrap/create/';
-
     });
 }
 

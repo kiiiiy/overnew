@@ -1,17 +1,17 @@
-# archive/views.py
+# archive/views.py (AttributeError 해결을 위해 fetch_article_preview 재배치)
 
 import json
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, get_object_or_404 # 🌟 수정: get_object_or_404 import
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.apps import apps
 from .utils import fetch_article_metadata
 
 User = get_user_model() 
 
-# 🌟 수정: user_id 대신 id 필드로 검색하도록 수정합니다.
+# 🌟 user_id 대신 id 필드로 검색하도록 수정합니다.
 def get_user_or_404(user_id: int):
     try:
         return User.objects.get(id=user_id)
@@ -62,7 +62,7 @@ def upload_article(request):
     media = None
     if media_id:
         try:
-            media = ArchiveMedia.objects.get(media_id=media_id)
+            media = ArchiveMedia.objects.get(id=media_id) # ID 필드를 사용하도록 가정
         except ArchiveMedia.DoesNotExist:
             return JsonResponse({"error": "존재하지 않는 언론사입니다."}, status=400)
     elif media_name:
@@ -104,6 +104,45 @@ def upload_article(request):
         "created": created,
     })
 
+
+# ------------------------------------------------------------------
+# 🌟 [재배치] fetch_article_preview를 앞쪽 API 영역으로 이동 (오류 해결 목적)
+# ------------------------------------------------------------------
+@csrf_exempt
+@require_POST
+def fetch_article_preview(request):
+    """
+    URL을 받아 메타데이터(제목, 이미지, 언론사 등)를 추출하여 반환합니다.
+    """
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON 형식이 아닙니다."}, status=400)
+
+    url = data.get("url")
+
+    if not url:
+        return JsonResponse({"error": "url은 필수입니다."}, status=400)
+
+    # 1) 메타데이터 크롤링
+    try:
+        meta = fetch_article_metadata(url)
+    except Exception as e:
+        # 크롤링 실패 시 오류 메시지와 함께 빈 객체 반환
+        print(f"Metadata fetch failed for {url}: {e}")
+        return JsonResponse({"error": f"기사 정보를 가져오는 데 실패했습니다: {e}"}, status=500)
+
+    # 2) 응답: 프론트엔드가 미리보기에 사용할 정보만 반환
+    return JsonResponse({
+        "title": meta.get("title", "제목 없음"),
+        "summary": meta.get("summary", ""),
+        "image": meta.get("image", ""),
+        "url": url,
+        "media_name_from_meta": meta.get("media_name", "출처 불명"),
+    })
+# ------------------------------------------------------------------
+
+
 # --- 스크랩 리스트 API ---
 @require_GET
 def scrap_list(request, user_id: int):
@@ -118,7 +157,7 @@ def scrap_list(request, user_id: int):
         return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
 
     try:
-        user = User.objects.get(id=user_id) # 🌟 수정: user_id 필드 대신 id 필드로 검색
+        user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return JsonResponse({"error": "해당 사용자를 찾을 수 없습니다"}, status=404)
 
@@ -171,7 +210,22 @@ def ping(request):
     return HttpResponse("archive API OK")
 
 def archive_main(request):
-    return render(request, "archive/archive.html")
+    # 로그인 여부와 관계없이 접근 허용
+    current_user = request.user
+    
+    if not current_user.is_authenticated:
+        try:
+            current_user = User.objects.all().first()
+        except Exception:
+            current_user = None 
+            
+    context = {}
+    if current_user:
+        context['current_user_id'] = current_user.id
+        context['current_user_nickname'] = current_user.nickname if hasattr(current_user, 'nickname') else current_user.username
+    
+    return render(request, "archive/archive.html", context)
+
 
 def article_detail(request):
     return render(request, "archive/article-detail.html")
@@ -182,38 +236,6 @@ def create_scrap(request):
 def profile_detail(request):
     return render(request, "archive/profile-detail.html")
 
-@csrf_exempt
-@require_POST
-def fetch_article_preview(request):
-    """
-    URL을 받아 메타데이터(제목, 이미지, 언론사 등)를 추출하여 반환합니다.
-    """
-    try:
-        data = json.loads(request.body.decode("utf-8"))
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "JSON 형식이 아닙니다."}, status=400)
-
-    url = data.get("url")
-
-    if not url:
-        return JsonResponse({"error": "url은 필수입니다."}, status=400)
-
-    # 1) 메타데이터 크롤링
-    try:
-        meta = fetch_article_metadata(url)
-    except Exception as e:
-        # 크롤링 실패 시 오류 메시지와 함께 빈 객체 반환
-        print(f"Metadata fetch failed for {url}: {e}")
-        return JsonResponse({"error": f"기사 정보를 가져오는 데 실패했습니다: {e}"}, status=500)
-
-    # 2) 응답: 프론트엔드가 미리보기에 사용할 정보만 반환
-    return JsonResponse({
-        "title": meta.get("title", "제목 없음"),
-        "summary": meta.get("summary", ""),
-        "image": meta.get("image", ""),
-        "url": url,
-        "media_name_from_meta": meta.get("media_name", "출처 불명"),
-    })
 
 # 🌟 추가: 팔로우/언팔로우 처리 API
 @csrf_exempt
@@ -236,7 +258,8 @@ def follow_toggle(request):
         return JsonResponse({"error": "follower_id와 following_id는 필수입니다."}, status=400)
 
     try:
-        Follow = apps.get_model('archive', 'Follow')
+        # Follow 모델이 archive 앱에 있다고 가정합니다.
+        Follow = apps.get_model('archive', 'Follow') 
         User = get_user_model()
     except LookupError as e:
         return JsonResponse({"error": f"모델 로드 실패: {e}"}, status=500)
@@ -291,12 +314,10 @@ def get_following_list(request, user_id: int):
     for relation in following_qs:
         followed_user = relation.following
         
-        # 🚨 중요: 여기서 'tags'와 'avatar'는 User 모델에 실제 필드가 있어야 합니다.
-        # 현재 코드에서는 해당 필드가 없으므로, 필요하다면 User 모델을 확장해야 합니다.
         following_data.append({
             "id": followed_user.id,
-            "nickname": followed_user.nickname, # User 모델에 nickname 필드가 있다고 가정
-            "tags": ["IT/과학", "문화"], # 임시 데이터 (실제는 UserNews, UserMedia 모델을 통해 가져와야 함)
+            "nickname": followed_user.nickname,
+            "tags": ["IT/과학", "문화"], # 임시 데이터 (실제 데이터 연동 필요)
             "avatar": "/static/image/avatar-placeholder.png",
         })
         

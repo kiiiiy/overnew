@@ -1,52 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기사 스크랩 - OVERNEW</title>
     <link rel="stylesheet" href="../../../static/css/style.css">
 </head>
-<body class="with-fixed-nav"> 
-<header class="main-header">
-    <!-- 뒤로가기 버튼 -->
-    <button type="button" class="icon-btn menu-btn" id="back-button">
-        <span>&lt;</span>
-    </button>
 
-    <h1 class="logo header-logo">OVERNEW</h1>
+<body class="with-fixed-nav">
+    <header class="main-header">
+        <!-- 뒤로가기 버튼 -->
+        <button type="button" class="icon-btn menu-btn" id="back-button">
+            <span>&lt;</span>
+        </button>
 
-    <!-- 오른쪽에는 빈 공간 (알람 제거) -->
-    <div style="width:40px;"></div>
-</header>
+        <h1 class="logo header-logo">OVERNEW</h1>
 
-<main class="container">
-    <h3 class="subtitle" style="margin-top: 20px; font-size: 20px;">
-        스크랩하는 기사의 분야와 언론사 및<br>해당 기사의 링크를 작성해주세요.
-    </h3>
+        <!-- 오른쪽에는 빈 공간 (알람 제거) -->
+        <div style="width:40px;"></div>
+    </header>
 
-    <div class="topic-grid">
-        <button type="button" class="topic-grid-button" data-topic="politics">정치</button>
-        <button type="button" class="topic-grid-button" data-topic="economy">경제</button>
-        <button type="button" class="topic-grid-button" data-topic="society">사회</button>
-        <button type="button" class="topic-grid-button" data-topic="culture">생활/문화</button>
-        <button type="button" class="topic-grid-button" data-topic="it">IT/과학</button>
-        <button type="button" class="topic-grid-button" data-topic="world">세계</button>
-        <button type="button" class="topic-grid-button" data-topic="enter">연예</button>
-        <button type="button" class="topic-grid-button" data-topic="sport">스포츠</button>
-    </div>
-    
-    <form class="info-form" style="margin-top: 30px;">
-        <div class="form-group input-with-clear"> 
-            <input type="text" id="article-source" placeholder="언론사를 입력해주세요">
-            <button type="button" class="clear-btn" id="clear-source-btn">×</button>
+    <main class="container">
+        <h3 class="subtitle" style="margin-top: 20px; font-size: 20px;">
+            스크랩하는 기사의 분야와 언론사 및<br>해당 기사의 링크를 작성해주세요.
+        </h3>
+
+        <div class="topic-grid">
+            <button type="button" class="topic-grid-button" data-topic="politics">정치</button>
+            <button type="button" class="topic-grid-button" data-topic="economy">경제</button>
+            <button type="button" class="topic-grid-button" data-topic="society">사회</button>
+            <button type="button" class="topic-grid-button" data-topic="culture">생활/문화</button>
+            <button type="button" class="topic-grid-button" data-topic="it">IT/과학</button>
+            <button type="button" class="topic-grid-button" data-topic="world">세계</button>
+            <button type="button" class="topic-grid-button" data-topic="enter">연예</button>
+            <button type="button" class="topic-grid-button" data-topic="sport">스포츠</button>
         </div>
-        <div class="form-group input-with-clear">
-            <input type="url" id="article-link" placeholder="기사 링크를 입력해주세요">
-            <button type="button" class="clear-btn" id="clear-link-btn">×</button>
-        </div>
-    </form>
-</main>
 
-<button type="button" class="next-button" id="submit-scrap-btn">기사 스크랩하기</button>
+        <form class="info-form" style="margin-top: 30px;">
+            <div class="form-group input-with-clear">
+                <input type="text" id="article-source" placeholder="언론사를 입력해주세요">
+                <button type="button" class="clear-btn" id="clear-source-btn">×</button>
+            </div>
+            <div class="form-group input-with-clear">
+                <input type="url" id="article-link" placeholder="기사 링크를 입력해주세요">
+                <button type="button" class="clear-btn" id="clear-link-btn">×</button>
+            </div>
+        </form>
+    </main>
 
-<script src="../../../static/js/archive.js"></script>
+    <button type="button" class="next-button" id="submit-scrap-btn">기사 스크랩하기</button>
+
+    <script src="../../../static/js/archive.js"></script>

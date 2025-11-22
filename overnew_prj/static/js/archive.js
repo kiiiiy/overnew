@@ -1,152 +1,315 @@
-// ----- 1. Dummy Data -----
-const dummyScrapData = {
-    scrap: {
-        politics: [{ category: '정치', source: '서울신문', title: "'12·3' 월담 언급한 정청래…", views: '31.9k', time: '10 hours ago', image: 'jung-chung-rae.jpg' }],
-        economy: [{ category: '경제', source: 'SBS', title: 'APEC 효과?...', views: '32.6k', time: '4 hours ago', image: 'apec-market.jpg' }],
-        society: [],
-        it: [],
-        culture: [{ category: '생활/문화', source: '문화일보', title: '생활 문화 뉴스입니다.', views: '1.2k', time: '1일 전', image: 'image-placeholder.jpg' }], // ⭐ 임시 데이터 추가
-        world: [{ category: '세계', source: 'CNN', title: '해외 주요 소식입니다.', views: '5.5k', time: '5시간 전', image: 'image-placeholder.jpg' }],     // ⭐ 임시 데이터 추가
-        enter: [], sport: []
-    },
-    bookmark: {
-        politics: [{ category: '정치', source: '뉴스웍스', title: "북마크한 정치 기사입니다.", views: '31.9k', time: '5 hours ago', image: 'lg-cns-award.jpg' }],
-        economy: [], society: [], it: [],
-        culture: [], // ⭐ 임시 데이터 필요 시 추가
-        world: [],   // ⭐ 임시 데이터 필요 시 추가
-        enter: [], sport: []
-    }
+// ============================================================
+// 1. 데이터 영역
+// ============================================================
+
+// [내 데이터] - 아카이브 메인 '스크랩/북마크' 탭용 (더미 데이터 삭제됨)
+const dummyMyData = {
+    scrap: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] },
+    bookmark: { politics: [], economy: [], society: [], it: [], culture: [], world: [], enter: [], sport: [] }
 };
 
-const dummyAllUsers = [
-    { id: 'ByeWind', nickname: 'ByeWind', tags: ['IT/과학', '문화'], isFollowing: true, avatar: 'avatar-placeholder.png' },
-    { id: 'Natali', nickname: 'Natali Craig', tags: ['경제', 'it'], isFollowing: true, avatar: 'avatar-placeholder.png' },
-    { id: 'Drew', nickname: 'Drew Cano', tags: ['문화'], isFollowing: true, avatar: 'avatar-placeholder.png' },
-    { id: 'Orlando', nickname: 'Orlando Diggs', tags: ['경제'], isFollowing: true, avatar: 'avatar-placeholder.png' },
-    { id: 'Andi', nickname: 'Andi Lane', tags: ['it', '스포츠', '경제'], isFollowing: true, avatar: 'avatar-placeholder.png' },
-    { id: 'NonFollow', nickname: 'Non Follow User', tags: ['사회'], isFollowing: false, avatar: 'avatar-placeholder.png' },
-    { id: 'AnotherUser', nickname: 'Another User', tags: ['정치'], isFollowing: false, avatar: 'avatar-placeholder.png' }
-];
+// [다른 유저 데이터] - (유지)
+const dummyUserDatabase = {
+    'kwon': {
+        id: 'kwon', nickname: '권또또', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=권', tags: ['정치', '사회'],
+        scrap: [
+            { id: 'kwon-1', topic: 'politics', category: '정치', source: '연합뉴스', title: "'사태동 광물' 최대 변수…황금돼지띠 N수생, 경쟁 격...", views: '29k', time: '10분 전', image: 'https://via.placeholder.com/100x60' },
+            { id: 'kwon-2', topic: 'society', category: '사회', source: 'YTN', title: "사회적 거리두기 그 후, 달라진 풍경들", views: '15k', time: '1시간 전', image: 'https://via.placeholder.com/100x60' }
+        ],
+        bookmark: []
+    },
+    'leftgabi': {
+        id: 'leftgabi', nickname: '왼가비', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=왼', tags: ['경제'],
+        scrap: [
+            { id: 'left-1', topic: 'economy', category: '경제', source: 'SBS', title: "'신혼가전 대기' LG전자 대리점장 구속", views: '18k', time: '30분 전', image: 'https://via.placeholder.com/100x60' },
+            { id: 'left-2', topic: 'economy', category: '경제', source: '한국경제', title: "코스피 3000선 붕괴 위기... 개미들 '패닉'", views: '50k', time: '2시간 전', image: 'https://via.placeholder.com/100x60' }
+        ],
+        bookmark: []
+    },
+    'kimlinky': {
+        id: 'kimlinky', nickname: '김링키', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=김', tags: ['경제'],
+        scrap: [
+            { id: 'kim-1', topic: 'economy', category: '경제', source: '조선일보', title: "타조가 제일 싸... '이것도' 아껴 판다", views: '12k', time: '5시간 전', image: 'https://via.placeholder.com/100x60' }
+        ],
+        bookmark: []
+    },
+    'ByeWind': {
+        id: 'ByeWind', nickname: 'ByeWind', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=B', tags: ['IT/과학', '문화'],
+        scrap: [
+            { id: 'bye-1', topic: 'it', category: 'IT/과학', source: 'ZDNet', title: "애플 비전 프로 출시 임박", views: '100k', time: '방금 전', image: 'https://via.placeholder.com/100x60' }
+        ],
+        bookmark: []
+    },
+    'Natali': { id: 'Natali', nickname: 'Natali Craig', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['경제', 'it'], scrap: [], bookmark: [] },
+    'Drew': { id: 'Drew', nickname: 'Drew Cano', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=D', tags: ['문화'], scrap: [], bookmark: [] },
+    'Orlando': { id: 'Orlando', nickname: 'Orlando Diggs', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=O', tags: ['경제'], scrap: [], bookmark: [] },
+    'Andi': { id: 'Andi', nickname: 'Andi Lane', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', tags: ['it', '스포츠', '경제'], scrap: [], bookmark: [] },
+    'NonFollow': { id: 'NonFollow', nickname: 'Non Follow User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=N', tags: ['사회'], scrap: [], bookmark: [] },
+    'AnotherUser': { id: 'AnotherUser', nickname: 'Another User', avatar: 'https://via.placeholder.com/36x36/CCCCCC/FFFFFF?text=A', tags: ['정치'], scrap: [], bookmark: [] }
+};
 
-// 🌟 추가: 기사 상세 페이지 URL 생성 함수
-function getArticleDetailUrl(articleId) {
-    // article-detail.html?id=123 형식으로 URL을 생성합니다.
-    return `article-detail.html?id=${articleId}`;
-}
 
-// ----- 2. HTML 생성 함수 (DB 데이터 형식에 맞게 수정) -----
+// ============================================================
+// 2. HTML 생성 함수
+// ============================================================
+
 function createArticleCardHTML(cardData) {
-    // 🌟 수정: DB에서 반환되는 'category'와 'media' 필드 이름을 사용하도록 변경
-    const topicDisplayMap = {
-        'IT/과학': 'IT/과학', '경제': '경제', '사회': '사회', '정치': '정치', '연예': '연예', '스포츠': '스포츠', '생활/문화': '생활/문화', '세계': '세계',
-    };
-
     const topicClassMap = {
-        '정치': 'topic-politics', '경제': 'topic-economy', '사회': 'topic-society', '생활/문화': 'topic-culture', 'IT/과학': 'topic-it', '세계': 'topic-world',
-        '연예': 'topic-enter', '스포츠': 'topic-sport'
+        'IT/과학': 'topic-it', '경제': 'topic-economy', '사회': 'topic-society', '정치': 'topic-politics',
+        '연예': 'topic-enter', '스포츠': 'topic-sport', '생활/문화': 'topic-culture', '세계': 'topic-world'
     };
 
-    // 🌟 수정: 'cardData.category'는 백엔드에서 온 한글 카테고리 이름입니다.
-    const categoryText = cardData.category || '기타';
-    const categoryClass = topicClassMap[categoryText] || 'topic-default';
+    const categoryClass = topicClassMap[cardData.category] || 'topic-default';
+    const cardTitle = cardData.title || "제목 정보 없음";
 
-    // 🌟 수정: href에 article_id를 포함하여 동적으로 URL 생성
+    // 🚨 [수정] data-article-json에 데이터를 심고, href를 #으로 바꿉니다.
+    const jsonString = JSON.stringify(cardData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    const viewIconPath = '../../../static/image/view.png'; // 뷰 아이콘 경로 정의
+
     return `
-        <a href="${getArticleDetailUrl(cardData.article_id)}" class="article-card">
+        <a href="#" class="article-card" data-article-json='${jsonString}'>
             <div class="card-text">
-                <span class="card-category ${categoryClass}">${categoryText}</span>
-                <span class="card-source">${cardData.media}</span>
-                <h3 class="card-title">${cardData.title}</h3>
+                <span class="card-category ${categoryClass}">${cardData.category}</span>
+                <span class="card-source">${cardData.source}</span>
+                <h3 class="card-title">${cardTitle}</h3>
                 <div class="card-stats">
-                    <span class="time">${new Date(cardData.scraped_at).toLocaleDateString()}</span>
+                    <span class="views"><img src="${viewIconPath}" alt="조회수" class="stat-icon"> ${cardData.views}</span>
+                    <span class="time">${cardData.time}</span>
                 </div>
             </div>
-            <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardData.title}" class="card-thumbnail">
+            <img src="${cardData.image || 'image-placeholder.jpg'}" alt="${cardTitle}" class="card-thumbnail">
         </a>`;
 }
 
-// ... (createUserListItemHTML 함수는 유지 또는 삭제) ...
+function createUserListItemHTML(userData) {
+    const tagsHTML = userData.tags.map(tag => `<span class="tag">#${tag}</span>`).join(' ');
+    const followingClass = userData.isFollowing ? 'followed' : 'not-followed';
+    const buttonText = userData.isFollowing ? '언팔로우' : '팔로우';
 
-// ----- 3. 렌더링 함수 (API 연동) -----
-async function renderFeed() { // 🌟 수정: async 키워드 추가
+    return `
+        <div class="user-list-item-wrapper ${followingClass}">
+            <a href="profile-detail.html?user_id=${userData.id}" class="user-list-item-info">
+                <img src="${userData.avatar}" alt="${userData.nickname}" class="card-avatar-small">
+                <div class="user-info">
+                    <span class="nickname">${userData.nickname}</span>
+                    <div class="user-tags">${tagsHTML}</div>
+                </div>
+            </a>
+            <button type="button" class="follow-toggle-btn ${followingClass}" data-user-id="${userData.id}">
+                ${buttonText}
+            </button>
+        </div>`;
+}
+
+
+// ============================================================
+// 3. 렌더링 함수
+// ============================================================
+
+// [아카이브 메인] 스크랩/북마크 탭 렌더링
+function renderFeed() {
     const tabInput = document.querySelector('input[name="archive-tab"]:checked');
-    if (!tabInput || tabInput.value !== 'scrap') return; // 북마크 탭은 일단 스킵
+    if (!tabInput) return;
 
-    const currentTopic = document.querySelector('#scrap-bookmark-content .keyword-tag.active').dataset.topic; // politics, economy 등
-    const feedContainer = document.getElementById(`feed-scrap`);
+    const currentTab = tabInput.value; // 'scrap' or 'bookmark'
+    const currentTopicEl = document.querySelector('#scrap-bookmark-content .keyword-tag.active');
+    const currentTopic = currentTopicEl ? currentTopicEl.dataset.topic : 'politics';
 
+    const feedContainer = document.getElementById(`feed-${currentTab}`);
     if (!feedContainer) return;
 
     feedContainer.innerHTML = '';
+    let articles = [];
 
-    // 1. 로그인된 사용자 ID 가져오기
-    const userInfo = JSON.parse(localStorage.getItem('user-info'));
-    // 🚨 중요: 여기서 user_id는 실제 DB에서 사용하는 ID여야 합니다. 
-    // 가정: userInfo에 id 필드가 있습니다.
-    const userId = userInfo ? userInfo.id : null;
+    if (currentTab === 'scrap') {
+        const savedScrapObject = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
+        const savedTopicArticles = savedScrapObject[currentTopic] || [];
+        articles = savedTopicArticles;
+    } else if (currentTab === 'bookmark') {
+        const allBookmarks = JSON.parse(localStorage.getItem('bookmarked_articles') || '[]');
+        const currentTopicText = currentTopicEl ? currentTopicEl.textContent.trim() : '';
 
-    if (!userId) {
-        feedContainer.innerHTML = '<p style="text-align: center; color: red; margin-top: 50px;">로그인이 필요합니다.</p>';
+        const savedTopicBookmarks = allBookmarks.filter(article => {
+            const matchesTopicId = article.topic && article.topic === currentTopic;
+            const matchesCategoryKo = article.category && article.category === currentTopicText;
+            return matchesTopicId || matchesCategoryKo;
+        });
+        articles = savedTopicBookmarks;
+    }
+
+    if (articles.length === 0) {
+        feedContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">이 주제의 기사가 없습니다.</p>';
         return;
     }
-
-    try {
-        // 2. scrap_list API 호출
-        const response = await fetch(`/archive/users/${userId}/scraps/`);
-        const allArticles = await response.json();
-
-        if (!response.ok) throw new Error(allArticles.error || '목록 로드 실패');
-
-        // 3. 현재 선택된 토픽으로 필터링
-        // 백엔드에서 온 'category' 필드는 한글 이름(예: '정치')이라고 가정합니다.
-        const topicMap = {
-            'politics': '정치', 'economy': '경제', 'society': '사회', 'culture': '생활/문화',
-            'it': 'IT/과학', 'world': '세계', 'enter': '연예', 'sport': '스포츠'
-        };
-        const targetCategory = topicMap[currentTopic];
-
-        const articles = allArticles.filter(
-            article => article.category === targetCategory
-        );
-
-        if (articles.length === 0) {
-            feedContainer.innerHTML = `<p style="text-align: center; color: #888; margin-top: 50px;">[${targetCategory}] 주제의 스크랩 기사가 없습니다.</p>`;
-            return;
-        }
-
-        // 4. DB 데이터로 카드 렌더링
-        articles.forEach(article => {
-            feedContainer.innerHTML += createArticleCardHTML(article);
-        });
-
-    } catch (error) {
-        console.error('스크랩 목록 로드 실패:', error);
-        feedContainer.innerHTML = '<p style="text-align: center; color: red; margin-top: 50px;">스크랩 목록을 불러오는 데 실패했습니다.</p>';
-    }
+    articles.forEach(article => {
+        feedContainer.innerHTML += createArticleCardHTML(article);
+    });
 }
 
+// [아카이브 메인] 팔로잉 탭 (유저 목록) 렌더링
 function renderFollowingList(searchTerm = "") {
     const listContainer = document.getElementById('following-list');
     if (!listContainer) return;
 
-    listContainer.innerHTML = '';
+    let realFollowingList = JSON.parse(localStorage.getItem('following_list')) || [];
+    const allUsersArray = Object.values(dummyUserDatabase);
 
-    const normalizedSearch = searchTerm.toLowerCase();
-    const usersToShow = dummyAllUsers.filter(user => {
-        const match = user.nickname.toLowerCase().includes(normalizedSearch);
-        return searchTerm ? match : user.isFollowing;
+    allUsersArray.forEach(user => {
+        user.isFollowing = realFollowingList.includes(user.id);
     });
 
+    const normalizedSearch = searchTerm.toLowerCase();
+    let usersToShow = allUsersArray.filter(user => {
+        if (searchTerm) {
+            return user.nickname.toLowerCase().includes(normalizedSearch);
+        } else {
+            return user.isFollowing;
+        }
+    });
+
+    usersToShow.sort((a, b) => {
+        if (a.isFollowing === b.isFollowing) return 0;
+        return a.isFollowing ? -1 : 1;
+    });
+
+    listContainer.innerHTML = '';
+
     if (usersToShow.length === 0) {
-        listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">일치하는 사용자가 없습니다.</p>';
+        const msg = searchTerm ? '일치하는 사용자가 없습니다.' : '팔로잉 중인 사용자가 없습니다.';
+        listContainer.innerHTML = `<p style="text-align: center; color: #888; margin-top: 50px;">${msg}</p>`;
         return;
     }
+
     usersToShow.forEach(user => {
         listContainer.innerHTML += createUserListItemHTML(user);
     });
+
+    document.querySelectorAll('.follow-toggle-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const userId = button.dataset.userId;
+            const isNowFollowing = button.classList.contains('followed');
+            let currentList = JSON.parse(localStorage.getItem('following_list')) || [];
+
+            if (isNowFollowing) {
+                currentList = currentList.filter(id => id !== userId);
+            } else {
+                if (!currentList.includes(userId)) currentList.push(userId);
+            }
+
+            localStorage.setItem('following_list', JSON.stringify(currentList));
+            console.log('Updated Following List:', currentList);
+
+            renderFollowingList(searchTerm);
+        });
+    });
 }
 
-// ----- 4. 기사 스크랩 기능 (API 연동으로 전면 수정) -----
+
+// ============================================================
+// 4. 프로필 상세 페이지 로직 (profile-detail.html)
+// ============================================================
+function initProfileDetailPage() {
+    const followBtn = document.getElementById('profile-follow-btn');
+    const profileNicknameEl = document.getElementById('profile-nickname');
+    const profileTagsEl = document.getElementById('profile-tags');
+    const profileFollowersEl = document.getElementById('profile-followers');
+    const profileAvatarEl = document.getElementById('profile-avatar');
+
+    if (!followBtn || !profileNicknameEl) return;
+
+    // 1. URL 확인 및 내 정보 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user_id');
+    const myInfo = JSON.parse(localStorage.getItem('user-info'));
+    const targetUser = dummyUserDatabase[targetUserId];
+
+
+
+    if (!targetUser) {
+        profileNicknameEl.textContent = "사용자 없음";
+        followBtn.style.display = 'none';
+        return;
+    }
+
+    let followingList = JSON.parse(localStorage.getItem('following_list')) || [];
+    let isFollowing = followingList.includes(targetUserId);
+
+    const updateFollowButton = () => {
+        if (isFollowing) {
+            followBtn.textContent = '언팔로우';
+            followBtn.classList.add('followed');
+            followBtn.classList.remove('not-followed');
+        } else {
+            followBtn.textContent = '팔로우';
+            followBtn.classList.add('not-followed');
+            followBtn.classList.remove('followed');
+        }
+    };
+
+    profileNicknameEl.textContent = targetUser.nickname;
+    if (profileAvatarEl) profileAvatarEl.src = targetUser.avatar;
+    if (profileTagsEl) profileTagsEl.textContent = targetUser.tags.map(t => `#${t}`).join(' ');
+    if (profileFollowersEl) profileFollowersEl.textContent = `팔로워: ${targetUser.id.length * 100}명`;
+
+    updateFollowButton();
+
+    followBtn.addEventListener('click', () => {
+        isFollowing = !isFollowing;
+        if (isFollowing) {
+            if (!followingList.includes(targetUserId)) followingList.push(targetUserId);
+        } else {
+            followingList = followingList.filter(id => id !== targetUserId);
+        }
+        localStorage.setItem('following_list', JSON.stringify(followingList));
+        updateFollowButton();
+    });
+
+    const tabInputs = document.querySelectorAll('input[name="profile-tab"]');
+    const keywordTags = document.querySelectorAll('.keyword-list .keyword-tag');
+
+    const renderProfileFeed = () => {
+        const currentTab = document.querySelector('input[name="profile-tab"]:checked').value;
+        const activeTag = document.querySelector('.keyword-list .keyword-tag.active');
+        const currentTopic = activeTag ? activeTag.dataset.topic : 'politics';
+
+        const listContainer = document.getElementById(currentTab === 'scrap' ? 'profile-scrap-list' : 'profile-bookmark-list');
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
+
+        let articles = (targetUser[currentTab] || []).filter(item => item.topic === currentTopic);
+
+        if (articles.length === 0) {
+            listContainer.innerHTML = '<p style="text-align: center; color: #888; margin-top: 20px;">이 주제의 기사가 없습니다.</p>';
+            return;
+        }
+        articles.forEach(article => {
+            listContainer.innerHTML += createArticleCardHTML(article);
+        });
+    };
+
+    tabInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            document.getElementById('content-scrap').style.display = (input.value === 'scrap') ? 'block' : 'none';
+            document.getElementById('content-bookmark').style.display = (input.value === 'bookmark') ? 'block' : 'none';
+            renderProfileFeed();
+        });
+    });
+
+    keywordTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            keywordTags.forEach(t => t.classList.remove('active'));
+            tag.classList.add('active');
+            renderProfileFeed();
+        });
+    });
+
+    renderProfileFeed();
+}
+
+
+// ============================================================
+// 5. 기사 스크랩 기능 (create-scrap.html)
+// ============================================================
 function initScrapFeature() {
     const topicButtons = document.querySelectorAll('.topic-grid-button');
     const linkInput = document.getElementById('article-link');
@@ -155,9 +318,7 @@ function initScrapFeature() {
     const sourceInput = document.getElementById('article-source');
     const clearSourceBtn = document.getElementById('clear-source-btn');
 
-    if (!topicButtons.length || !linkInput || !submitBtn || !sourceInput || !clearLinkBtn || !clearSourceBtn) {
-        return;
-    }
+    if (!topicButtons.length || !linkInput) return;
 
     let selectedTopic = null;
 
@@ -165,113 +326,136 @@ function initScrapFeature() {
         button.addEventListener('click', () => {
             topicButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            selectedTopic = button.dataset.topic; // politics, economy 등 소문자 영문 코드가 nc_id로 사용됨
+            selectedTopic = button.dataset.topic;
         });
     });
 
-    clearSourceBtn.addEventListener('click', () => { sourceInput.value = ''; });
-    clearLinkBtn.addEventListener('click', () => { linkInput.value = ''; });
+    if (clearSourceBtn) clearSourceBtn.addEventListener('click', () => { sourceInput.value = ''; });
+    if (clearLinkBtn) clearLinkBtn.addEventListener('click', () => { linkInput.value = ''; });
 
-    // 🌟 수정: 스크랩 버튼 클릭 이벤트 -> API 호출 및 리다이렉트
-    submitBtn.addEventListener('click', async () => {
+    submitBtn.addEventListener('click', () => {
         const linkValue = linkInput.value.trim();
-        const sourceValue = sourceInput.value.trim();
+        const sourceValue = sourceInput ? sourceInput.value.trim() : '외부기사';
 
-        if (!selectedTopic) {
-            alert('기사의 분야(토픽)를 1개 선택해주세요.');
-            return;
-        }
-        if (!linkValue) {
-            alert('기사 링크를 입력해주세요.');
-            return;
-        }
+        if (!selectedTopic) { alert('기사의 분야(토픽)를 1개 선택해주세요.'); return; }
+        if (!linkValue) { alert('기사 링크를 입력해주세요.'); return; }
 
-        // 1. 로그인된 사용자 ID 가져오기
-        const userInfo = JSON.parse(localStorage.getItem('user-info'));
-        const userId = userInfo ? userInfo.id : null; // 🚨 가정: 로그인 정보는 localStorage의 id 필드에 저장되어 있음
+        let savedScraps = JSON.parse(localStorage.getItem('scrapped_articles') || '{}');
 
-        if (!userId) {
-            alert('로그인이 필요한 작업입니다.');
-            return;
-        }
+        const categoryMap = {
+            politics: '정치', economy: '경제', society: '사회', culture: '생활/문화',
+            it: 'IT/과학', world: '세계', enter: '연예', sport: '스포츠'
+        };
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = '저장 중...';
+        const newArticle = {
+            category: categoryMap[selectedTopic] || selectedTopic,
+            source: sourceValue,
+            title: linkValue,
+            views: '0k',
+            time: '방금 전',
+            image: 'image-placeholder.jpg'
+        };
 
-        // 2. 백엔드 API 호출
-        try {
-            const response = await fetch('/archive/articles/upload/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    url: linkValue,
-                    nc_id: selectedTopic, // views.py에서 nc_id로 사용
-                    media_name: sourceValue,
-                })
-            });
+        if (!savedScraps[selectedTopic]) savedScraps[selectedTopic] = [];
+        savedScraps[selectedTopic].unshift(newArticle);
+        localStorage.setItem('scrapped_articles', JSON.stringify(savedScraps));
 
-            const result = await response.json();
-
-            if (response.ok) {
-                // 3. 응답으로 받은 article_id를 사용해 상세 페이지로 이동
-                alert('기사가 성공적으로 스크랩되었습니다! 상세 페이지로 이동합니다.');
-                window.location.href = getArticleDetailUrl(result.article_id); // 🌟 수정: 상세 페이지로 리다이렉트
-            } else {
-                alert(`스크랩 실패: ${result.error}`);
-            }
-
-        } catch (error) {
-            console.error('스크랩 API 호출 중 오류 발생:', error);
-            alert('서버와의 통신에 문제가 발생했습니다.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = '업로드하기';
-        }
+        alert('기사가 스크랩되었습니다!');
+        window.location.href = 'archive.html';
     });
 }
 
-// ----- 5. DOMContentLoaded (최종 버전) -----
+
+// ============================================================
+// 6. 메인 실행 (DOMContentLoaded - 통합)
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 탭 입력 요소가 있으면 아카이브 페이지로 간주합니다.
     const tabInputs = document.querySelectorAll('input[name="archive-tab"]');
     const isArchivePage = tabInputs.length > 0;
-
-    // 스크랩 버튼이 있으면 스크랩 페이지로 간주합니다.
     const submitBtn = document.getElementById('submit-scrap-btn');
     const isScrapPage = !!submitBtn;
+    const isProfileDetailPage = document.title.includes('프로필');
 
     // --- A. 로그인 확인 ---
     const nicknameEl = document.getElementById('user-nickname');
-    if (nicknameEl || isArchivePage || isScrapPage) {
-        const userInfo = JSON.parse(localStorage.getItem('user-info'));
+    if (nicknameEl || isArchivePage || isScrapPage || isProfileDetailPage) {
+        const userInfo = JSON.parse(localStorage.getItem('user-info')) || sessionInfo;
+
         if (!userInfo) {
-            alert('로그인이 필요한 페이지입니다.');
-            window.location.href = 'login.html';
-            return;
+            // 로그인 체크 필요 시 주석 해제
+        } else {
+            const tagsEl = document.getElementById('user-tags');
+            const followersEl = document.getElementById('user-followers');
+            if (nicknameEl) nicknameEl.textContent = userInfo.nickname || '사용자';
+            // 🚨 [수정] topics 배열을 #태그 형태로 변환
+            if (tagsEl) {
+                if (userInfo.topics && userInfo.topics.length > 0) {
+                    tagsEl.textContent = userInfo.topics.map(t => `#${t}`).join(' ');
+                } else {
+                    tagsEl.textContent = '#관심분야_없음';
+                }
+            }
+            if (followersEl) followersEl.textContent = '팔로워 : 2023명 (dummy)';
         }
-        // 프로필 정보 설정 (nicknameEl이 있는 페이지에서만)
-        const tagsEl = document.getElementById('user-tags');
-        const followersEl = document.getElementById('user-followers');
-        if (nicknameEl) nicknameEl.textContent = userInfo.nickname || '사용자';
-        if (tagsEl) tagsEl.textContent = (userInfo.topics && userInfo.topics.length > 0) ? userInfo.topics.map(t => `#${t}`).join(' ') : '#관심분야_없음';
-        if (followersEl) followersEl.textContent = '팔로워 : 2023명 (dummy)';
     }
 
-    // --- B. 스크랩 생성 기능 초기화 (create-scrap.html) ---
-    if (isScrapPage) {
-        initScrapFeature();
+    // --- B. 뒤로 가기 시 탭 상태 강제 복원 ---
+    const storedTab = sessionStorage.getItem('activeArchiveTab'); // 1. 저장된 탭을 가져옴
+
+    let activeArchiveTab = document.querySelector('input[name="archive-tab"]:checked');
+
+    // 2. 세션에 저장된 탭이 있고, 현재 체크된 탭과 다르다면 강제 체크
+    if (isArchivePage && storedTab && activeArchiveTab && activeArchiveTab.value !== storedTab) {
+        activeArchiveTab.checked = false;
+
+        const targetInput = document.querySelector(`input[name="archive-tab"][value="${storedTab}"]`);
+        if (targetInput) {
+            targetInput.checked = true;
+            activeArchiveTab = targetInput;
+        }
+    }
+    // ----------------------------------------------------
+
+    if (isArchivePage && activeArchiveTab) {
+        const scrapBookmarkContent = document.getElementById('scrap-bookmark-content');
+        const followingContent = document.getElementById('following-content');
+        const fab = document.querySelector('.floating-action-button');
+        const currentTabValue = activeArchiveTab.value;
+
+        if (currentTabValue === 'following') {
+            if (scrapBookmarkContent) scrapBookmarkContent.style.display = 'none';
+            if (followingContent) followingContent.style.display = 'block';
+            if (fab) fab.style.display = 'none';
+            if (typeof renderFollowingList === 'function') renderFollowingList(document.getElementById('search-user')?.value || "");
+        } else {
+            if (scrapBookmarkContent) scrapBookmarkContent.style.display = 'block';
+            if (followingContent) followingContent.style.display = 'none';
+            if (fab) fab.style.display = 'flex';
+
+            const feedScrap = document.getElementById('feed-scrap');
+            const feedBookmark = document.getElementById('feed-bookmark');
+            if (feedScrap) feedScrap.style.display = (currentTabValue === 'scrap') ? 'flex' : 'none';
+            if (feedBookmark) feedBookmark.style.display = (currentTabValue === 'bookmark') ? 'flex' : 'none';
+
+            if (typeof renderFeed === 'function') renderFeed();
+        }
     }
 
-    // --- C. 아카이브 페이지 기능 초기화 (archive.html) ---
+    // --- C. 페이지별 초기화 ---
+    if (isScrapPage) initScrapFeature();
+    if (isProfileDetailPage) initProfileDetailPage();
+
+    // --- D. 아카이브 탭 전환 ---
     if (isArchivePage) {
-        // 탭 전환 및 렌더링 로직은 아카이브 페이지에서만 실행됩니다.
         const scrapBookmarkContent = document.getElementById('scrap-bookmark-content');
         const followingContent = document.getElementById('following-content');
         const fab = document.querySelector('.floating-action-button');
 
         tabInputs.forEach(input => {
             input.addEventListener('change', () => {
+                // 3. 탭 변경 시 현재 상태를 세션에 저장
+                sessionStorage.setItem('activeArchiveTab', input.value);
+
                 if (input.value === 'following') {
                     if (scrapBookmarkContent) scrapBookmarkContent.style.display = 'none';
                     if (followingContent) followingContent.style.display = 'block';
@@ -284,9 +468,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const feedScrap = document.getElementById('feed-scrap');
                     const feedBookmark = document.getElementById('feed-bookmark');
-
-                    if (feedScrap) feedScrap.style.display = (input.value === 'scrap') ? 'block' : 'none';
-                    if (feedBookmark) feedBookmark.style.display = (input.value === 'bookmark') ? 'block' : 'none';
+                    if (feedScrap) feedScrap.style.display = (input.value === 'scrap') ? 'flex' : 'none';
+                    if (feedBookmark) feedBookmark.style.display = (input.value === 'bookmark') ? 'flex' : 'none';
                     renderFeed();
                 }
             });
@@ -307,11 +490,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFollowingList(e.target.value);
             });
         }
-
-        // 초기 렌더
-        renderFeed();
     }
-    // 기사 스크랩 페이지용 뒤로가기
+
     const backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.addEventListener('click', (e) => {
@@ -320,51 +500,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        // 1. URL에서 article_id 추출
-        const urlParams = new URLSearchParams(window.location.search);
-        const articleId = urlParams.get('id');
+    // 🚨 [핵심 추가] 기사 클릭 핸들러 (메인 & 프로필 공통)
+    function handleArchiveArticleClick(e) {
+        const card = e.target.closest('.article-card');
 
-        if (!articleId) {
-            console.error('기사 ID가 URL에서 누락되었습니다.');
-            return;
+        // 북마크 버튼이 눌렸다면 이동 안 함
+        if (e.target.closest('.bookmark-btn') || !card) return;
+
+        e.preventDefault();
+
+        if (card.dataset.articleJson) {
+            const rawData = JSON.parse(card.dataset.articleJson);
+
+            const finalArticleData = {
+                ...rawData,
+                body: [
+                    `✅ 기사 로드 성공: "${rawData.title}" (ID: ${rawData.id || 'N/A'})`,
+                    "---",
+                    "본문 내용은 스크랩/북마크 목록에서 가져온 데이터입니다.",
+                    `출처: ${rawData.source}, 카테고리: ${rawData.category}`
+                ],
+                author: rawData.source || "OVERNEW 기자",
+                date: rawData.time || "2025.11.21",
+                mainImage: rawData.image || 'https://via.placeholder.com/400x300'
+            };
+
+            localStorage.setItem('selected_article', JSON.stringify(finalArticleData));
+            window.location.href = 'article-detail.html';
         }
+    }
 
-        try {
-            // 2. 기사 상세 정보 API 호출 (views.py의 get_article_detail_api 호출)
-            const response = await fetch(`/archive/api/articles/${articleId}/`);
-            const article = await response.json();
+    // 🚨 [리스너 등록] 아카이브 메인 페이지
+    const feedScrap = document.getElementById('feed-scrap');
+    const feedBookmark = document.getElementById('feed-bookmark');
+    if (feedScrap) feedScrap.addEventListener('click', handleArchiveArticleClick);
+    if (feedBookmark) feedBookmark.addEventListener('click', handleArchiveArticleClick);
 
-            if (!response.ok) throw new Error(article.error || '기사 상세 정보 로드 실패');
+    // 🚨 [리스너 등록] 프로필 상세 페이지 (여기가 중요!)
+    const profileScrap = document.getElementById('profile-scrap-list');
+    const profileBookmark = document.getElementById('profile-bookmark-list');
+    if (profileScrap) profileScrap.addEventListener('click', handleArchiveArticleClick);
+    if (profileBookmark) profileBookmark.addEventListener('click', handleArchiveArticleClick);
 
-            // 3. Iframe에 원본 URL 설정
-            const iframe = document.createElement('iframe');
-            iframe.id = 'article-iframe';
-            iframe.src = article.url; // 👈 DB에서 가져온 원본 URL을 설정
-            iframe.style.width = '100%';
-            iframe.style.minHeight = '1000px';
-            iframe.style.border = 'none';
-
-            const articleContent = document.querySelector('.article-content');
-            if (articleContent) {
-                // 기존 콘텐츠를 지우고 iframe 삽입 (또는 특정 위치에 삽입)
-                articleContent.innerHTML = '';
-                articleContent.appendChild(iframe);
-            }
-
-            // 4. 페이지 제목 업데이트
-            document.title = article.title + ' - OVERNEW';
-
-        } catch (error) {
-            console.error('기사 로드 실패:', error);
-            // 사용자에게 에러 메시지 표시
-            const articleContent = document.querySelector('.article-content');
-            if (articleContent) {
-                articleContent.innerHTML = '<p style="padding: 20px; text-align: center;">기사 정보를 불러오는 데 실패했습니다.</p>';
-            }
-        }
-    });
-
-});
-
-
+}); // DOMContentLoaded 종료

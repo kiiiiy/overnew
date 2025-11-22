@@ -12,7 +12,7 @@ urlpatterns = [
     path("api/users/<int:user_id>/following/", views.get_following_list, name="api_get_following_list"), # 🌟 추가
     
     # HTML
-    path("", views.archive_main, name="archive_main"),
+    path("archive/", views.archive_main, name="archive_main"),
     path("article/", views.article_detail, name="article_detail"),
     path("scrap/create/", views.create_scrap, name="create_scrap"),
     path("profile/", views.profile_detail, name="profile_detail"),

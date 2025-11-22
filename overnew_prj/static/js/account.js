@@ -222,17 +222,25 @@ function initNotificationPage() {
         });
     }
 
-    // 🚨 [수정!] 'current-session' 사용
+// 🚨 [수정!] 아래 코드 전체를 주석 처리하거나 삭제하세요!
+/*
     const userInfo = JSON.parse(localStorage.getItem('current-session'));
     if (!userInfo || !userInfo.nickname) {
         alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'login.html';
+        window.location.href = 'login.html'; // 여기가 404 원인
         return;
     }
+*/
+
+// 닉네임 표시 기능은 로그인했을 때만 동작하도록 예외 처리
+const userInfo = JSON.parse(localStorage.getItem('current-session'));
+
+if (userInfo && userInfo.nickname) {
     document.querySelectorAll('.username').forEach(element => {
         element.textContent = userInfo.nickname;
     });
-    initializeNotifications();
+}
+// initializeNotifications(); // 필요하다면 이것도 조건부 실행
 }
 
 // [Settings - Logged In] settings-logged-in.html
@@ -247,13 +255,13 @@ function initSettingsLoggedInPage() {
         });
     }
 
-    // 🚨 [수정!] 'current-session' 사용
-    const userInfo = JSON.parse(localStorage.getItem('current-session'));
-    if (!userInfo) {
-        alert('로그인이 필요한 페이지입니다.');
-        window.location.href = 'settings-logged-out.html';
-        return;
-    }
+    // // 🚨 [수정!] 'current-session' 사용
+    // const userInfo = JSON.parse(localStorage.getItem('current-session'));
+    // if (!userInfo) {
+    //     alert('로그인이 필요한 페이지입니다.');
+    //     window.location.href = 'settings-logged-out.html';
+    //     return;
+    // }
 
     const nicknameEl = document.getElementById('user-nickname');
     const tagsEl = document.getElementById('user-tags');

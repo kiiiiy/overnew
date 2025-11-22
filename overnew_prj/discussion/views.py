@@ -1,15 +1,20 @@
 import json
-from django.shortcuts import render, get_object_or_404, redirect
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib import messages
-from django.core.serializers.json import DjangoJSONEncoder
-from django.dispatch import receiver
-from archive.models import *
-from .models import *
+from django.views.decorators.http import require_POST
+
+from archive.models import Article, NewsCategory
+from .models import DiscussionRoom, Comment, CommentLike
 from .gemini_service import check_for_hate_speech
-from django.db.models.signals import post_save
+
 
 @receiver(post_save, sender=Article)
 def create_discussion_rooms_for_article(sender, instance, created, **kwargs):
@@ -28,6 +33,7 @@ def create_discussion_rooms_for_article(sender, instance, created, **kwargs):
             is_anonymous=is_anonymous,
         )
 
+
 def choose_mode(request, article_id):
     """
     기사 1개 기준으로:
@@ -37,8 +43,6 @@ def choose_mode(request, article_id):
     """
     article = get_object_or_404(Article, pk=article_id)
 
-    # 현재 모델이 OneToOneField 라서 일반적으로 room 하나만 존재함
-    # (우리가 signals 에서 is_anonymous=False 만 자동 생성해둔 상태)
     real_room = DiscussionRoom.objects.filter(
         article=article,
         is_anonymous=False,
@@ -54,6 +58,7 @@ def choose_mode(request, article_id):
         "real_room": real_room,
         "anon_room": anon_room,
     })
+
 
 def get_time_left_label(finish_time):
     now = timezone.now()
@@ -93,7 +98,7 @@ def api_room_list(request):
         DiscussionRoom.objects
         .filter(
             article__nc_id=nc_id,
-            is_anonymous=False,          # ✅ 여기!
+            is_anonymous=False,
             start_time__lte=now,
             finish_time__gte=now,
         )
@@ -118,7 +123,7 @@ def api_room_list(request):
 
         data.append({
             'id': room.room_id,
-            'type': 'realname',                 # 실명 기준 카드
+            'type': 'realname',
             'category': category_name,
             'source': source_name,
             'title': article.title,
@@ -127,11 +132,12 @@ def api_room_list(request):
             'views': views_count,
             'likes': likes_count,
             'comments': comments_count,
-            'enter_url': enter_url,             # ✅ 토론 참여하기 버튼이 탈 URL
-            'article_url': article.url,         # 기사 원본 링크
+            'enter_url': enter_url,
+            'article_url': article.url,
         })
 
     return JsonResponse({'rooms': data})
+
 
 def discussion_list(request):
     categories = NewsCategory.objects.all().order_by('nc_id')
@@ -149,47 +155,44 @@ def main(request):
 
 # ============================== 댓글 트리 빌더 ==============================
 
-def build_comment_tree(comments_qs):
-    """
-    Comment 쿼리셋을 JS에서 쓰던 형태로 변환:
-    {
-      id: 'c1',
-      userId: 3,
-      display_name: '홍길동',
-      date: 'Aug 19, 2021',
-      text: '내용',
-      likes: 0,
-      replies: [ ... ]
-    }
-    """
+
+def build_comment_tree(comments_qs, user=None):
+    # 현재 로그인한 유저가 누른 좋아요 목록
+    liked_ids = set()
+    if user is not None and user.is_authenticated:
+        liked_ids = set(
+            CommentLike.objects
+            .filter(user=user, comment__in=comments_qs)
+            .values_list('comment_id', flat=True)
+        )
+
     by_id = {}
     for c in comments_qs:
         pk = c.pk
 
-        # user / user_id 안전하게 가져오기
-        user = getattr(c, "user", None)
-        user_id = getattr(c, "user_id", None)
-        user_pk = user.pk if user is not None else None
+        user_obj = getattr(c, "user", None)
+        user_pk = getattr(c, "user_id", None)
 
-        # 표시 이름: nickname > username > str(user) > '알 수 없음'
-        if user is not None:
+        if user_obj is not None:
             display_name = (
-                getattr(user, "nickname", None)
-                or getattr(user, "username", None)
-                or str(user)
+                getattr(user_obj, "nickname", None)
+                or getattr(user_obj, "username", None)
+                or str(user_obj)
             )
         else:
             display_name = "알 수 없음"
 
         by_id[pk] = {
-            "id": f"c{pk}",                 # JS용 ID (문자열)
-            "userId": user_pk,              # 필요하면 JS에서 프로필로 쓸 수 있음
-            "display_name": display_name,   # 실명 토론방에서 바로 사용
+            "id": pk,                           # JS에서 문자열로 써도 되지만 여기선 숫자
+            "userId": user_pk,
+            "display_name": display_name,
             "date": c.created_at.strftime("%b %d, %Y"),
             "text": c.comment_content,
-            "likes": 0,                     # 나중에 좋아요 모델 붙이면 수정
+            "likes": c.likes.count(),           # ✅ 실제 좋아요 수
+            "is_liked": (pk in liked_ids),      # ✅ 현재 로그인 유저가 누른 상태
             "replies": [],
             "parent_id": getattr(c, "parent_id", None),
+            "created_at": c.created_at.isoformat(),
         }
 
     roots = []
@@ -217,8 +220,8 @@ def build_comment_tree(comments_qs):
     return roots
 
 
-
 # ============================== 상세 페이지들 ==============================
+
 
 def anonymous_detail(request, room_id):
     room = get_object_or_404(
@@ -232,18 +235,16 @@ def anonymous_detail(request, room_id):
 
     comments_qs = room.comment_set.all().order_by('created_at')
 
-    
     participant_count = comments_qs.values_list('user_id', flat=True).distinct().count()
     time_left_label = get_time_left_label(room.finish_time)
 
-    # 📌 북마크 여부 (로그인 되어 있을 때만 체크)
     if request.user.is_authenticated:
         is_bookmarked = room.bookmark.filter(pk=request.user.pk).exists()
     else:
         is_bookmarked = False
 
-    # 댓글 트리 → JSON
-    comments_tree = build_comment_tree(comments_qs)
+    # ✅ 여기!
+    comments_tree = build_comment_tree(comments_qs, request.user)
     comments_json = json.dumps(comments_tree, cls=DjangoJSONEncoder, ensure_ascii=False)
 
     context = {
@@ -278,7 +279,7 @@ def discussion_detail(request, room_id):
     else:
         is_bookmarked = False
 
-    comments_tree = build_comment_tree(comments_qs)
+    comments_tree = build_comment_tree(comments_qs, request.user)
     comments_json = json.dumps(comments_tree, cls=DjangoJSONEncoder, ensure_ascii=False)
 
     context = {
@@ -291,7 +292,9 @@ def discussion_detail(request, room_id):
     }
     return render(request, 'discussion/discussion-realname.html', context)
 
+
 # ============================== 댓글 생성 / 삭제 ==============================
+
 
 def create_comment(request, room_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
@@ -319,7 +322,7 @@ def create_comment(request, room_id):
         parent = None
 
         if parent_id:
-            # parent_id는 'c3' 같이 올 수 있으므로 숫자만 추출
+            # parent_id는 숫자 문자열('3') 또는 'c3' 같이 올 수 있으므로 숫자만 추출
             try:
                 pure_id = int(str(parent_id).lstrip('c'))
                 parent = get_object_or_404(Comment, pk=pure_id, room=room)
@@ -375,6 +378,7 @@ def delete_comment(request, room_id, comment_id):
 
 # ============================== 북마크 토글 ==============================
 
+
 def toggle_bookmark(request, room_id):
     room = get_object_or_404(DiscussionRoom, pk=room_id)
     user = request.user
@@ -398,3 +402,30 @@ def toggle_bookmark(request, room_id):
         return redirect('discussion:anonymous_detail', room_id=room_id)
     else:
         return redirect('discussion:discussion_detail', room_id=room_id)
+
+
+# ============================== 댓글 좋아요 토글 ==============================
+
+
+@require_POST
+def toggle_comment_like(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+
+    like, created = CommentLike.objects.get_or_create(
+        user=request.user,
+        comment=comment,
+    )
+
+    if created:
+        liked = True
+    else:
+        like.delete()
+        liked = False
+
+    like_count = comment.likes.count()
+
+    return JsonResponse({
+        "liked": liked,
+        "like_count": like_count,
+        "comment_id": comment_id,
+    })

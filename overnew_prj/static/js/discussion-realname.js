@@ -1,29 +1,43 @@
 // static/js/discussion-realname.js
 
 // ====================================================================
+// 0. CSRF 쿠키 헬퍼
+// ====================================================================
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie("csrftoken");
+
+// ====================================================================
 // 1. 전역 상태 – 서버에서 내려준 INITIAL_COMMENTS 사용
 // ====================================================================
 
-// Django 템플릿에서 내려준 전역 변수
-// <script> window.INITIAL_COMMENTS = JSON.parse(`...`); </script>
 let commentTree = Array.isArray(window.INITIAL_COMMENTS)
   ? window.INITIAL_COMMENTS
   : [];
 
-let likedComments = JSON.parse(localStorage.getItem("realname_comment_likes")) || [];
 let currentSortOrder = "newest"; // 'newest' or 'oldest'
-let replyTarget = null; // { id: 'c3', display_name: '홍길동' }
-
+let replyTarget = null; // { id: 3, display_name: '홍길동' }
 
 // ====================================================================
 // 2. 헬퍼 함수들
 // ====================================================================
 
-// 댓글 하나에 대한 HTML 생성 (재귀)
 function createCommentHTML(node) {
-  const isLiked = likedComments.includes(node.id);
   const avatarHTML = `<div class="comment-avatar realname-placeholder"></div>`;
   const displayName = node.display_name || node.username || "사용자";
+  const isLiked = !!node.is_liked;
 
   let repliesHTML = "";
   if (node.replies && node.replies.length > 0) {
@@ -59,19 +73,19 @@ function createCommentHTML(node) {
   `;
 }
 
-// 트리에서 id로 댓글 찾기
+// 🔧 숫자/문자 타입 맞춰서 찾기
 function findCommentById(list, id) {
+  const targetId = Number(id);
   for (let c of list) {
-    if (c.id === id) return c;
+    if (Number(c.id) === targetId) return c;
     if (c.replies && c.replies.length > 0) {
-      const found = findCommentById(c.replies, id);
+      const found = findCommentById(c.replies, targetId);
       if (found) return found;
     }
   }
   return null;
 }
 
-// 입력창 상태 (답글 ↔ 일반)
 function updateCommentInputMode() {
   const input = document.getElementById("comment-input");
   const cancelBtn = document.getElementById("cancel-reply-btn");
@@ -83,7 +97,7 @@ function updateCommentInputMode() {
     const displayName = replyTarget.display_name || "사용자";
     input.placeholder = `@${displayName} 님에게 답글 남기기`;
     if (cancelBtn) cancelBtn.style.display = "inline-block";
-    if (parentInput) parentInput.value = replyTarget.id; // 'c3' 같은 형태
+    if (parentInput) parentInput.value = replyTarget.id;
     input.focus();
   } else {
     input.placeholder = "Add a comment";
@@ -96,25 +110,33 @@ function updateCommentInputMode() {
 // 3. 정렬 & 렌더링
 // ====================================================================
 
-// 🔥 정렬 로직을 단순화: 서버에서 이미 오래된순으로 내려준다는 가정
-// - currentSortOrder === 'oldest' → 그대로
-// - currentSortOrder === 'newest' → 최상위 댓글만 역순
-function getSortedTree() {
-  if (currentSortOrder === "oldest") {
-    return commentTree.slice(); // 원본 유지
-  } else {
-    return commentTree.slice().reverse(); // 최신순: 역순으로
-  }
+function sortComments(tree, order = 'newest') {
+    function sortNodes(nodes) {
+        nodes.sort((a, b) => {
+            // created_at(ISO) 있으면 그걸 쓰고, 없으면 기존 date 사용
+            const dateA = new Date(a.created_at || a.date);
+            const dateB = new Date(b.created_at || b.date);
+            return order === 'oldest' ? dateA - dateB : dateB - dateA;
+        });
+
+        nodes.forEach(n => {
+            if (n.replies && n.replies.length > 0) {
+                sortNodes(n.replies);
+            }
+        });
+    }
+
+    sortNodes(tree);
 }
 
 function renderComments() {
   const container = document.getElementById("comment-list");
   if (!container) return;
 
-  const sorted = getSortedTree();
-  container.innerHTML = sorted.map((c) => createCommentHTML(c)).join("");
+  sortComments(commentTree, currentSortOrder);
+  container.innerHTML = commentTree.map((c) => createCommentHTML(c)).join("");
 
-  console.log("[realname] renderComments / order =", currentSortOrder, sorted);
+  console.log("[realname] renderComments / order =", currentSortOrder);
 }
 
 // ====================================================================
@@ -130,23 +152,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelReplyBtn = document.getElementById("cancel-reply-btn");
   const backButton = document.getElementById("back-button");
   const pinBtn = document.getElementById("pin-btn");
+  const pinnedBox = document.getElementById("pinned-discussion-box");
 
-  // 아바타: 지금은 템플릿에서 placeholder 이미지 사용 중
+  const discussionId = document.body.dataset.roomId || "discussion-1";
+
   if (myAvatar) {
-    // 나중에 실제 프로필 이미지 연동하면 여기서 교체
+    // 나중에 실제 프로필 이미지 연동 가능
   }
 
-  // 🔹 초기 정렬 버튼 텍스트 세팅
   if (sortBtn) {
     sortBtn.innerHTML = `<span>⇅</span> ${
       currentSortOrder === "oldest" ? "오래된순" : "최신순"
     }`;
   }
 
-  // 🔹 초기 댓글 렌더
   renderComments();
 
-  // 정렬 버튼 클릭
   if (sortBtn) {
     sortBtn.addEventListener("click", () => {
       currentSortOrder = currentSortOrder === "oldest" ? "newest" : "oldest";
@@ -158,7 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 답글 취소 버튼
   if (cancelReplyBtn) {
     cancelReplyBtn.addEventListener("click", () => {
       replyTarget = null;
@@ -166,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 댓글 영역 클릭 (좋아요 / 답글)
   if (commentList) {
     commentList.addEventListener("click", (e) => {
       const commentEl = e.target.closest(".comment-item");
@@ -176,31 +195,46 @@ document.addEventListener("DOMContentLoaded", () => {
       const targetComment = findCommentById(commentTree, commentId);
       if (!targetComment) return;
 
-      // 👍 좋아요 (프론트 로컬)
+      // 👍 서버 좋아요
       if (e.target.closest(".like-btn")) {
+        e.preventDefault();
         const likeBtn = e.target.closest(".like-btn");
-        const isLiked = likedComments.includes(commentId);
 
-        if (isLiked) {
-          likeBtn.classList.remove("active");
-          likedComments = likedComments.filter((id) => id !== commentId);
-          targetComment.likes = Math.max(0, (targetComment.likes || 0) - 1);
-        } else {
-          likeBtn.classList.add("active");
-          likedComments.push(commentId);
-          targetComment.likes = (targetComment.likes || 0) + 1;
-        }
+        fetch(`/discussion/comment/${commentId}/like/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to toggle like");
+            return res.json();
+          })
+          .then((data) => {
+            if (data.liked) {
+              likeBtn.classList.add("active");
+            } else {
+              likeBtn.classList.remove("active");
+            }
 
-        const countSpan = likeBtn.querySelector(".count");
-        if (countSpan) countSpan.textContent = targetComment.likes;
+            const countSpan = likeBtn.querySelector(".count");
+            if (countSpan) {
+              countSpan.textContent = data.like_count;
+            }
 
-        localStorage.setItem(
-          "realname_comment_likes",
-          JSON.stringify(likedComments)
-        );
+            targetComment.likes = data.like_count;
+            targetComment.is_liked = data.liked;
+          })
+          .catch((err) => {
+            console.error("[realname] 댓글 좋아요 토글 실패:", err);
+            alert("좋아요 처리 중 오류가 발생했습니다. (로그인이 필요할 수 있어요)");
+          });
+
+        return;
       }
 
-      // 💬 답글 모드 진입
+      // 💬 답글
       if (e.target.closest(".reply-btn")) {
         replyTarget = {
           id: commentId,
@@ -214,18 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 제출 버튼: 내용 비어 있으면 막기
   if (submitBtn && commentInput) {
     submitBtn.addEventListener("click", (e) => {
       if (!commentInput.value.trim()) {
         e.preventDefault();
         console.warn("[realname] 댓글 입력이 비어 있습니다.");
       }
-      // 실제 저장은 Django form이 처리 (create_comment 뷰)
     });
   }
 
-  // 뒤로가기
   if (backButton) {
     const backUrl = backButton.dataset.backUrl || "/community/main/";
     backButton.addEventListener("click", () => {
@@ -234,8 +265,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 핀 버튼: 지금은 서버북마크(form) 기준이라 JS에서 굳이 뭘 안 해도 됨
-  if (pinBtn) {
-    // 필요하면 나중에 로컬 UI 효과 추가 가능
+  // 핀(고정) – 익명이랑 동일하게 쓰고 싶으면 여기 채우면 됨
+  if (pinBtn && pinnedBox) {
+    // 지금은 서버 북마크(form) 우선이라 JS에서 추가로 안 해도 OK
   }
 });

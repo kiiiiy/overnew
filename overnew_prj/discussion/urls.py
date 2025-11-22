@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/rooms/', api_room_list, name='api_room_list'),
     path('room/<int:room_id>/bookmark/', toggle_bookmark, name='toggle_bookmark'),
     path("article/<int:article_id>/enter/", choose_mode, name="choose_mode"),
+    path('comment/<int:comment_id>/like/', toggle_comment_like, name='toggle_comment_like'),
 
 ]
 

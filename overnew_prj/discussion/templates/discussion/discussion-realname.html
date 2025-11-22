@@ -37,7 +37,7 @@
         <div style="width:40px;"></div>
     </header>
 
-    <!-- (옵션) 상단 고정 토론 박스 – 필요하면 익명이랑 같이 쓸 수 있음 -->
+    <!-- (옵션) 상단 고정 토론 박스 -->
     <section id="pinned-discussion-box" class="pinned-discussion-box"></section>
 
     <main class="container">
@@ -61,7 +61,6 @@
 
             <div class="discussion-meta">
                 <div class="meta-left">
-                    <!-- TODO: finish_time 기준으로 남은 시간 계산해서 넣어도 됨 -->
                     <span class="time-left">
                         🕒 {{ time_left_label }}
                     </span>
@@ -71,10 +70,9 @@
                 </div>
 
                 <div class="meta-right">
-                    <!-- 실명방도 북마크 사용하고 싶으면 익명이랑 동일하게 -->
                     <form method="post"
-                        action="{% url 'discussion:toggle_bookmark' room.room_id %}"
-                        style="display:inline;">
+                          action="{% url 'discussion:toggle_bookmark' room.room_id %}"
+                          style="display:inline;">
                         {% csrf_token %}
                         <button type="submit"
                                 class="pinned-btn{% if is_bookmarked %} pinned{% endif %}"
@@ -131,8 +129,9 @@
 
         <!-- 제출 버튼 -->
         <button type="submit"
-        class="comment-submit-btn"
-        id="submit-comment-btn">업로드
+                class="comment-submit-btn"
+                id="submit-comment-btn">
+            업로드
         </button>
     </form>
 

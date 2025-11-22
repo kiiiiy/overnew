@@ -1,13 +1,30 @@
 // =========================================================================
-// 1. 전역 상태 (더미데이터 없음, 서버에서 내려준 INITIAL_COMMENTS 사용)
+// 0. CSRF 쿠키 헬퍼
+// =========================================================================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+
+// =========================================================================
+// 1. 전역 상태 (서버에서 내려준 INITIAL_COMMENTS 사용)
 // =========================================================================
 
-// 서버에서 내려준 댓글 트리
 let commentTree = Array.isArray(window.INITIAL_COMMENTS) ? window.INITIAL_COMMENTS : [];
 
-// 좋아요 상태는 로컬스토리지에만 저장 (백엔드 연동 안 함)
-let likedComments = JSON.parse(localStorage.getItem('comment_likes')) || [];
-let currentSortOrder = 'newest';  // 기본 최신순
+let currentSortOrder = 'newest';
 let replyTarget = null;
 
 // 로그인 유저 정보 (프론트 임시, 익명 닉네임용)
@@ -16,10 +33,9 @@ const userInfo = JSON.parse(localStorage.getItem('user-info')) || {
     avatar: null
 };
 
-// 익명 이름 매핑 (실제 userId는 "user<pk>")
+// 익명 이름 매핑 (실제 userId는 user의 pk)
 const userMapping = {};
 
-// 댓글 트리를 돌면서 userId 수집 후 익명 이름 부여
 function buildUserMappingFromComments(tree) {
     const set = new Set();
 
@@ -41,7 +57,7 @@ function buildUserMappingFromComments(tree) {
         }
     });
 
-    // 현재 유저도 매핑 (없으면)
+    // 현재 유저도 매핑 (없으면) – 익명방이니까 그냥 하나 붙여둠
     if (!userMapping[userInfo.id]) {
         userMapping[userInfo.id] = `익명${Object.keys(userMapping).length + 1}`;
     }
@@ -54,11 +70,10 @@ buildUserMappingFromComments(commentTree);
 // 2. 헬퍼 함수들
 // =========================================================================
 
-// 댓글 HTML 생성 (재귀)
 function createCommentHTML(commentData) {
-    const isLiked = likedComments.includes(commentData.id);
     const avatarHTML = `<div class="comment-avatar anonymous-placeholder"></div>`;
     const displayName = userMapping[commentData.userId] || '알 수 없음';
+    const isLiked = !!commentData.is_liked;   // 서버에서 내려준 내 좋아요 여부
 
     let repliesHTML = '';
     if (commentData.replies && commentData.replies.length > 0) {
@@ -88,26 +103,25 @@ function createCommentHTML(commentData) {
     </div>`;
 }
 
-// 트리 정렬 (created_at을 문자열로 받았기 때문에 JS Date로 정렬)
-function sortComments(tree, order = 'newest') {
-    function sortNodes(nodes) {
-        nodes.sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return order === 'oldest' ? dateA - dateB : dateB - dateA;
-        });
+function sortComments(tree, order = "newest") {
+  function sortNodes(nodes) {
+    nodes.sort((a, b) => {
+      const dateA = new Date(a.created_at || a.date);
+      const dateB = new Date(b.created_at || b.date);
+      return order === "oldest" ? dateA - dateB : dateB - dateA;
+    });
 
-        nodes.forEach(n => {
-            if (n.replies && n.replies.length > 0) {
-                sortNodes(n.replies);
-            }
-        });
-    }
+    nodes.forEach((n) => {
+      if (n.replies && n.replies.length > 0) {
+        sortNodes(n.replies);
+      }
+    });
+  }
 
-    sortNodes(tree);
+  sortNodes(tree);
 }
 
-// 렌더링
+
 function renderComments() {
     const container = document.getElementById('comment-list');
     if (!container) {
@@ -115,25 +129,23 @@ function renderComments() {
         return;
     }
 
-    // 정렬 적용
     sortComments(commentTree, currentSortOrder);
-
     container.innerHTML = commentTree.map(c => createCommentHTML(c)).join('');
 }
 
-// 댓글 찾기 헬퍼
+// 숫자/문자 타입 맞춰서 찾기
 function findCommentById(list, id) {
+    const targetId = Number(id);
     for (let c of list) {
-        if (c.id === id) return c;
+        if (Number(c.id) === targetId) return c;
         if (c.replies && c.replies.length > 0) {
-            const found = findCommentById(c.replies, id);
+            const found = findCommentById(c.replies, targetId);
             if (found) return found;
         }
     }
     return null;
 }
 
-// 입력창 상태 업데이트 (답글 모드 / 일반 모드)
 function updateCommentInputMode() {
     const input = document.getElementById('comment-input');
     const cancelBtn = document.getElementById('cancel-reply-btn');
@@ -145,7 +157,7 @@ function updateCommentInputMode() {
         const displayName = userMapping[replyTarget.userId] || '익명';
         input.placeholder = `@${displayName} 님에게 답글 남기기`;
         if (cancelBtn) cancelBtn.style.display = 'inline-block';
-        if (parentInput) parentInput.value = replyTarget.id; // 'c3' 같은 형태
+        if (parentInput) parentInput.value = replyTarget.id;
         input.focus();
     } else {
         input.placeholder = 'Add a comment';
@@ -156,7 +168,7 @@ function updateCommentInputMode() {
 
 
 // =========================================================================
-/** 3. DOMContentLoaded 후 이벤트 연결 */
+// 3. DOMContentLoaded 후 이벤트 연결
 // =========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -209,28 +221,48 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetComment = findCommentById(commentTree, commentId);
             if (!targetComment) return;
 
-            // 좋아요 (프론트 전용)
+            // ✅ 좋아요: 서버에 토글 요청
             if (e.target.closest('.like-btn')) {
+                e.preventDefault();
                 const likeBtn = e.target.closest('.like-btn');
-                const isLiked = likedComments.includes(commentId);
 
-                if (isLiked) {
-                    likeBtn.classList.remove('active');
-                    likedComments = likedComments.filter(id => id !== commentId);
-                    targetComment.likes = Math.max(0, (targetComment.likes || 0) - 1);
-                } else {
-                    likeBtn.classList.add('active');
-                    likedComments.push(commentId);
-                    targetComment.likes = (targetComment.likes || 0) + 1;
-                }
+                fetch(`/community/comment/${commentId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to toggle like");
+                    return res.json();
+                })
+                .then(data => {
+                    // data = { liked: bool, like_count: int, comment_id: int }
+                    if (data.liked) {
+                        likeBtn.classList.add('active');
+                    } else {
+                        likeBtn.classList.remove('active');
+                    }
 
-                const countSpan = likeBtn.querySelector('.count');
-                if (countSpan) countSpan.textContent = targetComment.likes;
+                    const countSpan = likeBtn.querySelector('.count');
+                    if (countSpan) {
+                        countSpan.textContent = data.like_count;
+                    }
 
-                localStorage.setItem('comment_likes', JSON.stringify(likedComments));
+                    // JS 트리도 동기화
+                    targetComment.likes = data.like_count;
+                    targetComment.is_liked = data.liked;
+                })
+                .catch(err => {
+                    console.error('댓글 좋아요 토글 실패:', err);
+                    alert('좋아요 처리 중 오류가 발생했습니다.');
+                });
+
+                return; // 아래 reply 처리로 내려가지 않도록
             }
 
-            // 답글 클릭
+            // 💬 답글 클릭
             if (e.target.closest('.reply-btn')) {
                 replyTarget = { id: commentId, userId: targetComment.userId };
                 updateCommentInputMode();
@@ -238,8 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // submitBtn/폼은 기본 동작(POST → create_comment)에 맡기고,
-    // JS에서는 내용이 비었을 때만 막아주는 정도로 사용 가능
+    // 댓글 내용 비어 있을 때 막기
     if (submitBtn && commentInput) {
         submitBtn.addEventListener('click', (e) => {
             if (!commentInput.value.trim()) {
@@ -251,12 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 뒤로가기 버튼
     if (backButton) {
-    const backUrl = backButton.dataset.backUrl || "/community/main/";
-    backButton.addEventListener("click", () => {
-      console.log("[realname] back to:", backUrl);
-      window.location.href = backUrl;
-    });
-  }
+        const backUrl = backButton.dataset.backUrl || "/community/main/";
+        backButton.addEventListener("click", () => {
+            console.log("[anonymous] back to:", backUrl);
+            window.location.href = backUrl;
+        });
+    }
 
     // =========================================================================
     // 4. 핀(고정) 기능 - 프론트 로컬 (위에서 북마크는 서버용)
@@ -319,9 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPinnedBox();
 
         pinBtn.addEventListener('click', (e) => {
-            // 이 버튼은 form 안에 있으므로, 서버 북마크 토글이 우선.
-            // 만약 프론트 핀만 쓰고 싶으면 e.preventDefault() 하고 여기서만 처리.
-            // 지금은 북마크 POST를 쓰고 있으니 JS에서는 단순 보조 역할로 둠.
             console.log('pin button clicked (서버 북마크 동작 우선)');
         });
     }

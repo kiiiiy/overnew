@@ -14,7 +14,7 @@ function createArticleCardHTML(cardData) {
     const cardTitle = cardData.title || "제목 정보 없음";
 
     // 🚨 [수정] data-article-json에 데이터를 심고, href를 #으로 바꿉니다.
-    const jsonString = JSON.stringify(cardData).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    const jsonString = encodeURIComponent(JSON.stringify(cardData));
     const viewIconPath = '../../../static/image/view.png'; // 뷰 아이콘 경로 정의
 
     return `
@@ -292,12 +292,23 @@ function initScrapFeature() {
     let selectedTopic = null;
 
     topicButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            topicButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            selectedTopic = button.dataset.topic;
-        });
+    button.addEventListener('click', () => {
+        const isActive = button.classList.toggle('active'); // 토글로 active 상태 변경
+
+        // selectedTopic 배열로 관리
+        if (!window.selectedTopics) window.selectedTopics = [];
+        
+        const topic = button.dataset.topic;
+        if (isActive) {
+            if (!window.selectedTopics.includes(topic)) window.selectedTopics.push(topic);
+        } else {
+            window.selectedTopics = window.selectedTopics.filter(t => t !== topic);
+        }
+
+        console.log('선택된 분야:', window.selectedTopics);
     });
+});
+
 
     if (clearSourceBtn) clearSourceBtn.addEventListener('click', () => { sourceInput.value = ''; });
     if (clearLinkBtn) clearLinkBtn.addEventListener('click', () => { linkInput.value = ''; });
@@ -344,6 +355,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isArchivePage = tabInputs.length > 0;
     const submitBtn = document.getElementById('submit-scrap-btn');
     const isScrapPage = !!submitBtn;
+    
+    if (isScrapPage) initScrapFeature();
     const isProfileDetailPage = document.title.includes('프로필');
 
     // --- A. 로그인 확인 ---
@@ -368,10 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (followersEl) followersEl.textContent = '팔로워 : 2023명 (dummy)';
         }
     }
-    document.getElementById('scrap-btn').addEventListener('click', () => {
-    window.location.href = '/archive/scrap/create/';
-});
-
+    
 
     // --- B. 뒤로 가기 시 탭 상태 강제 복원 ---
     const storedTab = sessionStorage.getItem('activeArchiveTab'); // 1. 저장된 탭을 가져옴
@@ -410,13 +420,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const feedBookmark = document.getElementById('feed-bookmark');
             if (feedScrap) feedScrap.style.display = (currentTabValue === 'scrap') ? 'flex' : 'none';
             if (feedBookmark) feedBookmark.style.display = (currentTabValue === 'bookmark') ? 'flex' : 'none';
+            if (feedScrap) feedScrap.addEventListener('click', handleArchiveArticleClick);
 
             if (typeof renderFeed === 'function') renderFeed();
         }
     }
 
     // --- C. 페이지별 초기화 ---
-    if (isScrapPage) initScrapFeature();
     if (isProfileDetailPage) initProfileDetailPage();
 
     // --- D. 아카이브 탭 전환 ---

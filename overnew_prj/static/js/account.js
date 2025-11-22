@@ -73,7 +73,7 @@ function initInfoStep1Page() {
 
 // [Step 2] info-step2.html
 function initInfoStep2Page() {
-    const userInfo = JSON.parse(localStorage.getItem('user-info'));
+    const userInfo = JSON.parse(localStorage.getItem('user-info')) || null;
     const greetingElement = document.getElementById('user-greeting');
     if (userInfo && userInfo.name) {
         greetingElement.textContent = `${userInfo.name}님`;

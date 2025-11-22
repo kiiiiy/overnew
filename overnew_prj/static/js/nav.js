@@ -4,17 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // nav가 보여질 메인 페이지 경로
     const mainPages = [
-        '/feed.html',
-        '/archive.html',
-        '/main.html',
-        '/community.html'
+        '/feed/',
+        '/archive/',
+        '/recommend/',
+        '/discussion/'
     ];
 
     const currentPath = window.location.pathname;
     const isMainPage = mainPages.some(page => currentPath.includes(page));
 
     if (!isMainPage) {
-        navContainer.style.display = 'none';
+       // navContainer.style.display = 'none';
         return;
     }
 

@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.apps import apps
 from .utils import fetch_article_metadata
-
+from django.shortcuts import render
 User = get_user_model() 
 
 # 🌟 user_id 대신 id 필드로 검색하도록 수정합니다.
@@ -21,6 +21,7 @@ def get_user_or_404(user_id: int):
 
 @csrf_exempt
 @require_POST
+
 def upload_article(request):
     try:
         data = json.loads(request.body.decode("utf-8"))

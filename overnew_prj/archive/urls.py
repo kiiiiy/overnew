@@ -16,8 +16,7 @@ urlpatterns = [
     path("article/", views.article_detail, name="article_detail"),
     path("scrap/create/", views.create_scrap, name="create_scrap"),
     path("profile/", views.profile_detail, name="profile_detail"),
-    path("scrap/create/", views.create_scrap, name="create_scrap"),
-
+    
 
     # 기타
     path("ping/", views.ping, name="ping"),

@@ -73,13 +73,11 @@ class RecommendUserView(View):
         # 1. 핵심 추천 로직 분기 (rec_type에 따라 필터링)
         # -----------------------------------------------------
         if rec_type == 'similar':
-            # [유사] 관심사 기반: target_category를 선택한 모든 사용자
-            users_with_target_topic_ids = AccountUserNews.objects.filter(
-                category=target_category 
-            ).values_list('user_id', flat=True)
+            # 🌟 [수정된 유사 추천 로직] 성향 기반: 현재 사용자와 같은 성향을 가진 모든 사용자 🌟
+            current_user_stance = current_user.stance
             
             recommend_users = User.objects.filter(
-                id__in=users_with_target_topic_ids
+                stance=current_user_stance # ⬅️ current_user와 동일한 성향 필터링
             ).exclude(
                 pk=current_user.pk
             ).distinct()
